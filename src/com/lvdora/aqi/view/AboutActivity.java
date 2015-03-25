@@ -18,19 +18,21 @@ import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
 import com.lvdora.aqi.util.WebViewContentClient;
+
 /**
  * 关于我们
+ * 
  * @author Administrator
- *
+ * 
  */
 public class AboutActivity extends Activity {
-	
+
 	private static final int UPDATE_UI = 1;
 	private ImageView backView;
 	private WebView aboutWebview;
 	private String rootPath;
 	private ProgressDialog pDialog;
-	
+
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -50,36 +52,35 @@ public class AboutActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting_more_about);
-		ExitTool.activityList.add(AboutActivity.this);
-		backView = (ImageView) findViewById(R.id.btn_life_back);
 		
+		ExitTool.activityList.add(AboutActivity.this);
 		rootPath = DataTool.createFileDir("Download");
-		Log.i("lvdora", "path"+rootPath);
+		Log.i("lvdora", "path" + rootPath);
+		
+		backView = (ImageView) findViewById(R.id.btn_life_back);
 		backView.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				finish();
 			}
 		});
 
-		aboutWebview = (WebView) findViewById(R.id.about_webview);
 		if (!NetworkTool.isNetworkConnected(AboutActivity.this)) {
 			initView();
 		} else {
 			// 判断获取数据结束
-			pDialog = ProgressDialog.show(AboutActivity.this, "", getResources()
-					.getString(R.string.getting_data));
+			String message = getResources().getString(R.string.getting_data);
+			pDialog = ProgressDialog.show(AboutActivity.this, "", message);
 			pDialog.show();
 			final File file1 = new File(rootPath + "/ic_launcher.png");
 			final File file2 = new File(rootPath + "/code.jpg");
 			final File file3 = new File(rootPath + "/about.html");
-			//initView();
+			// initView();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					while (true) {
-						if (file1.exists()&&file2.exists()&&file3.exists()) {
+						if (file1.exists() && file2.exists() && file3.exists()) {
 							mHandler.sendEmptyMessageDelayed(UPDATE_UI, 0);
 							break;
 						}
@@ -95,7 +96,7 @@ public class AboutActivity extends Activity {
 	}
 
 	private void initView() {
-		// TODO Auto-generated method stub
+		aboutWebview = (WebView) findViewById(R.id.about_webview);
 		// 设置WebView属性，能够执行Javascript脚本
 		aboutWebview.getSettings().setJavaScriptEnabled(true);
 		// 加载本地文件

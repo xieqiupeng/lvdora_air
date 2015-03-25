@@ -344,7 +344,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 						break;
 					case 1:
 						// 检测版本
-						// updateVersion();
 						ModuleVersionUpdate test = new ModuleVersionUpdate(getActivity());
 						test.updateVersion();
 						break;

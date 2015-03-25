@@ -12,6 +12,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,6 +21,7 @@ import android.app.ProgressDialog;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -39,27 +41,27 @@ import com.lvdora.aqi.util.NetworkTool;
 public class ModuleVersionUpdate {
 
 	Activity activity;
+	public ProgressDialog pBar;
+	private String downPath;
+	private Handler handler = new Handler();
 
-	// 版本检测
+	// 版本检测参数
 	private float newVerCode;
 	private String newVerName;
 	private String updateDetails;
-	public ProgressDialog pBar;
-	private StringBuffer sb;
-	private String downPath;
-	
-	
-	private Handler handler = new Handler();
+	private int isUpdate;
 
 	public ModuleVersionUpdate(Activity activity) {
 		this.activity = activity;
+		getSPData();
+		Log.v("ModuleVersionUpdate", "ModuleVersionUpdate");
 	}
 
 	/**
-	 * 检测版本
+	 * 版本检测与升级
 	 */
 	public void updateVersion() {
-		Log.e("ModuleVersionUpdate", "版本检测与升级");
+		Log.e("ModuleVersionUpdate", "updateVersion");
 		// 判断是否存在网络
 		if (NetworkTool.isNetworkConnected(getActivity())) {
 			Float vercode = (float) Config.getVerCode(getActivity());
@@ -81,64 +83,6 @@ public class ModuleVersionUpdate {
 			});
 			builder.show();
 		}
-	}
-
-	/**
-	 * 打开文件
-	 */
-	public void update() {
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.fromFile(new File(downPath, Config.UPDATE_SAVENAME)),
-				"application/vnd.android.package-archive");
-		activity.startActivity(intent);
-	}
-
-	/**
-	 * 进度条
-	 */
-	public void down() {
-		handler.post(new Runnable() {
-			public void run() {
-				pBar.cancel();
-				update();
-			}
-		});
-	
-	}
-
-	/**
-	 * 展示更新对话框
-	 */
-	private void showUpdateDialog() {
-		//
-		updateDetails();
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		// 设置内容
-		builder.setTitle("是否更新 ?");
-		builder.setMessage(sb.toString());
-		// 设置确定按钮
-		builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				pBar = new ProgressDialog(getActivity());
-				pBar.setTitle("正在下载");
-				pBar.setMessage("请稍候...");
-				pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				// 下载apk文件
-				downFile(Constant.DOWNLOAD_URL);
-			}
-		});
-		builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				// 点击"取消"按钮之后退出程序
-				// getActivity().finish();
-			}
-		});
-		// 创建
-		Dialog dialog = builder.create();
-		// 显示对话框
-		dialog.show();
 	}
 
 	/**
@@ -183,28 +127,97 @@ public class ModuleVersionUpdate {
 	}
 
 	/**
+	 * 进度条
+	 */
+	private void down() {
+		handler.post(new Runnable() {
+			public void run() {
+				pBar.cancel();
+				updateApplication();
+			}
+		});
+	}
+
+	/**
+	 * 版本升级
+	 */
+	private void updateApplication() {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		File apk = new File(downPath, Config.UPDATE_SAVENAME);
+		String type = "application/vnd.android.package-archive";
+		intent.setDataAndType(Uri.fromFile(apk), type);
+		activity.startActivity(intent);
+	}
+
+	// getDataFromSP
+	private void getSPData() {
+		SharedPreferences sp;
+		sp = activity.getSharedPreferences("verdata", 0);
+		newVerCode = Float.parseFloat(sp.getString("newVerCode", "1"));
+		newVerName = sp.getString("verName", "");
+		updateDetails = sp.getString("updatedetails", "");
+		isUpdate = sp.getInt("isUpdate", 0);
+	}
+
+	/**
+	 * 展示更新对话框
+	 */
+	private void showUpdateDialog() {
+		// 版本更新信息
+		StringBuffer sb = updateDetails();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		// 设置内容
+		builder.setTitle("是否更新 ?");
+		builder.setMessage(sb.toString());
+		// 设置确定按钮
+		builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				pBar = new ProgressDialog(getActivity());
+				pBar.setTitle("正在下载");
+				pBar.setMessage("请稍候...");
+				pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				// 下载apk文件
+				downFile(Constant.DOWNLOAD_URL);
+			}
+		});
+		builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// 点击"取消"按钮之后退出程序
+				// getActivity().finish();
+			}
+		});
+		// 创建
+		Dialog dialog = builder.create();
+		// 显示对话框
+		dialog.show();
+	}
+
+	/**
 	 * 版本更新信息
 	 */
-	private void updateDetails() {
+	private StringBuffer updateDetails() {
 		String verName = Config.getVerName(getActivity());
-		sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer();
+		sb.append("发现新版本:");
+		sb.append(newVerName + "\r\n");
+		sb.append("当前版本:");
+		sb.append(verName + "\r\n");
+		sb.append("新版本增加功能:" + "\r\n");
+		//
 		JSONArray details;
 		try {
-			sb.append("发现新版本:");
-			sb.append(newVerName + "\r\n");
-			sb.append("当前版本:");
-			sb.append(verName + "\r\n");
-			sb.append("新版本增加功能:" + "\r\n");
 			details = new JSONArray(updateDetails);
 			for (int i = 0; i < details.length(); i++) {
 				sb.append(details.get(i) + "\r\n");
 			}
-			/*
-			 * sb.append("如不更新则无法使用新功能！" + "\r\n"); sb.append("建议您立即更新！！！");
-			 */
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		// sb.append("如不更新则无法使用新功能！" + "\r\n");
+		// sb.append("建议您立即更新！！！");
+		return sb;
 	}
 
 	private Activity getActivity() {

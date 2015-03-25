@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,22 +36,31 @@ import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.ScreenManager;
-
+/**
+ * 
+ * 主activity 加载frament
+ * @author xqp
+ *
+ */
 public class MainActivity extends FragmentActivity {
 
 	private SharedPreferences sp;
 	private long mExitTime;
 	private FragmentTabHost mTabHost;
 	private RadioGroup mTabRg;
-	private String newVerName;
-	private String updateDetails;
-	private float newVerCode;
+	
 	public ProgressDialog pBar;
 	private Handler handler = new Handler();
-	private int isUpdate;
 	private String downPath;
 	private StringBuffer sb;
 
+	//版本更新
+	private String newVerName;
+	private String updateDetails;
+	private float newVerCode;
+	private int isUpdate;
+	
+	
 	// private OnMainListener mainListener;
 
 	private final Class[] fragments = { HazeForecastActivity.class, //
@@ -74,8 +82,8 @@ public class MainActivity extends FragmentActivity {
 		newVerCode = Float.parseFloat(sp.getString("newVerCode", "1"));
 		newVerName = sp.getString("verName", "");
 		updateDetails = sp.getString("updatedetails", "");
-		// Log.e("aqi", "MAIN"+updateDetails);
 		isUpdate = sp.getInt("isUpdate", 0);
+		
 		// 更新版本
 		Float vercode = (float) Config.getVerCode(this);
 		if (newVerCode > vercode) {
@@ -246,34 +254,29 @@ public class MainActivity extends FragmentActivity {
 				try {
 					response = client.execute(get);
 					HttpEntity entity = response.getEntity();
-					InputStream is = entity.getContent();
+					InputStream inputStream = entity.getContent();
 					FileOutputStream fileOutputStream = null;
-					if (is != null) {
-
+					if (inputStream != null) {
 						File file = new File(downPath, Config.UPDATE_SAVENAME);
 						fileOutputStream = new FileOutputStream(file);
-
 						byte[] buf = new byte[1024];
 						int ch = -1;
-						while ((ch = is.read(buf)) != -1) {
+						while ((ch = inputStream.read(buf)) != -1) {
 							fileOutputStream.write(buf, 0, ch);
 						}
-
 					}
 					fileOutputStream.flush();
 					if (fileOutputStream != null) {
 						fileOutputStream.close();
 					}
-					down();
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				down();
 			}
-
 		}.start();
-
 	}
 
 	/**

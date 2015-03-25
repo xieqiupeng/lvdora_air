@@ -65,11 +65,11 @@ public class LvdoraGuide extends Activity implements OnGestureListener {
 		setContentView(R.layout.app_guide);
 
 		// 初始化腾讯bugly
-		Context appContext = this.getApplicationContext();
-		String appId = "900001956"; // 上Bugly(bugly.qq.com)注册产品获取的AppId
-		boolean isDebug = true; // true代表App处于调试阶段，false代表App发布阶段
-		CrashReport.initCrashReport(appContext, appId, isDebug); // 初始化SDK
-		CrashReport.setUserId("xieqiupeng");
+//		Context appContext = this.getApplicationContext();
+//		String appId = "900001956"; // 上Bugly(bugly.qq.com)注册产品获取的AppId
+//		boolean isDebug = true; // true代表App处于调试阶段，false代表App发布阶段
+//		CrashReport.initCrashReport(appContext, appId, isDebug); // 初始化SDK
+//		CrashReport.setUserId("xieqiupeng");
 
 		// 模拟Java Crash方法：
 		// CrashReport.testJavaCrash ();

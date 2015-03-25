@@ -69,7 +69,7 @@ public class ModuleServerInteraction {
 		client.get(param, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String result) {
-				Log.i("ModuleServerIneteraction", "ServerSendBack "+Aqis.size() + "   " + Aqis.toString() + "   " + result);
+				Log.v("ModuleServerIneteraction", "ServerSendBack "+Aqis.size() + "   " + Aqis.toString() + "   " + result);
 				JSONObject obj;
 				try {
 					obj = new JSONObject(result);
