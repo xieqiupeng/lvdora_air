@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_bar_bg" >
+
+        <!-- <ImageView
+            android:id="@+id/devices_back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0.0dip"
+            android:clickable="true"
+            android:src="@drawable/life_top_back_selector" /> -->
+
+        <ImageButton
+            android:id="@+id/devices_share_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="60.0dp"
+            android:background="@drawable/share_bg_selector"
+            android:contentDescription="分享按钮"
+            android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/devices_update_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dp"
+            android:background="@drawable/main_update_icon_selector"
+            android:contentDescription="刷新按钮"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/devides_update_image_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dip"
+            android:scaleType="center"
+            android:src="@drawable/main_progress_update"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/devices_title"
+            style="@style/setting_top_back_text"
+            android:layout_centerInParent="true"
+            android:text="民间站点" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/devices_show_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <RelativeLayout
+            android:id="@+id/devices_city"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#005dab" >
+
+            <TextView
+                android:id="@+id/city_official"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="80dp"
+                android:layout_marginTop="15dp"
+                android:background="#00ffffff"
+                android:paddingLeft="10dp"
+                android:text="官方数据"
+                android:textColor="#ffffffff"
+                android:textSize="15.0sp" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/city_official"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/city_official"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/city_name"
+                android:orientation="horizontal"
+                android:paddingBottom="15dp" >
+
+                <TextView
+                    android:layout_width="1dp"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/bar_50" />
+
+                <LinearLayout
+                    android:id="@+id/aqi_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/city_aqi"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="#00ffffff"
+                        android:gravity="center"
+                        android:text="指数"
+                        android:textColor="#ffffffff"
+                        android:textSize="18.0sp" />
+
+                    <TextView
+                        android:id="@+id/show_city_aqi"
+                        android:layout_width="65dp"
+                        android:layout_height="wrap_content"
+                        android:background="#00ffffff"
+                        android:gravity="center_horizontal"
+                        android:text="123"
+                        android:textColor="#ffffffff"
+                        android:textSize="28.0sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/bar_50" />
+
+                <LinearLayout
+                    android:id="@+id/pm25_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="left"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/city_pm25"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:background="#00ffffff"
+                        android:gravity="right"
+                        android:text="PM2.5"
+                        android:textColor="#ffffffff"
+                        android:textSize="18.0sp" />
+
+                    <TextView
+                        android:id="@+id/show_city_pm25"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:background="#00ffffff"
+                        android:gravity="center"
+                        android:text="46"
+                        android:textColor="#ffffffff"
+                        android:textSize="28.0sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/city_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@+id/city_official"
+                android:layout_marginLeft="17dp"
+                android:background="@drawable/device_city_background"
+                android:padding="10dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="2.0"
+                android:shadowDy="2.0"
+                android:shadowRadius="2.0"
+                android:text="廊坊"
+                android:textColor="#ffffffff"
+                android:textSize="30.0sp" />
+
+            <TextView
+                android:id="@+id/update_minjian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/city_name"
+                android:layout_below="@+id/city_name"
+                android:textColor="#ffffffff" />
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/device_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/devices_city"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40.0dp"
+                android:background="#A9DBFD"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="0.5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2.50"
+                    android:gravity="center_horizontal"
+                    android:text="位置"
+                    android:textColor="#ff005FC6"
+                    android:textSize="18.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/bar_30" />
+
+                <TextView
+                    android:layout_width="0.5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5.0dp"
+                    android:layout_weight="2.5"
+                    android:gravity="center"
+                    android:text="设备名称"
+                    android:textColor="#ff005FC6"
+                    android:textSize="18.0sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/bar_30" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.19"
+                    android:gravity="center"
+                    android:text="指数"
+                    android:textColor="#ff005FC6"
+                    android:textSize="18.0sp" />
+
+                <TextView
+                    android:layout_width="1dp"
+                    android:layout_height="fill_parent"
+                    android:background="@drawable/bar_30" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:gravity="center_horizontal"
+                    android:text="PM2.5"
+                    android:textColor="#ff005FC6"
+                    android:textSize="18.0sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/device_listview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/device_title"
+            android:layout_marginTop="10dip" >
+
+            <ListView
+                android:id="@+id/device_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:background="@android:color/white"
+                android:divider="#ffe1e1e1"
+                android:dividerHeight="0dip"
+                android:listSelector="@drawable/listview_selector" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

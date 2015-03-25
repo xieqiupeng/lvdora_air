@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/trend_index_in"
+        layout="@layout/forecast_index" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff7f7f7"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/wumai_forcast"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="全国空气污染扩散气象条件预报图"
+                android:textColor="@android:color/black" />
+
+            <WebView
+                android:id="@+id/wumai_forcast"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+                <LinearLayout
+            android:id="@+id/wumai_forcast"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="全国霾24小时预报"
+                android:textColor="@android:color/black" />
+
+            <WebView
+                android:id="@+id/haze_forcast_webview"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_trend_pm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="最近24小时空气质量指数(AQI)趋势"
+                android:textColor="@android:color/black" />
+
+            <HorizontalScrollView
+                android:id="@+id/hsv_hours"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fadingEdge="none"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <!--
+                         <com.lvdora.aqi.view.ui.TrendChartView
+                        android:id="@+id/tcv_hours_aqi"
+                        android:layout_width="200.0dp"
+                        android:layout_height="match_parent" />
+                    -->
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="最近一个月空气质量指数(AQI)趋势"
+                android:textColor="@android:color/black" />
+
+            <HorizontalScrollView
+                android:id="@+id/hsv_days"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:fadingEdge="none"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent" >
+
+                    <!--
+                         <com.lvdora.aqi.view.ui.TrendChartView
+                        android:id="@+id/tcv_days_aqi"
+                        android:layout_width="200.0dip"
+                        android:layout_height="match_parent" />
+                    -->
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

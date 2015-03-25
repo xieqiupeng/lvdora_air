@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bj" >
+
+    <RelativeLayout
+        android:id="@+id/rl_city_weather"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/rl_pollutants"
+        android:layout_alignParentTop="true" >
+
+        <RelativeLayout
+            android:id="@+id/ll_city_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" >
+
+            <include
+                android:id="@+id/forecast_city_air_item_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/forecast_city_air_offical_item1" />
+                        <include
+                android:id="@+id/forecast_city_air_item_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/forecast_city_air_item_1"
+                layout="@layout/forecast_city_air_location_site_item3" />
+
+            <include
+                android:id="@+id/forecast_city_air_item_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/forecast_city_air_item_2"
+                layout="@layout/forecast_city_air_usa_item2" />
+
+          <include
+                android:id="@+id/forecast_city_air_spit_item4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="30dp"
+                layout="@layout/forecast_city_air_spit_item4" /> 
+
+     <!--        <include
+                android:id="@+id/forecast_city_air_spit_item4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@id/forecast_city_air_item_3"
+                layout="@layout/forecast_city_air_spit_item4" /> -->
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+<RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_bar_bg" >
+
+		<ImageButton
+            android:id="@+id/share_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="60.0dp"
+            android:background="@drawable/share_bg_selector"
+            android:contentDescription="分享按钮"
+            android:visibility="visible" />
+        <ImageButton
+            android:id="@+id/update_graph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dp"
+            android:background="@drawable/main_update_icon_selector"
+            android:contentDescription="刷新按钮"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/update_graph_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dip"
+            android:scaleType="center"
+            android:src="@drawable/main_progress_update"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/devides_update_image_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dip"
+            android:scaleType="center"
+            android:src="@drawable/main_progress_update"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/devices_title"
+            style="@style/setting_top_back_text"
+            android:layout_centerInParent="true"
+            android:text="空气质量趋势图-北京" />
+    </RelativeLayout>
+
+    
+    
+    <com.lvdora.aqi.util.ScrollViewTool
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+      <TextView
+        android:id="@+id/space1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background = "@color/gray"/>
+     <TextView
+        android:id="@+id/history_24"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines = "2"
+        android:gravity="center"
+        android:text="过去24小时趋势图"
+        android:textColor = "@color/dark_blue"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+    <TextView
+        android:layout_width="8dp"
+        android:layout_height="match_parent"/>
+     <LinearLayout
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background = "@color/blue" >
+     
+      <TextView    
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>   
+         
+     <TextView
+        android:id="@+id/max"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+     <TextView      
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+     <TextView
+        android:id="@+id/m2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+     <TextView
+        android:id="@+id/m1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>  
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+      
+     <TextView
+        android:id="@+id/min"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+         
+    </LinearLayout>
+    
+   
+    <com.lvdora.aqi.graph.MyHorizontalScrollView
+        android:id="@+id/study_graph_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/haze_view_back"
+        android:scrollbars="none" >
+ 
+        <com.lvdora.aqi.graph.StudyGraphView
+            android:id="@+id/study_graph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.lvdora.aqi.graph.MyHorizontalScrollView>
+    
+    </LinearLayout>
+    
+       <TextView
+        android:id="@+id/history_30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:gravity="center"
+        android:text="过去1个月趋势图"
+        android:textColor = "@color/dark_blue"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+    <TextView
+        android:layout_width="8dp"
+        android:layout_height="match_parent"/>
+     <LinearLayout
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:background = "@color/blue"
+        android:orientation="vertical" >
+     
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>   
+         
+     <TextView
+        android:id="@+id/max1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+     <TextView
+        android:id="@+id/m_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+     <TextView
+        android:id="@+id/m_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>  
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/> 
+      
+     <TextView
+        android:id="@+id/min1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:gravity="right"/>
+         
+    </LinearLayout>
+    
+   
+ 	<com.lvdora.aqi.graph.MyHorizontalScrollView1
+        android:id="@+id/study_graph_layout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/haze_view_back"
+        android:scrollbars="none" >
+ 
+        <com.lvdora.aqi.graph.StudyGraphView1
+            android:id="@+id/study_graph1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             />
+    </com.lvdora.aqi.graph.MyHorizontalScrollView1>
+    </LinearLayout>
+      <TextView    
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+   
+            <LinearLayout
+                android:id="@+id/haze_forcast_spread"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <WebView
+                    android:id="@+id/haze_spread_forcast"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+      
+    </com.lvdora.aqi.util.ScrollViewTool>
+ 	
+</LinearLayout>

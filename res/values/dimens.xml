@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+
+    <dimen name="bottom_tab_font_size">16.0sp</dimen>
+    <dimen name="title_text_size">22.0sp</dimen>
+    <dimen name="pollutants_index_textsize">14.0sp</dimen>
+    <dimen name="form_item_text_size">17.0sp</dimen>
+    <dimen name="text_size_vlarge">45.0sp</dimen>
+    <dimen name="activity_horizontal_margin">16sp</dimen>
+    <dimen name="activity_vertical_margin">16sp</dimen>
+    <dimen name="picSize">40dp</dimen>
+</resources>

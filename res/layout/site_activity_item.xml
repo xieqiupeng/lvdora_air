@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="5.0dip"
+    android:paddingLeft="5.0dip"
+    android:paddingRight="5.0dip"
+    android:paddingTop="10.0dip" >
+
+    <TextView
+        android:id="@+id/tv_site"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="@string/monitoring_points"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/form_item_text_size" />
+
+    <TextView
+        android:id="@+id/tv_AQI"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/AQI"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_PM25"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/PM_density"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_quality"
+        android:layout_width="0.0dp"
+        android:layout_height="30dp"
+        android:layout_weight="1.5"
+        android:background="@drawable/aqi_index_shape_green"
+        android:gravity="center"
+        android:text="优"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/form_item_text_size" />
+
+</LinearLayout>

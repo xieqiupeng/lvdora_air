@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/top_bar_bg" >
+
+    <LinearLayout
+        android:id="@+id/city_linear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="left|center"
+        android:gravity="center" >
+
+        <!--
+         <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@id/title_bar_menu_btn"
+        android:background="@drawable/ic_top_divider" />
+        -->
+
+        <ImageView
+            android:id="@+id/city_setting_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8.0dp"
+            android:layout_marginRight="5.0dp"
+            android:src="@drawable/main_ic_city_bg" />
+
+        <ImageView
+            android:id="@+id/home_locate"
+            android:layout_width="14.0dip"
+            android:layout_height="20.0dip"
+            android:background="@drawable/locate_white"
+            android:visibility="gone" />
+             
+        <TextView
+            android:id="@+id/city_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5.0dp"
+            android:ellipsize="end"
+            android:maxEms="6"
+            android:singleLine="true"
+            android:text="    "
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/title_text_size"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/site_into_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10.0dip"
+            android:background="@drawable/cityinto_selector" />
+    </LinearLayout>
+
+<!--     <ImageButton
+        android:id="@+id/spit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="130.0dp"
+        android:background="@drawable/title_bar_more_btn"
+        android:contentDescription="吐槽"
+        android:visibility="visible" /> -->
+
+    <ImageButton
+        android:id="@+id/share_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="100.0dp"
+        android:background="@drawable/share_bg_selector"
+        android:contentDescription="分享按钮"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/title_bar_menu_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="0dip"
+        android:gravity="center"
+        android:src="@drawable/ic_top_bar_category" />
+
+    <ImageButton
+        android:id="@+id/update_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="50.0dp"
+        android:background="@drawable/main_update_icon_selector"
+        android:contentDescription="刷新按钮"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_weather_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="50.0dip"
+        android:scaleType="center"
+        android:src="@drawable/main_progress_update"
+        android:visibility="gone" />
+
+</RelativeLayout>

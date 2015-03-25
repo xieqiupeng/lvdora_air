@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/top_bar_bg" >
+
+        <ImageButton
+            android:id="@+id/btn_life_back"
+            android:layout_width="50dp"
+            android:layout_height="30.0dip"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5.0dip"
+            android:background="@drawable/life_top_back_selector" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="城市管理"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+
+        <ImageButton
+            android:id="@+id/update_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dip"
+            android:background="@drawable/main_update_icon_selector"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/update_image_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2.0dip"
+            android:scaleType="center"
+            android:src="@drawable/main_progress_update"
+            android:visibility="gone" />
+
+        <CheckBox
+            android:id="@+id/btn_life_edit"
+            android:layout_width="45.0dip"
+            android:layout_height="40.0dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="40.0dip"
+            android:background="@drawable/main_life_edit_bg"
+            android:button="@null" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/settings_bg_icon"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1.0" >
+
+            <GridView
+                android:id="@+id/gv_life_citys"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:horizontalSpacing="10.0dp"
+                android:listSelector="@drawable/setting_city_gv"
+                android:numColumns="3"
+                android:paddingLeft="5.0dp"
+                android:paddingRight="5.0dp"
+                android:verticalSpacing="10.0dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

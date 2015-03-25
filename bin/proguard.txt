@@ -1,0 +1,71 @@
+# view res/layout/main_activity.xml #generated:57
+-keep class android.support.v4.app.FragmentTabHost { <init>(...); }
+
+# view res/layout/forecast_activity.xml #generated:18
+-keep class android.support.v4.view.ViewPager { <init>(...); }
+
+# view AndroidManifest.xml #generated:131
+-keep class com.baidu.location.f { <init>(...); }
+
+# view res/layout/baidumap_activity.xml #generated:7
+# view res/layout/map_activity.xml #generated:55
+# view res/layout/site_activity.xml #generated:182
+-keep class com.baidu.mapapi.map.MapView { <init>(...); }
+
+# view AndroidManifest.xml #generated:55
+-keep class com.lvdora.aqi.baidu.MyApplication { <init>(...); }
+
+# view res/layout/haze_forecast_activity.xml #generated:145
+-keep class com.lvdora.aqi.graph.MyHorizontalScrollView { <init>(...); }
+
+# view res/layout/haze_forecast_activity.xml #generated:225
+-keep class com.lvdora.aqi.graph.MyHorizontalScrollView1 { <init>(...); }
+
+# view res/layout/haze_forecast_activity.xml #generated:152
+-keep class com.lvdora.aqi.graph.StudyGraphView { <init>(...); }
+
+# view res/layout/haze_forecast_activity.xml #generated:232
+-keep class com.lvdora.aqi.graph.StudyGraphView1 { <init>(...); }
+
+# view res/layout/site_activity.xml #generated:164
+-keep class com.lvdora.aqi.util.LinearLayoutForListView { <init>(...); }
+
+# view res/layout/haze_forecast_activity.xml #generated:69
+-keep class com.lvdora.aqi.util.ScrollViewTool { <init>(...); }
+
+# view AndroidManifest.xml #generated:79
+-keep class com.lvdora.aqi.view.AboutActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:108
+-keep class com.lvdora.aqi.view.AirQualityStandardsActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:92
+-keep class com.lvdora.aqi.view.CitySelectorActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:70
+-keep class com.lvdora.aqi.view.CitySettingActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:75
+-keep class com.lvdora.aqi.view.DeviceShareActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:87
+-keep class com.lvdora.aqi.view.FeedBackActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:83
+-keep class com.lvdora.aqi.view.HelpActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:102
+-keep class com.lvdora.aqi.view.LogoActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:118
+-keep class com.lvdora.aqi.view.LvdoraGuide { <init>(...); }
+
+# view AndroidManifest.xml #generated:65
+-keep class com.lvdora.aqi.view.MainActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:97
+-keep class com.lvdora.aqi.view.SiteActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:113
+-keep class com.lvdora.aqi.view.WeatherForecast { <init>(...); }
+

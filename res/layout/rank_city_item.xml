@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="4.0dp"
+    android:paddingBottom="2.0dp"
+    android:paddingRight="15dp"
+    android:paddingLeft="15dp" >
+
+    <TextView
+        android:id="@+id/lv_air_rank"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5.0dip"
+        android:layout_weight="1"
+        android:text="排名"
+        android:textColor="#ff323232"
+        android:textSize="20.0sp" />
+    
+        <TextView
+        android:id="@+id/lv_air_province"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5.0dip"
+        android:layout_weight="2"
+        android:text="省"
+        android:textColor="#ff005FC6"
+        android:textSize="18.0sp" />
+
+    <TextView
+        android:id="@+id/lv_air_city"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5.0dip"
+        android:layout_weight="2"
+        android:text="城市"
+        android:textColor="#ff005FC6"
+        android:textSize="18.0sp" />
+
+    <TextView
+        android:id="@+id/lv_air_aqi"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5.0dip"
+        android:paddingRight="10.0dip"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="AQI"
+        android:textColor="#ffffff"
+        android:textSize="20.0sp" />
+
+</LinearLayout>

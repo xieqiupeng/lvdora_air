@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="pollutants_bg">#fff5f5f5</color>
+    <color name="yellow">#ffffff00</color>
+    <color name="green">#ff00e400</color>
+    <color name="gray">#ff808080</color>
+    <color name="settings_others_bg">#ffeaeaea</color>
+    <color name="hered">#ff7e0001</color>
+    <color name="red">#ffff0000</color>
+    <color name="orange">#ffff7e00</color>
+    <color name="purple">#ff99004C</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="translucent">#22ffffff</color>
+    <color name="location">#ff1eb1c8</color>
+    <color name="color_2">#2a4253</color>
+    <color name="transparentblack">#88000000</color>
+    
+    <color name="graph_fill">#44c39a</color>
+	<color name="graph_separate">#dee5e8</color>
+	<color name="graph_text">#c1c8cb</color>
+	<color name="you">#02A401</color>
+	<color name="liang">#E6E608</color>
+	<color name="qingdu">#E27204</color>
+	<color name="zhongdu">#D50505</color>
+	<color name="yanzhong">#98004B</color>
+	<color name="da">#7D0022</color>
+	<color name="blue">#01CDFC</color>
+	<color name="dark_blue">#0361C6</color>
+
+  
+</resources>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/settings_bg_icon"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="42.0dip"
+        android:background="@drawable/top_bar_bg" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="更多"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10.0dip"
+        android:layout_marginRight="10.0dip"
+        android:layout_marginTop="35.0dip"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/ll_user_center"
+            android:layout_width="fill_parent"
+            android:layout_height="60.0dip"
+            android:background="@drawable/setting_item_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="5.0dip"
+            android:paddingRight="10.0dip" >
+
+            <ImageView
+                android:layout_width="35.0dip"
+                android:layout_height="35.0dip"
+                android:background="@drawable/settings_tabcontent_site" />
+
+            <View
+                android:layout_width="1.0dip"
+                android:layout_height="30.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:layout_marginRight="5.0dip"
+                android:background="#ffd1d5dc" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:text="民间站点"
+                android:textColor="#ff202020"
+                android:textSize="22.0sp" />
+
+            <ImageView
+                android:layout_width="12.0dip"
+                android:layout_height="12.0dip"
+                android:layout_marginRight="5.0dip"
+                android:layout_weight="0.0"
+                android:src="@drawable/settings_start_activity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_feedback"
+            android:layout_width="fill_parent"
+            android:layout_height="50.0dip"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/setting_item_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip" >
+
+            <ImageView
+                android:layout_width="25.0dip"
+                android:layout_height="25.0dip"
+                android:src="@drawable/settings_tabcontent_suggest" />
+
+            <View
+                android:layout_width="1.0dip"
+                android:layout_height="25.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:layout_marginRight="5.0dip"
+                android:background="#ffd1d5dc" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:text="意见反馈"
+                android:textColor="#ff202020"
+                android:textSize="18.0dip" />
+
+            <ImageView
+                android:layout_width="10.0dip"
+                android:layout_height="10.0dip"
+                android:layout_marginRight="5.0dip"
+                android:layout_weight="0.0"
+                android:src="@drawable/settings_start_activity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/update_system"
+            android:layout_width="fill_parent"
+            android:layout_height="50.0dip"
+            android:background="@drawable/setting_item_selector"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip" >
+
+            <ImageView
+                android:layout_width="25.0dip"
+                android:layout_height="25.0dip"
+                android:src="@drawable/settings_tabcontent_new_version" />
+
+            <View
+                android:layout_width="1.0dip"
+                android:layout_height="25.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:layout_marginRight="5.0dip"
+                android:background="#ffd1d5dc" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="检测版本"
+                    android:textColor="#ff202020"
+                    android:textSize="18.0dip" />
+
+                <TextView
+                    android:id="@+id/now_version"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="当前最新版本1.0"
+                    android:textColor="#ffb5b5b5"
+                    android:textSize="10.0dip" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="10.0dip"
+                android:layout_height="10.0dip"
+                android:layout_marginRight="5.0dip"
+                android:layout_weight="0.0"
+                android:src="@drawable/settings_start_activity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/air_quality_standards"
+            android:layout_width="fill_parent"
+            android:layout_height="50.0dip"
+            android:background="@drawable/setting_item_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip" >
+
+            <ImageView
+                android:layout_width="25.0dip"
+                android:layout_height="25.0dip"
+                android:src="@drawable/settings_tabcontent_standard" />
+
+            <View
+                android:layout_width="1.0dip"
+                android:layout_height="25.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:layout_marginRight="5.0dip"
+                android:background="#ffd1d5dc" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:text="空气质量标准"
+                android:textColor="#ff202020"
+                android:textSize="18.0dip" />
+
+            <ImageView
+                android:layout_width="10.0dip"
+                android:layout_height="10.0dip"
+                android:layout_marginRight="5.0dip"
+                android:layout_weight="0.0"
+                android:src="@drawable/settings_start_activity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/about"
+            android:layout_width="fill_parent"
+            android:layout_height="50.0dip"
+            android:background="@drawable/setting_item_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip" >
+
+            <ImageView
+                android:layout_width="25.0dip"
+                android:layout_height="25.0dip"
+                android:src="@drawable/settings_tabcontent_about" />
+
+            <View
+                android:layout_width="1.0dip"
+                android:layout_height="25.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:layout_marginRight="5.0dip"
+                android:background="#ffd1d5dc" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:text="关于"
+                android:textColor="#ff202020"
+                android:textSize="18.0dip" />
+
+            <ImageView
+                android:layout_width="10.0dip"
+                android:layout_height="10.0dip"
+                android:layout_marginRight="5.0dip"
+                android:layout_weight="0.0"
+                android:src="@drawable/settings_start_activity" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bj" >
+
+    <LinearLayout
+        android:id="@+id/ll_exponent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/pollutants_bg"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            style="@style/forecast_ll_exponent"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1.0"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_pollutants"
+        android:layout_width="fill_parent"
+        android:layout_height="25.0dip"
+        android:layout_above="@+id/ll_exponent"
+        android:layout_marginBottom="3.0dip" >
+
+    </RelativeLayout>
+
+   <RelativeLayout
+        android:id="@+id/rl_city_weather"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/rl_pollutants"
+        android:layout_alignParentTop="true" >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1.5dip"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="150dp"
+            android:background="#e0778899" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1.5dip"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="260dp"
+            android:background="#e0778899" />
+
+        <RelativeLayout
+            android:id="@+id/ll_city_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal" >
+
+            <include
+                android:id="@+id/forecast_city_air_item_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/forecast_city_air_offical_item1" />
+
+            <include
+                android:id="@+id/forecast_city_air_item_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/forecast_city_air_item_1"
+                layout="@layout/forecast_city_air_usa_item2" />
+
+            <include
+                android:id="@+id/forecast_city_air_item_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/forecast_city_air_item_2"
+                layout="@layout/forecast_city_air_location_site_item3" />
+
+           
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

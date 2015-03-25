@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/settings_tabcontent_more_all_title_bg" >
+
+        <ImageView
+            android:id="@+id/btn_life_back"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0.0dip"
+            android:clickable="true"
+            android:src="@drawable/life_top_back_selector" />
+
+        <TextView
+            style="@style/setting_top_back_text"
+            android:layout_centerInParent="true"
+            android:text="关于" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/settings_tabcontent_more_all_title_bg" >
+
+        <WebView
+            android:id="@+id/about_webview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </RelativeLayout>
+</LinearLayout>
