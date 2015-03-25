@@ -40,8 +40,8 @@ import com.lvdora.aqi.util.NetworkTool;
  */
 public class ModuleVersionUpdate {
 
-	Activity activity;
-	public ProgressDialog pBar;
+	private Activity activity;
+	private ProgressDialog pBar;
 	private String downPath;
 	private Handler handler = new Handler();
 
@@ -54,6 +54,7 @@ public class ModuleVersionUpdate {
 	public ModuleVersionUpdate(Activity activity) {
 		this.activity = activity;
 		getSPData();
+		// 更新版本
 		Log.v("ModuleVersionUpdate", "ModuleVersionUpdate");
 	}
 
@@ -83,6 +84,85 @@ public class ModuleVersionUpdate {
 			});
 			builder.show();
 		}
+	}
+
+	/**
+	 * 两种升级方式
+	 */
+	public void updateChoose() {
+		Log.e("ModuleVersionUpdate", "updateChoose");
+		// 当前apk版本
+		Float vercode = (float) Config.getVerCode(activity);
+		// 两种升级方式
+		if (newVerCode > vercode) {
+			if (isUpdate == 2) {
+				showMustUpdateDialog();
+			} else if (isUpdate == 1) {
+				showUpdateDialog();
+			}
+		}
+	}
+
+	/**
+	 * 必须升级
+	 */
+	public void showMustUpdateDialog() {
+		Log.e("ModuleVersionUpdate", "showMustUpdateDialog");
+		// 版本更新信息
+		StringBuffer sb = updateDetails();
+		// 提示更新对话框
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("立即更新 ");
+		builder.setMessage(sb.toString());
+		// 设置确定按钮
+		builder.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				pBar = new ProgressDialog(getActivity());
+				pBar.setTitle("正在下载");
+				pBar.setMessage("请稍候...");
+				pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				// 下载apk文件
+				downFile(Constant.DOWNLOAD_URL);
+			}
+		});
+		// 创建,显示对话框
+		Dialog dialog = builder.create();
+		dialog.show();
+	}
+
+	/**
+	 * 可选升级
+	 */
+	public void showUpdateDialog() {
+		Log.e("ModuleVersionUpdate", "showUpdateDialog");
+		// 版本更新信息
+		StringBuffer sb = updateDetails();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("是否更新 ?");
+		builder.setMessage(sb.toString());
+		// 设置确定按钮
+		builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				pBar = new ProgressDialog(getActivity());
+				pBar.setTitle("正在下载");
+				pBar.setMessage("请稍候...");
+				pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				// 下载apk文件
+				downFile(Constant.DOWNLOAD_URL);
+			}
+		});
+		builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// 点击"取消"按钮之后退出程序
+				// getActivity().finish();
+			}
+		});
+		// 创建，显示对话框
+		Dialog dialog = builder.create();
+		dialog.show();
 	}
 
 	/**
@@ -153,45 +233,11 @@ public class ModuleVersionUpdate {
 	private void getSPData() {
 		SharedPreferences sp;
 		sp = activity.getSharedPreferences("verdata", 0);
-		newVerCode = Float.parseFloat(sp.getString("newVerCode", "1"));
-		newVerName = sp.getString("verName", "");
-		updateDetails = sp.getString("updatedetails", "");
-		isUpdate = sp.getInt("isUpdate", 0);
-	}
 
-	/**
-	 * 展示更新对话框
-	 */
-	private void showUpdateDialog() {
-		// 版本更新信息
-		StringBuffer sb = updateDetails();
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		// 设置内容
-		builder.setTitle("是否更新 ?");
-		builder.setMessage(sb.toString());
-		// 设置确定按钮
-		builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				pBar = new ProgressDialog(getActivity());
-				pBar.setTitle("正在下载");
-				pBar.setMessage("请稍候...");
-				pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				// 下载apk文件
-				downFile(Constant.DOWNLOAD_URL);
-			}
-		});
-		builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				// 点击"取消"按钮之后退出程序
-				// getActivity().finish();
-			}
-		});
-		// 创建
-		Dialog dialog = builder.create();
-		// 显示对话框
-		dialog.show();
+		updateDetails = sp.getString("updatedetails", "");
+		newVerName = sp.getString("verName", "");
+		newVerCode = Float.parseFloat(sp.getString("newVerCode", "1"));
+		isUpdate = sp.getInt("isUpdate", 0);
 	}
 
 	/**

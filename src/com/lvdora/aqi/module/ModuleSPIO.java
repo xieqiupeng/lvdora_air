@@ -42,7 +42,9 @@ public class ModuleSPIO {
 			// 7 记录界面加载时间
 			"autoupdate",
 			// 8 进度条标志位，存GPS
-			"isFlash" };
+			"isFlash" 
+			//
+			};
 
 	public ModuleSPIO() {
 	}
