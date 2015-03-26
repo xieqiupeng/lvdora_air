@@ -27,7 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 layout="@layout/forecast_city_air_offical_item1" />
-                        <include
+
+            <include
                 android:id="@+id/forecast_city_air_item_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,21 +42,23 @@
                 android:layout_below="@id/forecast_city_air_item_2"
                 layout="@layout/forecast_city_air_usa_item2" />
 
-          <include
+            <include
                 android:id="@+id/forecast_city_air_spit_item4"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="30dp"
-                layout="@layout/forecast_city_air_spit_item4" /> 
+                layout="@layout/forecast_city_air_spit_item4" />
 
-     <!--        <include
+            <!--
+                 <include
                 android:id="@+id/forecast_city_air_spit_item4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_below="@id/forecast_city_air_item_3"
-                layout="@layout/forecast_city_air_spit_item4" /> -->
+                layout="@layout/forecast_city_air_spit_item4" />
+            -->
         </RelativeLayout>
     </RelativeLayout>
 

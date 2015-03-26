@@ -1,13 +1,15 @@
 package com.lvdora.aqi.util;
 
 import com.lvdora.aqi.R;
+
 /**
+ * 等級判定工具类
  * 
- * @author 
- *
+ * @xqp
+ * 
  */
 public class GradeTool {
-	
+
 	//
 	public static String getStateByIndex(int paramInt) {
 		if ((paramInt > -1) && (paramInt <= 0))
@@ -24,7 +26,7 @@ public class GradeTool {
 			return "重度污染";
 		return "严重污染";
 	}
-	
+
 	//
 	public static int getMapColorByIndex(String index) {
 
@@ -46,8 +48,8 @@ public class GradeTool {
 			return R.color.purple;
 		return R.color.hered;
 	}
-	
-	//颜色
+
+	// 颜色
 	public static int getAqiColorByIndex(String index) {
 		if ("--".equals(index.trim()) || "".equals(index.trim())) {
 			return R.drawable.aqi_index_shape_green;
@@ -164,6 +166,9 @@ public class GradeTool {
 		}
 		if (grade.equals("d19")) {
 			return R.drawable.weathericon_graph_18;
+		}
+		if (grade.equals("d53")) {
+			return R.drawable.weathericon_graph_52;
 		}
 		return R.drawable.weathericon_graph_01;
 	}
