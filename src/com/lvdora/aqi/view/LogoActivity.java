@@ -47,7 +47,7 @@ public class LogoActivity extends Activity {
 
 	private int dbCount;
 	private CityAqiDao cityAqiDB;
-	private List<City> citys;
+	private List<City> citys = new ArrayList<City>();
 	private SharedPreferences sp;
 	private boolean isNetLink = false;
 	public boolean isGPS = false;
@@ -90,8 +90,6 @@ public class LogoActivity extends Activity {
 		// 透明度变化动画类
 		AlphaAnimation localAnimation = new AlphaAnimation(0.1f, 1.0f);
 		localAnimation.setDuration(2500);
-
-		//
 
 		// 取得数据库的开始记录数
 		cityAqiDB = new CityAqiDao(LogoActivity.this, "");
@@ -204,18 +202,16 @@ public class LogoActivity extends Activity {
 	public void dispose(String locateCity, double jingdu, double weidu) {
 
 		// 0 TODO 手动设置定位城市，进行测试
-//		double[][] lonLat = {
-//				// 台北市
-//				{ 121.524871, 25.061039 },
-//				// 东北省
-//				{ 126.63, 45.75 },
-//				// 保定市
-//				{ 115.472963, 38.878139 },
-//				// 深圳市
-//				{ 114.064781, 22.560473 } };
-//		locateCity = "深圳市";
-//		jingdu = lonLat[2][0];
-//		weidu = lonLat[2][1];
+		double[][] lonLat = {
+				// 0 保定市 游泳馆
+				{ 115.472963, 38.878139 },
+				// 1 深圳市 荔园
+				{ 114.064781, 22.560473 },
+				// 2 杭州市 千岛湖
+				{ 119.051449, 29.61001 } };
+		locateCity = "深圳市";
+		jingdu = lonLat[1][0];
+		weidu = lonLat[1][1];
 
 		// 1 加载缓存城市
 		loadCityListFromSP();
@@ -262,14 +258,10 @@ public class LogoActivity extends Activity {
 		sp = getSharedPreferences("citydata", 0);
 		String citysStr = sp.getString("citys", "");
 		if (citysStr.equals("")) {
-			citys = null;
 			return true;
 		}
 		// 加载收藏城市list
-		try {
-			citys = EnAndDecryption.String2WeatherList(citysStr);
-		} catch (Exception e) {
-		}
+		citys = EnAndDecryption.String2WeatherList(citysStr);
 		return false;
 	}
 
@@ -277,6 +269,7 @@ public class LogoActivity extends Activity {
 	 * 加载定位城市，与db和缓存定位城市对比
 	 */
 	private int loadLocateCity(String locateCity) {
+		Log.d("LogoActivity", "loadLocateCity " + citys.toString());
 		// 0 预处理
 		locateCity = locateCity.substring(0, locateCity.length() - 1);
 		// 得cityID和isHaveAqi
@@ -288,7 +281,7 @@ public class LogoActivity extends Activity {
 		}
 
 		// 1 缓存城市为空，添加定位城市
-		if (citys == null) {
+		if (citys == null || citys.size() == 0) {
 			// 新逻辑
 			CitysIndexMap.getInstance(this).put(0, cityID);
 			// 旧逻辑兼容

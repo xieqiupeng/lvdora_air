@@ -22,7 +22,7 @@ public class ModuleSPIO {
 	// private Activity activity;
 	public String fullName = "SharedPreferences InputStream and OutputStream";
 	private SharedPreferences sp;
-	
+
 	// sp意义
 	public final static String[] spName = {
 			// 0 城市编辑界面中添加的城市
@@ -42,21 +42,17 @@ public class ModuleSPIO {
 			// 7 记录界面加载时间
 			"autoupdate",
 			// 8 进度条标志位，存GPS
-			"isFlash" 
-			//
-			};
+			"isFlash"
+	//
+	};
 
 	public ModuleSPIO() {
 	}
 
 	public static void showCityData(Activity activity, String FromWhere) {
-		SharedPreferences sp = activity.getSharedPreferences(spName[0], 0);
+		SharedPreferences sp = activity.getSharedPreferences("citydata", 0);
 		List<City> citys = new ArrayList<City>();
-		try {
-			citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
 		int cityCount = citys.size();
 		Log.d("ModuleSPIO", "showCityData from" + FromWhere + " citys:" + cityCount + " " + citys.toString());
 	}

@@ -8,23 +8,28 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Binder;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.lvdora.aqi.R;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
+import com.lvdora.aqi.view.HomeActivity;
 import com.lvdora.aqi.view.LogoActivity;
+import com.lvdora.aqi.view.MainActivity;
 
 /**
  * 服务器交互类
  * 
- * @1 根据城市id和order得到aqi数据 存到数据库
+ * @1 根据城市id和order得到aqi数据
+ * @2 存到数据库
  */
 public class ModuleServerInteraction {
-
+	
 	private Activity activity;
 	private List<CityAqi> Aqis;
 	// 请求aqi数量
@@ -33,10 +38,13 @@ public class ModuleServerInteraction {
 	public ModuleServerInteraction(Activity activity) {
 		this.activity = activity;
 		Aqis = new ArrayList<CityAqi>();
+		
 	}
 
-	/*
+	/**
 	 * 多条请求
+	 * 
+	 * @param citys
 	 */
 	public void sendRequestForAqis(List<City> citys) {
 		this.requestNum = citys.size();
@@ -48,17 +56,16 @@ public class ModuleServerInteraction {
 		}
 		citysID = citysID.substring(0, citysID.length() - 1);
 		citysOrder = citysOrder.substring(0, citysOrder.length() - 1);
-		Log.v("LD", citysID + " " + citysOrder);
+		Log.v("ModuleServerInteraction", citysID + " " + citysOrder);
 		sendRequestForAqis(citysOrder, citysID);
 	}
 
 	/**
-	 * 与服务器交互
-	 * 
-	 * @param param
+	 * 多条请求
 	 */
 	public void sendRequestForAqis(final String citysOrder, final String citysID) {
-		Log.d("LD", citysID + citysOrder + " " + Aqis.toString() + " " + Aqis.size() + " " + requestNum);
+		Log.d("ModuleServerInteraction", citysID + citysOrder + " " + Aqis.toString() + " " + Aqis.size() + " "
+				+ requestNum);
 		String param = Constant.AQIS_URL + citysID;
 		// java转义
 		final String[] cityIDArr = citysID.split("\\|");
@@ -69,7 +76,8 @@ public class ModuleServerInteraction {
 		client.get(param, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String result) {
-				Log.v("ModuleServerIneteraction", "ServerSendBack "+Aqis.size() + "   " + Aqis.toString() + "   " + result);
+				Log.v("ModuleServerIneteraction", "ServerSendBack " + Aqis.size() + " " + Aqis.toString() + " "
+						+ result);
 				JSONObject obj;
 				try {
 					obj = new JSONObject(result);
@@ -81,24 +89,27 @@ public class ModuleServerInteraction {
 						Aqis.add(cityAqi);
 					}
 				} catch (JSONException e) {
-					
+
 				}
 				// 界面回调，默认单条查询
 				if (Aqis.size() == requestNum) {
-					pageCallBack();
+					callLogoActivity();
 				}
 			}
 		});
 	}
 
+	/**
+	 * 单条请求
+	 * 
+	 * @param city
+	 */
 	public void sendRequestForAqi(City city) {
 		sendRequestForAqi(city.getOrder(), city.getId());
 	}
 
 	/**
-	 * 与服务器交互
-	 * 
-	 * @param param
+	 * 单条请求
 	 */
 	public void sendRequestForAqi(final int cityOrder, final int cityID) {
 		Log.d("ModuleServerIneteraction", cityID + " " + Aqis.toString() + Aqis.size());
@@ -107,26 +118,22 @@ public class ModuleServerInteraction {
 		client.get(param, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String result) {
-				Log.w("ModuleServerIneteraction", "ServerSendBack "+cityID + result);
-				// 取得添加城市及信息
+				Log.w("ModuleServerIneteraction", "ServerSendBack " + result);
+				// 得到单条城市天气信息
 				CityAqi cityAqi = DataTool.getCityAqi(result, cityID, cityOrder);
-				Aqis.add(cityAqi);
-				// 界面回调，默认单条查询
-				if (Aqis.size() == requestNum) {
-					Log.i("LD", Aqis.size() + "   " + cityID + Aqis.toString());
-					pageCallBack();
-				}
+				//((MainActivity) activity).getFragmentManager().findFragmentById().updateCityData(cityAqi);
 			}
 		});
 	}
 
-	/**
-	 * 回调界面函数
-	 */
-	public void pageCallBack() {
+	// 回调界面函数
+	public void callLogoActivity() {
 		Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
-		//String name = activity.toString();
-		//name = name.substring(0, name.indexOf("y") + 1);
 		((LogoActivity) activity).listToDB(Aqis);
+	}
+
+	// 
+	public void callHomeActivity() {
+		Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
 	}
 }

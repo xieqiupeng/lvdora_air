@@ -89,7 +89,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
-                
 
                 <LinearLayout
                     android:id="@+id/site_layout"
@@ -167,25 +166,25 @@
                         android:layout_height="fill_parent"
                         android:orientation="vertical" >
                     </com.lvdora.aqi.util.LinearLayoutForListView>
-                    
-                    <!--     android:background="@android:color/white"
+
+                    <!--
+                    android:background="@android:color/white"
                     android:cacheColorHint="#00000000"
                     android:divider="#ffe1e1e1"
                     android:dividerHeight="0.5dip"
                     android:listSelector="@drawable/listview_selector"
-                    android:scrollbars="none"  -->
-
-                  
+                    android:scrollbars="none"
+                    -->
 
                 </LinearLayout>
-			
+
                 <com.baidu.mapapi.map.MapView
                     android:id="@+id/bmapView1"
                     android:layout_width="fill_parent"
                     android:layout_height="200dp"
                     android:clickable="true" >
-         		</com.baidu.mapapi.map.MapView>
-	 			
+                </com.baidu.mapapi.map.MapView>
+
                 <LinearLayout
                     android:id="@+id/ll_exponent"
                     android:layout_width="match_parent"
@@ -194,8 +193,6 @@
                     android:background="@color/pollutants_bg"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal" >
-                    
-                    
 
                     <LinearLayout
                         style="@style/forecast_ll_exponent"
@@ -327,7 +324,7 @@
                             android:textColor="@android:color/black" />
                     </LinearLayout>
                 </LinearLayout>
-<!--  
+                <!--
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -494,8 +491,8 @@
                             android:text="01/24"
                             android:textColor="#FFFFFF" />
                     </LinearLayout>
-                </LinearLayout>
-      -->
+                </LinearLayout>
+                -->
                 <!--
                      <LinearLayout
                     android:id="@+id/ll_pm"
@@ -512,11 +509,10 @@
                         android:text="无站点信息，该市未开展PM2.5监测！"
                         android:textColor="@android:color/black"
                         android:textSize="20sp" />
-                </LinearLayout>
+                </LinearLayout>
                 -->
             </LinearLayout>
         </LinearLayout>
-      
     </ScrollView>
 
 </LinearLayout>

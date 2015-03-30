@@ -39,6 +39,7 @@ import com.lvdora.aqi.model.CitysIndexMap;
 import com.lvdora.aqi.model.SiteAqi;
 import com.lvdora.aqi.model.SpitContent;
 import com.lvdora.aqi.module.ModuleDataClean;
+import com.lvdora.aqi.module.ModuleDotIndicator;
 import com.lvdora.aqi.module.ModuleSPIO;
 import com.lvdora.aqi.module.ModuleVersionUpdate;
 import com.lvdora.aqi.util.AsyncHttpClient;
@@ -56,6 +57,12 @@ import com.lvdora.aqi.util.TitlePopup;
 import com.lvdora.aqi.util.TitlePopup.OnItemOnClickListener;
 import com.lvdora.aqi.util.UpdateTool;
 
+/**
+ * 主界面
+ * 
+ * @author xqp
+ * 
+ */
 public class HomeActivity extends Fragment implements OnClickListener {
 
 	public static final int UPDATE_UI = 1;
@@ -74,6 +81,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	private int aboutVersion = 0;
 
 	private TitlePopup titlePopup;
+	// 刷新按钮
 	public boolean isFlash = false;
 	private View homeView;
 	private List<View> views;
@@ -126,15 +134,18 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	// private List<SpitContent> contentList = new ArrayList<SpitContent>();
 
 	// 版本检测
-	// private float newVerCode;
-	// private String newVerName;
-	// private String updateDetails;
-	// public ProgressDialog pBar;
-	// private StringBuffer sb;
+	private float newVerCode;
+	private String newVerName;
+	private String updateDetails;
+	public ProgressDialog pBar;
+	private StringBuffer sb;
+	private String downPath;
+	private Handler handler = new Handler();
 
 	// FlushFlag=true刷新
 	public Boolean FlushFlag = false;
 	private Boolean first_update = true;
+	private Boolean onstart_flush = false;
 	private RelativeLayout forecast_index_layout;
 
 	// aqi信息
@@ -178,6 +189,10 @@ public class HomeActivity extends Fragment implements OnClickListener {
 
 	private ProgressDialog pDialog;
 
+	/**
+	 * @1 接受子线程发送的数据
+	 * @2 用此数据配合主线程更新UI.
+	 */
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -185,7 +200,9 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			case UPDATE_UI: {
 				initView();
 				viewDataInit();
-				initIndicators();
+				// 添加页面指示器
+				ModuleDotIndicator.getInstance(getActivity(), indicatorLayout).addIndicator(citys.size());
+				// initIndicators();
 				break;
 			}
 			case SPIT_PUBLISH: {
@@ -212,11 +229,14 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		onstart_flush = false;
 		// 加载缓存
 		loadSP();
-
+		// 初始化数据库
 		cityAqiDB = new CityAqiDao(getActivity(), "");
 		Log.d("HomeActivity", "onCreate cityAqiDB=" + cityAqiDB.getCount());
+		// 下载文件
+		// DataTool.getAboutData();
 	}
 
 	@Override
@@ -225,37 +245,25 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		homeView = inflater.inflate(R.layout.forecast_activity, container, false);
 		findView();
 
-		sp = getActivity().getSharedPreferences("isFlash", 0);
-		isFlash = sp.getBoolean("isFlash", false);
-		// 这什么判断
+		// 与服务器通信
 		if (NetworkTool.isNetworkConnected(getActivity()) && !isFlash) {
 			// 进度条
 			pDialog = ProgressDialog.show(getActivity(), "", getResources().getString(R.string.getting_data));
 			pDialog.show();
-			pDialog.setCancelable(true);
-			// 下拉菜单按钮
+			// 与服务器通信
 			new Thread(new ShowProgressThread()).start();
-		} else {
-			// 界面滑动
-			initView();
-			// 填充数据
-			viewDataInit();
-		}
-		// 初始化翻页指示器
-		initIndicators();
-		//
-		if (about > aboutVersion) {
-			aboutVersion += 1;
-			DataTool.getAboutData();
+			return homeView;
 		}
 
-		// if (contentList != null) {
-		// publishTime = DateUtil.getTime(contentList.get(0).getPubTime());
-		// Log.e("aqi", "pubtime：" + publishTime);
-		// } else {
-		// publishTime = System.currentTimeMillis() + 10000;
-		// }
-		// pastCount = contentList.size();
+		// 添加viewpage个数
+		initView();
+		// 初始化白点指示器
+		initIndicators();
+		// ModuleDotIndicator mdi =
+		// ModuleDotIndicator.getInstance(getActivity(), indicatorLayout);
+		// mdi.addIndicator(citys.size());
+		// 填充数据
+		viewDataInit();
 		return homeView;
 	}
 
@@ -277,38 +285,9 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				public void onItemClick(TitleActionItem item, int position) {
 					// 关闭下拉菜单
 					titlePopup.dismiss();
-					switch (position) {
-					case 0:
-						Toast.makeText(getActivity(), R.string.spitOn, Toast.LENGTH_SHORT).show();
-						cityId = citys.get(currentIndexOut).getId();
-						onOrOff = !onOrOff;
-						titlePopup.cleanAction();
-						// 初始化下拉菜单
-						extraMenuInit();
-						// 打开吐槽
-						initCitySpit(views, citys);
-						break;
-					case 1:
-						// 检测版本
-						ModuleVersionUpdate test = new ModuleVersionUpdate(getActivity());
-						test.updateVersion();
-						break;
-					case 2:
-						startActivity(new Intent(getActivity(), AirQualityStandardsActivity.class));
-						break;
-					case 3:
-						startActivity(new Intent(getActivity(), AboutActivity.class));
-						break;
-					case 4:
-						// 清除缓存，刷新
-						clearCache();
-						OnFlush();
-						break;
-					default:
-						break;
-					}
+					// 点击子项目
+					extraMenuItemClick(position);
 				}
-
 			});
 			break;
 		case R.id.city_setting_icon:
@@ -387,67 +366,95 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	public void onStart() {
 		super.onStart();
 		autoUpdate();
+		if (onstart_flush) {
+			OnFlush();
+		}
+		onstart_flush = true;
 	}
 
 	@Override
 	public void onPause() {
+		// 城市列表缓存
 		CitysIndexMap.getInstance(getActivity()).listToSP();
 		super.onPause();
 	}
 
 	@Override
 	public void onStop() {
+		// 城市列表缓存
 		CitysIndexMap.getInstance(getActivity()).listToSP();
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
+		// 城市列表缓存
 		CitysIndexMap.getInstance(getActivity()).listToSP();
 		super.onDestroy();
 	}
 
 	/**
-	 * 附加功能菜单
+	 * 显示进度条线程
+	 * 
+	 * @1 和服务器通讯获得aqi信息
+	 * @2 存库
+	 * @3 更新UI
 	 */
-	private void extraMenuInit() {
-		titlePopup = new TitlePopup(getActivity(), LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		if (!onOrOff) {
-			titlePopup.addAction(new TitleActionItem(getActivity(), "打开吐槽", R.drawable.mm_title_btn_receiver_normal));
-		} else {
-			titlePopup.addAction(new TitleActionItem(getActivity(), "关闭吐槽", R.drawable.mm_title_btn_receiver_normal));
+	class ShowProgressThread implements Runnable {
+		@Override
+		public void run() {
+			int i = 0;
+			//
+			while (true) {
+				int count = DataTool.count_city;
+				cityCount = cityAqiDB.getCount();
+				Log.i("HomeActivity", "ShowProgressThread count=" + count + "cityCount=" + cityCount);
+				// 更新UI
+				if ((count == cityCount && count > 0) || i++ > 3) {
+					pDialog.dismiss();
+					mHandler.sendEmptyMessageDelayed(UPDATE_UI, 0);
+					DataTool.count_city = 0;
+					break;
+				}
+				//
+				else {
+					DataTool.count_city = 0;
+					// 服务器请求aqi数据， 并存库
+					DataTool.getAqiData(citys, cityAqiDB);
+				}
+			}
 		}
-		titlePopup.addAction(new TitleActionItem(getActivity(), "检测版本", R.drawable.settings_tabcontent_new_version));
-		titlePopup.addAction(new TitleActionItem(getActivity(), "空气标准", R.drawable.settings_tabcontent_standard));
-		titlePopup.addAction(new TitleActionItem(getActivity(), "关于我们", R.drawable.settings_tabcontent_about));
-		titlePopup.addAction(new TitleActionItem(getActivity(), "清除缓存", R.drawable.home_clean));
-		// titlePopup.addAction(new TitleActionItem(getActivity(),
-		// "意见反馈",R.drawable.settings_tabcontent_suggest));
 	}
 
 	/**
-	 * 界面滑动
+	 * 添加滑动页个数
 	 */
 	private void initView() {
-
-		viewPager = (ViewPager) homeView.findViewById(R.id.viewpager);
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		views = new ArrayList<View>();
-
 		// 添加滑动页个数
-		for (int i = 0; i < cityCount; i++) {
+		for (int i = 0; i < citys.size(); i++) {
 			View v = inflater.inflate(R.layout.forecast_pager, null);
 			views.add(v);
 		}
+		// 页面滑动
+		pageScroll();
+	}
+
+	/**
+	 * 页面滑动
+	 */
+	private void pageScroll() {
 		pagerAdapter = new ViewPagerAdapter(views);
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.setCurrentItem(currentIndexOut);
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
-
 			@Override
 			public void onPageSelected(int position) {
-				// Log.e("aqi", "position:"+position);
-				pubCount = 0;
+				// 存缓存
+				sp = getActivity().getSharedPreferences("cur_city", 0);
+				sp.edit().putInt("city_id", cityAqis.get(position).getCityId()).commit();
+
 				// 设置当前页面
 				setCurPage(position);
 				views.get(position).setSelected(true);
@@ -456,10 +463,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				currentIndexOut = position;
 				curViewId = position;
 				currentID = position;
-
-				// 存缓存
-				sp = getActivity().getSharedPreferences("cur_city", 0);
-				sp.edit().putInt("city_id", cityAqis.get(curViewId).getCityId()).commit();
 			}
 
 			@Override
@@ -475,6 +478,34 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	}
 
 	/**
+	 * 设置当前页面
+	 * 
+	 * @param position
+	 */
+	private void setCurPage(int position) {
+		// 异常处理
+		if ((position < 0) || (position > cityCount - 1) || currentIndex == position) {
+			return;
+		}
+		//
+		((ImageView) indicators.get(position)).setEnabled(false);
+		((ImageView) indicators.get(currentIndex)).setEnabled(true);
+
+		currentIndex = position;
+		cityName = cityAqis.get(position).getCityName();
+
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				// 自动更新
+				autoUpdate();
+				// 设置城市名称
+				cityNameText.setText(cityName);
+			}
+		});
+	}
+
+	/**
 	 * 添加界面数据
 	 */
 	public void viewDataInit() {
@@ -482,12 +513,12 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		cityAqis = new ArrayList<CityAqi>();
 		cityAqis = cityAqiDB.getAll();
 		Log.v("HomeActivity", "viewDataInit " + cityAqis.toString());
+
 		// 处理数组越界
-
 		cityName = cityAqis.get(currentIndexOut).getCityName();
-
 		Log.v("HomeActivity", "currentIndexOut" + currentIndexOut + cityName);
 		this.cityNameText.setText(cityName);
+
 		// 给首页几个城市界面赋值
 		int i = 0;
 		for (CityAqi cityAqi : cityAqis) {
@@ -503,7 +534,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	 * @param cityAqi
 	 */
 	private void setPageView(int i, CityAqi cityAqi) {
-
 		findView(views, i);
 
 		if (cityAqi != null) {
@@ -632,16 +662,68 @@ public class HomeActivity extends Fragment implements OnClickListener {
 						+ "℃";
 				this.secondDayText.setText(strTmp);
 
-				// TODO 根据天气等级设置天气图标，未完成
-				int icon0 = GradeTool.getWeatherIcon(cityAqi.getWeather_icon0());
-				int icon1 = GradeTool.getWeatherIcon(cityAqi.getWeather_icon1());
-				this.firstWeatherImag.setBackgroundDrawable(getActivity().getResources().getDrawable(icon0));
-				this.secondWeatherImag.setBackgroundDrawable(getActivity().getResources().getDrawable(icon1));
+				// 根据天气等级设置天气图标，未完成
+				this.firstWeatherImag.setBackgroundDrawable(getActivity().getResources().getDrawable(
+						GradeTool.getWeatherIcon(cityAqi.getWeather_icon0())));
+				this.secondWeatherImag.setBackgroundDrawable(getActivity().getResources().getDrawable(
+						GradeTool.getWeatherIcon(cityAqi.getWeather_icon1())));
 			} else {
 				moreWetherForecast.setVisibility(View.INVISIBLE);
 			}
 			this.suggestionText.setText(GradeTool.getSuggestion(Integer.parseInt(cityAqi.getAqi())));
 			this.suggestionText.setSelected(true);
+		}
+	}
+
+	/**
+	 * 附加功能菜单
+	 */
+	private void extraMenuInit() {
+		titlePopup = new TitlePopup(getActivity(), LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		if (!onOrOff) {
+			titlePopup.addAction(new TitleActionItem(getActivity(), "打开吐槽", R.drawable.mm_title_btn_receiver_normal));
+		} else {
+			titlePopup.addAction(new TitleActionItem(getActivity(), "关闭吐槽", R.drawable.mm_title_btn_receiver_normal));
+		}
+		titlePopup.addAction(new TitleActionItem(getActivity(), "检测版本", R.drawable.settings_tabcontent_new_version));
+		titlePopup.addAction(new TitleActionItem(getActivity(), "空气标准", R.drawable.settings_tabcontent_standard));
+		titlePopup.addAction(new TitleActionItem(getActivity(), "关于我们", R.drawable.settings_tabcontent_about));
+		titlePopup.addAction(new TitleActionItem(getActivity(), "清除缓存", R.drawable.home_clean));
+		// titlePopup.addAction(new TitleActionItem(getActivity(),
+		// "意见反馈",R.drawable.settings_tabcontent_suggest));
+	}
+
+	// 点击子项目
+	private void extraMenuItemClick(int position) {
+		switch (position) {
+		case 0:
+			Toast.makeText(getActivity(), R.string.spitOn, Toast.LENGTH_SHORT).show();
+			cityId = citys.get(currentIndexOut).getId();
+			onOrOff = !onOrOff;
+			titlePopup.cleanAction();
+			// 初始化下拉菜单
+			extraMenuInit();
+			// 打开吐槽
+			initCitySpit(views, citys);
+			break;
+		case 1:
+			// 检测版本
+			ModuleVersionUpdate test = new ModuleVersionUpdate(getActivity());
+			test.updateVersion();
+			break;
+		case 2:
+			startActivity(new Intent(getActivity(), AirQualityStandardsActivity.class));
+			break;
+		case 3:
+			startActivity(new Intent(getActivity(), AboutActivity.class));
+			break;
+		case 4:
+			// 清除缓存，刷新
+			clearCache();
+			OnFlush();
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -654,10 +736,10 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		if (this.indicatorLayout.getChildCount() > 0) {
 			this.indicatorLayout.removeAllViews();
 		}
+
 		for (int i = 0;; i++) {
-			if (i >= cityCount) {
-				this.currentIndex = currentIndexOut;
-				((ImageView) this.indicators.get(this.currentIndex)).setEnabled(false);
+			if (i >= citys.size()) {
+				((ImageView) this.indicators.get(currentIndexOut)).setEnabled(false);
 				return;
 			}
 			ImageView localImageView = (ImageView) View.inflate(getActivity(), R.layout.dot_imageview, null);
@@ -667,45 +749,16 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	}
 
 	/**
-	 * 设置当前页面
-	 * 
-	 * @param position
-	 */
-	private void setCurPage(int position) {
-		if ((position < 0) || (position > -1 + this.cityCount) || this.currentIndex == position) {
-			return;
-		}
-		((ImageView) this.indicators.get(position)).setEnabled(false);
-		((ImageView) this.indicators.get(currentIndex)).setEnabled(true);
-		this.currentIndex = position;
-		try {
-			cityName = cityAqis.get(position).getCityName();
-		} catch (Exception e) {
-		}
-
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				// 自动更新
-				autoUpdate();
-				// 设置城市名称
-				cityNameText.setText(cityName);
-				// 吐槽内容
-			}
-		});
-	}
-
-	/**
-	 * 刷新数据分以下三步 1）取得当前的城市,还有order 2）读取数据 3）删库、存库并显示
+	 * 刷新数据
 	 */
 	private void updateViewData() {
-		// 刷新按钮实现刷新
+		// 单条刷新，刷新按钮触发
 		if (FlushFlag) {
 			final int currentCityID = cityAqis.get(curViewId).getCityId();
 			final int currentOrder = curViewId;
 			updateViewDataById(currentCityID, currentOrder);
 		}
-		// 由start刷新和auto刷新触发
+		// 全部刷新，由start刷新和auto刷新触发
 		else {
 			for (int i = 0; i < cityCount; i++) {
 				final int currentCityID = cityAqis.get(i).getCityId();
@@ -715,14 +768,18 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		}
 	}
 
-	/**
-	 * 从server端取数据
-	 */
-	private void updateViewDataById(final int currentCityID, final int currentOrder) {
-		//
+	// 更新数据
+	private void updateViewDataById(int currentCityID, int currentOrder) {
+		// 更新当前城市aqi
+		updateCurrentCityAqi(currentOrder, currentCityID);
+		// 更新定位城市最近站点
+		updateNeatestSite();
+	}
+
+	// 更新当前城市aqi
+	private void updateCurrentCityAqi(final int currentOrder, final int currentCityID) {
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.get(Constant.SERVER_URL + currentCityID, new AsyncHttpResponseHandler() {
-
 			// 启动刷新动画
 			@Override
 			public void onStart() {
@@ -743,25 +800,27 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				}
 			}
 		});
+	}
 
-		if (currentOrder == 0) {
-			client.get(Constant.SITE_URL + currentCityID, new AsyncHttpResponseHandler() {
-				@Override
-				public void onSuccess(String result) {
-					sp = getActivity().getSharedPreferences("sortSiteData", 0);
-					siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
-					siteList = DataTool.getsortsite(getActivity(), result, sp.getFloat("locationLong", 0),
-							sp.getFloat("locationLat", 0));
-					setPageView(currentOrder, null);
-					UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
-				}
+	// 更新定位城市最近站点
+	private void updateNeatestSite() {
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.get(Constant.SITE_URL + currentIndexOut, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(String result) {
+				sp = getActivity().getSharedPreferences("sortSiteData", 0);
+				siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
+				siteList = DataTool.getsortsite(getActivity(), result, sp.getFloat("locationLong", 0),
+						sp.getFloat("locationLat", 0));
+				setPageView(0, null);
+				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+			}
 
-				@Override
-				public void onFailure(Throwable error) {
-					UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
-				}
-			});
-		}
+			@Override
+			public void onFailure(Throwable error) {
+				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+			}
+		});
 	}
 
 	/**
@@ -772,7 +831,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	private void showSite(Intent intent) {
 		cityId = citys.get(currentIndexOut).getId();
 		if (NetworkTool.isNetworkConnected(getActivity())) {
-			// 判断是不是删除缓存
 			// 时间大于30分钟删除缓存
 			long nowTime = System.currentTimeMillis();
 			sp = getActivity().getSharedPreferences("autoupdate", 0);
@@ -912,7 +970,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 					if (cityContentList != null) {
 						int length = cityContentList.size();
 						for (int j = 0; j < length; j++) {
-							// pubCount != 0 &&
 							if (mySpit != null) {
 								if (length > 8) {
 									// if (j == 0 && mySpit != null) {
@@ -1171,44 +1228,14 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	}
 
 	/**
-	 * 显示进度条线程
-	 */
-	class ShowProgressThread implements Runnable {
-		@Override
-		public void run() {
-			int i = 0;
-			while (true) {
-				int count = DataTool.count_city;
-				cityCount = cityAqiDB.getCount();
-				Log.i("DataTool", "ShowProgressThread count=" + count + "cityCount=" + cityCount);
-				if ((count == cityCount && count > 0) || i++ > 3) {
-					pDialog.dismiss();
-					mHandler.sendEmptyMessageDelayed(UPDATE_UI, 0);
-					DataTool.count_city = 0;
-					break;
-				} else {
-					DataTool.count_city = 0;
-					DataTool.getAqiData(citys, cityAqiDB);
-				}
-				try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
 	 * 自动刷新
 	 */
 	public void autoUpdate() {
 		// 当前时间
 		long nowTime = System.currentTimeMillis();
 		sp = getActivity().getSharedPreferences("autoupdate", 0);
-		// 加载时间
 		long loadTime = sp.getLong("homeLoadTime", 0);
-		//
+
 		if (nowTime - loadTime > Constant.UPDATE_TIME) {
 			UpdateTool.startLoadingAnim(getActivity(), updateDataBtn, updateAnimImg);
 			OnFlush();
@@ -1242,53 +1269,11 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		}
 	}
 
-	// 加载缓存
-	private void loadSP() {
-		// sortSiteData是当前城市的站点数据
-		sp = getActivity().getSharedPreferences("sortSiteData", 0);
-		siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
-		// Log.e("aqi", "siteList:"+siteList.toString());
-
-		// cur_city是当前所有选择的城市
-		sp = getActivity().getSharedPreferences("cur_city", 0);
-		currentID = sp.getInt("city_id", 18);
-
-		// 保存运行时间到自动更新缓存，精确到毫秒
-		long loadTime = System.currentTimeMillis();
-		sp = getActivity().getSharedPreferences("autoupdate", 0);
-		sp.edit().putLong("siteloadTime", loadTime).commit();
-
-		// 获取用户选择的城市
-		sp = getActivity().getSharedPreferences("citydata", 0);
-		try {
-			citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		cityCount = citys.size();
-		ModuleSPIO.showCityData(getActivity(), "HomeActivity");
-
-		// json排名数据
-		sp = getActivity().getSharedPreferences("jsondata", 0);
-		sp.getString("rankjson", "");
-
-		// about信息
-		File aboutFile = new File(DataTool.createFileDir("Download") + "/about.html");
-		if (!aboutFile.exists() && NetworkTool.isNetworkConnected(getActivity())) {
-			DataTool.getAboutData();
-		}
-
-		// 吐槽数据
-		sp = getActivity().getSharedPreferences("spitdata", 0);
-		longtitude = sp.getString("longtitude", "");
-		latitude = sp.getString("latitude", "");
-		// contentList = DataTool.String2SpitContentList(sp.getString(
-		// "spitjson", ""));
-	}
-
 	private void findView() {
 		// 上方导航栏
 		this.forecast_index_layout = (RelativeLayout) homeView.findViewById(R.id.forecast_index_in);
+		// viewPager
+		this.viewPager = (ViewPager) homeView.findViewById(R.id.viewpager);
 		// 下方翻页指示器
 		this.indicatorLayout = ((LinearLayout) homeView.findViewById(R.id.page_indicator));
 		// 按钮
@@ -1341,5 +1326,60 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		this.secondDayText = (TextView) views.get(i).findViewById(R.id.tv_secondDay);
 		this.firstWeatherImag = (ImageView) views.get(i).findViewById(R.id.iv_firstDay_weather);
 		this.secondWeatherImag = (ImageView) views.get(i).findViewById(R.id.iv_secondDay_weather);
+	}
+
+	// 加载缓存
+	private void loadSP() {
+		// 获取用户选择的城市
+		sp = getActivity().getSharedPreferences("citydata", 0);
+		citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
+		cityCount = citys.size();
+		ModuleSPIO.showCityData(getActivity(), "HomeActivity loadSP");
+
+		// sortSiteData是当前城市的站点数据
+		sp = getActivity().getSharedPreferences("sortSiteData", 0);
+		siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
+
+		// cur_city是当前所有选择的城市
+		sp = getActivity().getSharedPreferences("cur_city", 0);
+		currentID = sp.getInt("city_id", 18);
+
+		// Log.e("aqi", "siteList:"+siteList.toString());
+		// 取得吐槽缓存数据
+		/*
+		 * sp = getActivity().getSharedPreferences("spitdata", 0); contentList =
+		 * DataTool.String2SpitContentList(sp.getString( "spitjson", ""));
+		 */
+
+		// 保存运行时间到自动更新缓存，精确到毫秒
+		long loadTime = System.currentTimeMillis();
+		sp = getActivity().getSharedPreferences("autoupdate", 0);
+		sp.edit().putLong("siteloadTime", loadTime).commit();
+
+		// 版本信息
+		sp = getActivity().getSharedPreferences("verdata", 0);
+		newVerCode = Float.parseFloat(sp.getString("newVerCode", ""));
+		newVerName = sp.getString("verName", "");
+		updateDetails = sp.getString("updatedetails", "");
+		about = Integer.parseInt(sp.getString("about", ""));
+
+		// json排名数据
+		sp = getActivity().getSharedPreferences("jsondata", 0);
+		sp.getString("rankjson", "");
+
+		// about信息
+		File aboutFile = new File(DataTool.createFileDir("Download") + "/about.html");
+		if (!aboutFile.exists() && NetworkTool.isNetworkConnected(getActivity())) {
+			DataTool.getAboutData();
+		}
+
+		// 吐槽数据
+		sp = getActivity().getSharedPreferences("spitdata", 0);
+		longtitude = sp.getString("longtitude", "");
+		latitude = sp.getString("latitude", "");
+
+		// 进度条标志位
+		sp = getActivity().getSharedPreferences("isFlash", 0);
+		isFlash = sp.getBoolean("isFlash", false);
 	}
 }

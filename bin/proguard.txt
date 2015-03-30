@@ -9,7 +9,7 @@
 
 # view res/layout/baidumap_activity.xml #generated:7
 # view res/layout/map_activity.xml #generated:55
-# view res/layout/site_activity.xml #generated:182
+# view res/layout/site_activity.xml #generated:187
 -keep class com.baidu.mapapi.map.MapView { <init>(...); }
 
 # view AndroidManifest.xml #generated:55
@@ -27,7 +27,7 @@
 # view res/layout/haze_forecast_activity.xml #generated:232
 -keep class com.lvdora.aqi.graph.StudyGraphView1 { <init>(...); }
 
-# view res/layout/site_activity.xml #generated:164
+# view res/layout/site_activity.xml #generated:163
 -keep class com.lvdora.aqi.util.LinearLayoutForListView { <init>(...); }
 
 # view res/layout/haze_forecast_activity.xml #generated:69

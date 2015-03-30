@@ -46,14 +46,15 @@ public class ModuleVersionUpdate {
 	private Handler handler = new Handler();
 
 	// 版本检测参数
-	private float newVerCode;
-	private String newVerName;
-	private String updateDetails;
-	private int isUpdate;
-
+	public float newVerCode;
+	public String newVerName;
+	public String updateDetails;
+	public int isUpdate;
+	public int about;
+	
 	public ModuleVersionUpdate(Activity activity) {
 		this.activity = activity;
-		getSPData();
+		getCacheFromSP();
 		// 更新版本
 		Log.v("ModuleVersionUpdate", "ModuleVersionUpdate");
 	}
@@ -229,15 +230,15 @@ public class ModuleVersionUpdate {
 		activity.startActivity(intent);
 	}
 
-	// getDataFromSP
-	private void getSPData() {
+	// getCacheFromSP
+	private void getCacheFromSP() {
 		SharedPreferences sp;
 		sp = activity.getSharedPreferences("verdata", 0);
-
 		updateDetails = sp.getString("updatedetails", "");
 		newVerName = sp.getString("verName", "");
 		newVerCode = Float.parseFloat(sp.getString("newVerCode", "1"));
 		isUpdate = sp.getInt("isUpdate", 0);
+		about = Integer.parseInt(sp.getString("about", "0"));
 	}
 
 	/**

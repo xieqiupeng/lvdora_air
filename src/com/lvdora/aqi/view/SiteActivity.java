@@ -132,7 +132,6 @@ public class SiteActivity extends Activity implements OnClickListener {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case UPDATE_UI: {
-
 				initViewData();
 				break;
 			}
@@ -144,91 +143,68 @@ public class SiteActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.site_activity);
+
 		ExitTool.activityList.add(SiteActivity.this);
 		ScreenManager.getScreenManager().pushActivity(this);
+
 		// TODO 取得屏幕的分辨率
 		dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 
+		// 初始化界面
+		findView();
+		// 接受参数
 		cityId = getIntent().getIntExtra("cityId", 0);
 		cityName = getIntent().getStringExtra("cityName");
 		order = getIntent().getIntExtra("order", 0);
-
+		// 数据库
 		cityAqis = new ArrayList<CityAqi>();
 		cityAqiDB = new CityAqiDao(SiteActivity.this, "");
 		cityDB = new CityDao(SiteActivity.this);
+		// 查询aqis
 		cityAqis = cityAqiDB.getAll();
-
+		// sp缓存
 		sp = getSharedPreferences("jsondata", 0);
 		mapJson = sp.getString("rankjson", "");
 		mapSiteJson = sp.getString("mapsitejson", "");
-		// 初始化界面
-		initView();
 
-		/**
+		/*
 		 * 使用地图sdk前需先初始化BMapManager. BMapManager是全局的，可为多个MapView共用，它需要地图模块创建前创建，
 		 * 并在地图地图模块销毁后销毁，只要还有地图模块在使用，BMapManager就不应该销毁
 		 */
 		MyApplication app = (MyApplication) getApplication();
 		if (app.mBMapManager == null) {
-
 			app.mBMapManager = new BMapManager(this);
-			/**
-			 * 如果BMapManager没有初始化则初始化BMapManager
-			 */
+			// 如果BMapManager没有初始化则初始化BMapManager
 			app.mBMapManager.init(new MyApplication.MyGeneralListener());
 		}
 
-		/**
-		 * 获取地图控制器
-		 */
+		// 获取地图控制器
 		mMapController = mMapView.getController();
-		/**
-		 * 设置地图是否响应点击事件 .
-		 */
+		// 设置地图是否响应点击事件
 		mMapController.enableClick(true);
-		/**
-		 * 设置地图缩放级别
-		 */
+		// 设置地图缩放级别
 		mMapController.setZoom(11);
-		/**
-		 * 显示内置缩放控件
-		 */
+		// 显示内置缩放控件
 		// mMapView.setBuiltInZoomControls(true);
-
-		/**
-		 * 设定类型
-		 */
+		// 设定类型
 		type = "captial";
-
-		/**
-		 * 初始化显示省会城市信息
-		 */
+		// 初始化显示省会城市信息
 		initOverlay();
-
-		/**
-		 * 设定地图中心点
-		 */
+		// 设定地图中心点
 		Longlati ll = cityDB.getJWById(cityId);
 		GeoPoint p;
-
 		if (ll != null) {
 			p = new GeoPoint((int) (ll.getLati() * 1E6), (int) (ll.getLongi() * 1E6));
 		} else {
 			p = new GeoPoint((int) (116.45999 * 1E6), (int) (39.919998 * 1E6));
 		}
 		mMapController.setCenter(p);
-
-		/**
-		 * 地图状态监听
-		 */
+		// 地图状态监听
 		MapStatusChange();
-
 		mMapView.setOnTouchListener(new OnTouchListener() {
-
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
@@ -247,18 +223,13 @@ public class SiteActivity extends Activity implements OnClickListener {
 			// 判断获取数据结束
 			pDialog = ProgressDialog.show(SiteActivity.this, "", getResources().getString(R.string.getting_data));
 			pDialog.show();
-
 			new Thread(new Runnable() {
-
 				@Override
 				public void run() {
 					while (true) {
 						sp = getSharedPreferences("sitedata", 0);
-
 						siteStr = sp.getString("sites_" + cityId, "");
-
 						if (!siteStr.equals("")) {
-
 							pDialog.dismiss();
 							mHandler.sendEmptyMessageDelayed(UPDATE_UI, 0);
 							break;
@@ -266,94 +237,48 @@ public class SiteActivity extends Activity implements OnClickListener {
 						try {
 							Thread.sleep(1000);
 						} catch (Exception e) {
-
 							e.printStackTrace();
 						}
 					}
 				}
 			}).start();
 		}
-
 	}
 
-	private void initView() {
-
-		this.site_layout = (LinearLayout) findViewById(R.id.site_layout);
-		/* this.noSite_layout = (LinearLayout) findViewById(R.id.ll_pm); */
-		this.backBtn = (ImageView) findViewById(R.id.back_btn);
-		this.backBtn.setOnClickListener(this);
-		this.siteView = (LinearLayoutForListView) findViewById(R.id.lv_site_data);
-		this.cityNameText = (TextView) findViewById(R.id.city_name_text);
-		this.updateDataBtn = (ImageButton) findViewById(R.id.update_image);
-		this.shareBtn = (ImageView) findViewById(R.id.share_image);
-		this.updateAnimImg = (ImageView) findViewById(R.id.update_image_animation);
-		this.pm10_value_text = (TextView) findViewById(R.id.tv_pm10_value);
-		this.O3_value_text = (TextView) findViewById(R.id.tv_O3_value);
-		this.SO2_value_text = (TextView) findViewById(R.id.tv_SO2_value);
-		this.NO2_value_text = (TextView) findViewById(R.id.tv_NO2_value);
-		this.CO_value_text = (TextView) findViewById(R.id.tv_CO_value);
-		this.mMapView = (MapView) findViewById(R.id.bmapView1);
-		this.scrollView = (ScrollView) findViewById(R.id.scroll_view);
-
-		this.updateDataBtn.setOnClickListener(this);
-		this.shareBtn.setOnClickListener(this);
-		cityNameText.setText(cityName);
-
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		mMapView.onSaveInstanceState(outState);
 	}
 
 	// 初始化数据
 	private void initViewData() {
-
+		//
 		sp = getSharedPreferences("sitedata", 0);
 		siteStr = sp.getString("sites_" + cityId, "");
-		CityAqi cityAqi = cityAqis.get(order);
+		//
 		if (!siteStr.equals("0")) {
 			siteAqis = new ArrayList<SiteAqi>();
 			try {
 				siteAqis = EnAndDecryption.String2SiteList(siteStr);
-
 				siteAdapter = new SiteAdapter(SiteActivity.this, siteAqis);
 				siteView.removeAllViews();
-
 				siteView.setAdapter(siteAdapter);
 
 				int screenWidth = getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）
 				int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
 
 				// this.trendView = (TrendView) findViewById(R.id.trendView);
-
 				trendView.setWidthHeight(screenWidth, screenHeight);
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-
 			site_layout.setVisibility(View.GONE);
 			// noSite_layout.setVisibility(View.VISIBLE);
 		}
-
-		this.pm10_value_text.setText(cityAqi.getPm10());
-		this.pm10_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getPm10_aqi())));
-		this.pm10_value_text.setBackgroundDrawable(getResources().getDrawable(
-				GradeTool.getColorByIndex(cityAqi.getPm10_aqi())));
-		this.O3_value_text.setText(cityAqi.getO3());
-		this.O3_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getO3_aqi())));
-		this.O3_value_text.setBackgroundDrawable(getResources().getDrawable(
-				GradeTool.getColorByIndex(cityAqi.getO3_aqi())));
-		this.SO2_value_text.setText(cityAqi.getSo2());
-		this.SO2_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getSo2_aqi())));
-		this.SO2_value_text.setBackgroundDrawable(getResources().getDrawable(
-				GradeTool.getColorByIndex(cityAqi.getSo2_aqi())));
-		this.NO2_value_text.setText(cityAqi.getNo2());
-		this.NO2_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getNo2_aqi())));
-		this.NO2_value_text.setBackgroundDrawable(getResources().getDrawable(
-				GradeTool.getColorByIndex(cityAqi.getNo2_aqi())));
-		this.CO_value_text.setText(cityAqi.getCo());
-		this.CO_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getCo_aqi())));
-		this.CO_value_text.setBackgroundDrawable(getResources().getDrawable(
-				GradeTool.getColorByIndex(cityAqi.getCo_aqi())));
-
+		// 刷新指数
+		updateExponent();
 	}
 
 	/**
@@ -685,28 +610,21 @@ public class SiteActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-
 		switch (v.getId()) {
 		case R.id.update_image:
-
 			if (!NetworkTool.isNetworkConnected(SiteActivity.this)) {
-
 				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
 			} else {
-
 				// 更新数据
 				updateData();
 			}
-
 			break;
+		// 返回
 		case R.id.back_btn:
-
-			// 返回
 			finish();
 			break;
+		// 分享
 		case R.id.share_image:
-
-			// 分享
 			if (NetworkTool.isNetworkConnected(SiteActivity.this)) {
 				String filePath = DataTool.createFileDir("Share_Imgs");
 				String tmpTime = String.valueOf(System.currentTimeMillis());
@@ -718,7 +636,6 @@ public class SiteActivity extends Activity implements OnClickListener {
 				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
 			}
 			break;
-
 		default:
 			break;
 		}
@@ -729,7 +646,6 @@ public class SiteActivity extends Activity implements OnClickListener {
 			AsyncHttpClient client = new AsyncHttpClient();
 
 			client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
-
 				@Override
 				public void onStart() {
 					UpdateTool.startLoadingAnim(SiteActivity.this, updateDataBtn, updateAnimImg);
@@ -737,26 +653,20 @@ public class SiteActivity extends Activity implements OnClickListener {
 
 				@Override
 				public void onSuccess(String result) {
-
 					siteAqis = DataTool.getSiteAqi(result, cityId);
 					sp = getSharedPreferences("sitedata", 0);
 					try {
 						sp.edit().putString("sites_" + cityId, EnAndDecryption.SiteList2String(siteAqis)).commit();
-
 						initViewData();
-
 						UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
 				}
 
 				@Override
 				public void onFailure(Throwable error) {
-
 				}
-
 			});
 
 			client.get(Constant.SERVER_URL + cityId, new AsyncHttpResponseHandler() {
@@ -807,22 +717,13 @@ public class SiteActivity extends Activity implements OnClickListener {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-
-		super.onSaveInstanceState(outState);
-		mMapView.onSaveInstanceState(outState);
-	}
-
-	@Override
 	public void onPause() {
-
 		mMapView.onPause();
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-
 		mMapView.onResume();
 		super.onResume();
 	}
@@ -848,6 +749,59 @@ public class SiteActivity extends Activity implements OnClickListener {
 			updateData();
 			sp.edit().putLong("siteloadTime", nowTime).commit();
 		}
+	}
+
+	private void updateExponent() {
+		CityAqi cityAqi = cityAqis.get(order);
+
+		this.pm10_value_text.setText(cityAqi.getPm10());
+		this.pm10_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getPm10_aqi())));
+		this.pm10_value_text.setBackgroundDrawable(getResources().getDrawable(
+				GradeTool.getColorByIndex(cityAqi.getPm10_aqi())));
+		this.O3_value_text.setText(cityAqi.getO3());
+		this.O3_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getO3_aqi())));
+		this.O3_value_text.setBackgroundDrawable(getResources().getDrawable(
+				GradeTool.getColorByIndex(cityAqi.getO3_aqi())));
+		this.SO2_value_text.setText(cityAqi.getSo2());
+		this.SO2_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getSo2_aqi())));
+		this.SO2_value_text.setBackgroundDrawable(getResources().getDrawable(
+				GradeTool.getColorByIndex(cityAqi.getSo2_aqi())));
+		this.NO2_value_text.setText(cityAqi.getNo2());
+		this.NO2_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getNo2_aqi())));
+		this.NO2_value_text.setBackgroundDrawable(getResources().getDrawable(
+				GradeTool.getColorByIndex(cityAqi.getNo2_aqi())));
+		this.CO_value_text.setText(cityAqi.getCo());
+		this.CO_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getCo_aqi())));
+		this.CO_value_text.setBackgroundDrawable(getResources().getDrawable(
+				GradeTool.getColorByIndex(cityAqi.getCo_aqi())));
+	}
+
+	private void findView() {
+		//
+		this.site_layout = (LinearLayout) findViewById(R.id.site_layout);
+		/* this.noSite_layout = (LinearLayout) findViewById(R.id.ll_pm); */
+		this.backBtn = (ImageView) findViewById(R.id.back_btn);
+		this.backBtn.setOnClickListener(this);
+		this.cityNameText = (TextView) findViewById(R.id.city_name_text);
+		this.cityNameText.setText(cityName);
+		this.updateDataBtn = (ImageButton) findViewById(R.id.update_image);
+		this.updateDataBtn.setOnClickListener(this);
+		this.shareBtn = (ImageView) findViewById(R.id.share_image);
+		this.shareBtn.setOnClickListener(this);
+		this.siteView = (LinearLayoutForListView) findViewById(R.id.lv_site_data);
+		this.updateAnimImg = (ImageView) findViewById(R.id.update_image_animation);
+
+		// 下方pm信息
+		this.pm10_value_text = (TextView) findViewById(R.id.tv_pm10_value);
+		this.O3_value_text = (TextView) findViewById(R.id.tv_O3_value);
+		this.SO2_value_text = (TextView) findViewById(R.id.tv_SO2_value);
+		this.NO2_value_text = (TextView) findViewById(R.id.tv_NO2_value);
+		this.CO_value_text = (TextView) findViewById(R.id.tv_CO_value);
+
+		// map信息
+		this.mMapView = (MapView) findViewById(R.id.bmapView1);
+		this.scrollView = (ScrollView) findViewById(R.id.scroll_view);
+
 	}
 
 }

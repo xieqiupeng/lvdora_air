@@ -26,16 +26,11 @@ import com.lvdora.aqi.util.EnAndDecryption;
  */
 public class CitysIndexMap extends TreeMap<Integer, Integer> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8222090615251741193L;
-
-	Activity activity;
-	// 单例
+	// 所在页面
+	private Activity activity;
+	// 城市id映射列表的单例
 	private static CitysIndexMap instance;
-	// 共享当前选中城市序号
-	public static int currentCityIndex = 0;
 
 	private CitysIndexMap(Activity activity) {
 		this.activity = activity;
@@ -65,7 +60,7 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 			tempMap.put(i, instance.get(key));
 			i++;
 		}
-		Log.v("CitysIndexMap", "reorder "+tempMap.toString());
+		Log.v("CitysIndexMap", "reorder " + tempMap.toString());
 		instance.clear();
 		for (Integer key : tempMap.keySet()) {
 			instance.put(key, tempMap.get(key));
@@ -109,7 +104,7 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 		spLocation.edit().putInt("cityId", cityId).commit();
 	}
 
-	// 保存映射到sp
+	// 城市列表存缓存
 	public void listToSP() {
 		Log.v("CitysIndexMap", "listToSP " + instance.toString());
 		List<City> citys = new ArrayList<City>();

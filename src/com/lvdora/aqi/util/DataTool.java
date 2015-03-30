@@ -879,6 +879,7 @@ public class DataTool {
 		NetworkTool.downloadFile(Constant.HAZESPREADFORECAST_URL, rootPath, "spread.html");
 	}
 
+	// 下载文件
 	public static void getAboutData() {
 		String rootPath = DataTool.createFileDir("Download");
 		NetworkTool.downloadFile(Constant.ABOUT_LOGO, rootPath, "ic_launcher.png");

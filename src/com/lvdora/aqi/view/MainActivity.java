@@ -1,9 +1,7 @@
 package com.lvdora.aqi.view;
 
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.view.KeyEvent;
@@ -30,7 +28,7 @@ public class MainActivity extends FragmentActivity {
 	private FragmentTabHost mTabHost;
 	private RadioGroup mTabRg;
 
-	private final Class[] fragments = { HazeForecastActivity.class, //
+	public final Class[] fragments = { HazeForecastActivity.class, //
 			MapActivity.class, //
 			HomeActivity.class, //
 			RankActivity.class, //
@@ -82,6 +80,7 @@ public class MainActivity extends FragmentActivity {
 			TabSpec tabSpec = mTabHost.newTabSpec(i + "").setIndicator(i + "");
 			mTabHost.addTab(tabSpec, fragments[i], null);
 		}
+		// homeActivity
 		mTabHost.setCurrentTab(2);
 
 		// 切换界面
