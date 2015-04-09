@@ -1,6 +1,5 @@
 package com.lvdora.aqi.view;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +28,13 @@ import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CitysIndexMap;
 import com.lvdora.aqi.model.Province;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
-import com.lvdora.aqi.util.ScreenManager;
 
 /**
  * 城市选择界面
@@ -70,8 +68,9 @@ public class CitySelectorActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.choose_city_activity);
 
-		ScreenManager.getScreenManager().pushActivity(this);
-		ExitTool.activityList.add(CitySelectorActivity.this);
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
+		
 		findView();
 
 		// 吐槽数据，经纬度
@@ -137,7 +136,7 @@ public class CitySelectorActivity extends Activity implements OnClickListener {
 
 	// 将城市添加到sp
 	public void saveData() {
-		
+
 		City city = new City();
 		city.setId(cityId);
 		city.setName(cityName);
@@ -146,14 +145,11 @@ public class CitySelectorActivity extends Activity implements OnClickListener {
 
 		// 存映射
 		CitysIndexMap.getInstance(this).put(order, cityId);
-		
+
 		// 将城市添加到sp
 		sp = getSharedPreferences("citydata", 0);
-		try {
-			sp.edit().putString("citys", EnAndDecryption.CityList2String(citys)).commit();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String cityString = EnAndDecryption.CityList2String(citys);
+		sp.edit().putString("citys", cityString).commit();
 	}
 
 	// 获取添加的空气信息

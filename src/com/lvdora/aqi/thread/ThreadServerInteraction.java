@@ -1,4 +1,4 @@
-package com.lvdora.aqi.module;
+package com.lvdora.aqi.thread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,21 +6,16 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.os.Binder;
-import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.util.Log;
 
-import com.lvdora.aqi.R;
+import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
-import com.lvdora.aqi.view.HomeActivity;
-import com.lvdora.aqi.view.LogoActivity;
-import com.lvdora.aqi.view.MainActivity;
 
 /**
  * 服务器交互类
@@ -28,17 +23,16 @@ import com.lvdora.aqi.view.MainActivity;
  * @1 根据城市id和order得到aqi数据
  * @2 存到数据库
  */
-public class ModuleServerInteraction {
-	
-	private Activity activity;
+public class ThreadServerInteraction {
+
+	private Context context;
 	private List<CityAqi> Aqis;
 	// 请求aqi数量
 	private int requestNum = 1;
 
-	public ModuleServerInteraction(Activity activity) {
-		this.activity = activity;
+	public ThreadServerInteraction(Context context) {
+		this.context = context;
 		Aqis = new ArrayList<CityAqi>();
-		
 	}
 
 	/**
@@ -47,7 +41,7 @@ public class ModuleServerInteraction {
 	 * @param citys
 	 */
 	public void sendRequestForAqis(List<City> citys) {
-		this.requestNum = citys.size();
+		requestNum = citys.size();
 		String citysID = "";
 		String citysOrder = "";
 		for (City city : citys) {
@@ -91,10 +85,8 @@ public class ModuleServerInteraction {
 				} catch (JSONException e) {
 
 				}
-				// 界面回调，默认单条查询
-				if (Aqis.size() == requestNum) {
-					callLogoActivity();
-				}
+				Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
+				callBackLogo();
 			}
 		});
 	}
@@ -121,19 +113,21 @@ public class ModuleServerInteraction {
 				Log.w("ModuleServerIneteraction", "ServerSendBack " + result);
 				// 得到单条城市天气信息
 				CityAqi cityAqi = DataTool.getCityAqi(result, cityID, cityOrder);
-				//((MainActivity) activity).getFragmentManager().findFragmentById().updateCityData(cityAqi);
+				callBackHome();
 			}
 		});
 	}
 
 	// 回调界面函数
-	public void callLogoActivity() {
-		Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
-		((LogoActivity) activity).listToDB(Aqis);
+	public void callBackLogo() {
+		CityAqiDao cityAqiDao = new CityAqiDao(context, "");
+		cityAqiDao.insertCityAqiList(Aqis);
+		Log.d("ModuleServerIneteraction", "" + cityAqiDao.getCount());
 	}
 
-	// 
-	public void callHomeActivity() {
+	// 回调界面函数
+	public void callBackHome() {
 		Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
+
 	}
 }

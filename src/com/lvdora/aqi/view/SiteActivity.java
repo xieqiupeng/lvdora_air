@@ -52,16 +52,15 @@ import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.Longlati;
 import com.lvdora.aqi.model.MapPopup;
 import com.lvdora.aqi.model.SiteAqi;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.GradeTool;
 import com.lvdora.aqi.util.LinearLayoutForListView;
 import com.lvdora.aqi.util.NetworkTool;
-import com.lvdora.aqi.util.ScreenManager;
 import com.lvdora.aqi.util.ShareTool;
 import com.lvdora.aqi.util.TrendView;
 import com.lvdora.aqi.util.UpdateTool;
@@ -146,8 +145,8 @@ public class SiteActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.site_activity);
 
-		ExitTool.activityList.add(SiteActivity.this);
-		ScreenManager.getScreenManager().pushActivity(this);
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
 
 		// TODO 取得屏幕的分辨率
 		dm = new DisplayMetrics();
@@ -752,7 +751,7 @@ public class SiteActivity extends Activity implements OnClickListener {
 	}
 
 	private void updateExponent() {
-		CityAqi cityAqi = cityAqis.get(order);
+		CityAqi cityAqi = cityAqis.get(HomeActivity.currentIndexOut);
 
 		this.pm10_value_text.setText(cityAqi.getPm10());
 		this.pm10_value_text.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(cityAqi.getPm10_aqi())));

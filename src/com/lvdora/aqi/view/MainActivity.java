@@ -11,9 +11,9 @@ import android.widget.TabHost.TabSpec;
 import android.widget.Toast;
 
 import com.lvdora.aqi.R;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.module.ModuleVersionUpdate;
 import com.lvdora.aqi.util.ExitTool;
-import com.lvdora.aqi.util.ScreenManager;
 
 /**
  * 
@@ -40,9 +40,8 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
 
-		// 界面管理
-		ScreenManager.getScreenManager().pushActivity(this);
-		ExitTool.activityList.add(MainActivity.this);
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
 
 		// 检查，升级版本
 		ModuleVersionUpdate mvu = new ModuleVersionUpdate(MainActivity.this);
@@ -89,8 +88,8 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-				SharedPreferences sp = getSharedPreferences("isFlash", 0);
-				sp.edit().putBoolean("isFlash", true).commit();
+				SharedPreferences sp = getSharedPreferences("isFirstIn", 0);
+				sp.edit().putBoolean("isFirstIn", true).commit();
 
 				// 切换界面
 				switch (checkedId) {

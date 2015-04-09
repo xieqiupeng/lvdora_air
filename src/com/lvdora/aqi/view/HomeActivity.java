@@ -39,7 +39,6 @@ import com.lvdora.aqi.model.CitysIndexMap;
 import com.lvdora.aqi.model.SiteAqi;
 import com.lvdora.aqi.model.SpitContent;
 import com.lvdora.aqi.module.ModuleDataClean;
-import com.lvdora.aqi.module.ModuleDotIndicator;
 import com.lvdora.aqi.module.ModuleSPIO;
 import com.lvdora.aqi.module.ModuleVersionUpdate;
 import com.lvdora.aqi.util.AsyncHttpClient;
@@ -81,8 +80,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	private int aboutVersion = 0;
 
 	private TitlePopup titlePopup;
-	// 刷新按钮
-	public boolean isFlash = false;
+	// 是否首次进入
+	public boolean isFirstIn = false;
 	private View homeView;
 	private List<View> views;
 	private ViewPager viewPager;
@@ -191,7 +190,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 
 	/**
 	 * @1 接受子线程发送的数据
-	 * @2 用此数据配合主线程更新UI.
+	 * @2 用此数据配合主线程更新UI
 	 */
 	private Handler mHandler = new Handler() {
 		@Override
@@ -201,8 +200,9 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				initView();
 				viewDataInit();
 				// 添加页面指示器
-				ModuleDotIndicator.getInstance(getActivity(), indicatorLayout).addIndicator(citys.size());
-				// initIndicators();
+				// ModuleDotIndicator.getInstance(getActivity(),
+				// indicatorLayout).addIndicator(citys.size());
+				initIndicators();
 				break;
 			}
 			case SPIT_PUBLISH: {
@@ -232,6 +232,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		onstart_flush = false;
 		// 加载缓存
 		loadSP();
+
 		// 初始化数据库
 		cityAqiDB = new CityAqiDao(getActivity(), "");
 		Log.d("HomeActivity", "onCreate cityAqiDB=" + cityAqiDB.getCount());
@@ -245,15 +246,23 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		homeView = inflater.inflate(R.layout.forecast_activity, container, false);
 		findView();
 
-		// 与服务器通信
-		if (NetworkTool.isNetworkConnected(getActivity()) && !isFlash) {
-			// 进度条
-			pDialog = ProgressDialog.show(getActivity(), "", getResources().getString(R.string.getting_data));
-			pDialog.show();
-			// 与服务器通信
-			new Thread(new ShowProgressThread()).start();
-			return homeView;
+		// 下载about信息
+		File aboutFile = new File(DataTool.createFileDir("Download") + "/about.html");
+		if (!aboutFile.exists() && NetworkTool.isNetworkConnected(getActivity())) {
+			DataTool.getAboutData();
 		}
+
+		// 与服务器通信，将城市存入数据库
+		// if (NetworkTool.isNetworkConnected(getActivity()) && !isFirstIn) {
+		// // 进度条
+		// pDialog = ProgressDialog.show(getActivity(), "",
+		// getResources().getString(R.string.getting_data));
+		// pDialog.show();
+		// // 与服务器通信
+		// new Thread(new ShowProgressThread()).start();
+		// isFirstIn = true;
+		// return homeView;
+		// }
 
 		// 添加viewpage个数
 		initView();
@@ -265,6 +274,38 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		// 填充数据
 		viewDataInit();
 		return homeView;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		autoUpdate();
+		if (onstart_flush) {
+			OnFlush();
+		}
+		onstart_flush = true;
+	}
+
+	@Override
+	public void onPause() {
+		// 城市列表缓存
+		CitysIndexMap.getInstance(getActivity()).listToSP();
+		super.onPause();
+	}
+
+	@Override
+	public void onStop() {
+		// 城市列表缓存
+		CitysIndexMap.getInstance(getActivity()).listToSP();
+		super.onStop();
+	}
+
+	@Override
+	public void onDestroy() {
+		// 城市列表缓存
+		CitysIndexMap.getInstance(getActivity()).listToSP();
+		cityAqiDB.closeAll();
+		super.onDestroy();
 	}
 
 	/**
@@ -342,15 +383,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			showSite(intent);
 			break;
 		case R.id.temp:
-			cityId = citys.get(currentIndexOut).getId();
-			intent.setClass(getActivity(), WeatherForecast.class);
-			intent.putExtra("cityId", cityId);
-			// intent.putExtra("cityName", cityName);
-			startActivity(intent);
-			// startActivity(new Intent(getActivity(), WeatherForecast.class));
-			// Toast.makeText(getActivity(),
-			// "五天天气预报",Toast.LENGTH_SHORT).show();
-			break;
 		case R.id.weather_more_forecast:
 			cityId = citys.get(currentIndexOut).getId();
 			intent.setClass(getActivity(), WeatherForecast.class);
@@ -360,37 +392,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		default:
 			break;
 		}
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		autoUpdate();
-		if (onstart_flush) {
-			OnFlush();
-		}
-		onstart_flush = true;
-	}
-
-	@Override
-	public void onPause() {
-		// 城市列表缓存
-		CitysIndexMap.getInstance(getActivity()).listToSP();
-		super.onPause();
-	}
-
-	@Override
-	public void onStop() {
-		// 城市列表缓存
-		CitysIndexMap.getInstance(getActivity()).listToSP();
-		super.onStop();
-	}
-
-	@Override
-	public void onDestroy() {
-		// 城市列表缓存
-		CitysIndexMap.getInstance(getActivity()).listToSP();
-		super.onDestroy();
 	}
 
 	/**
@@ -408,7 +409,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			while (true) {
 				int count = DataTool.count_city;
 				cityCount = cityAqiDB.getCount();
-				Log.i("HomeActivity", "ShowProgressThread count=" + count + "cityCount=" + cityCount);
+				Log.i("ShowProgressThread", "count=" + count + " cityCount=" + cityCount);
 				// 更新UI
 				if ((count == cityCount && count > 0) || i++ > 3) {
 					pDialog.dismiss();
@@ -437,6 +438,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			View v = inflater.inflate(R.layout.forecast_pager, null);
 			views.add(v);
 		}
+		Log.v("HomeActivity", "initView " + views.size());
 		// 页面滑动
 		pageScroll();
 	}
@@ -451,10 +453,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				// 存缓存
-				sp = getActivity().getSharedPreferences("cur_city", 0);
-				sp.edit().putInt("city_id", cityAqis.get(position).getCityId()).commit();
-
+				Log.e("onPageSelected", position + "");
 				// 设置当前页面
 				setCurPage(position);
 				views.get(position).setSelected(true);
@@ -463,44 +462,27 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				currentIndexOut = position;
 				curViewId = position;
 				currentID = position;
+
+				// 存缓存
+				sp = getActivity().getSharedPreferences("cur_city", 0);
+				sp.edit().putInt("city_id", cityAqis.get(position).getCityId()).commit();
 			}
 
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				Log.i("onPageScrolled", arg0 + "  " + arg1 + "   " + arg2);
 
 			}
 
 			@Override
-			public void onPageScrollStateChanged(int position) {
+			public void onPageScrollStateChanged(int arg0) {
+				Log.w("onPageScrollStateChanged", arg0 + "");
+				switch (arg0) {
+				case 2:
+					((ImageView) indicators.get(currentIndexOut)).setEnabled(true);
+					break;
+				}
 
-			}
-		});
-	}
-
-	/**
-	 * 设置当前页面
-	 * 
-	 * @param position
-	 */
-	private void setCurPage(int position) {
-		// 异常处理
-		if ((position < 0) || (position > cityCount - 1) || currentIndex == position) {
-			return;
-		}
-		//
-		((ImageView) indicators.get(position)).setEnabled(false);
-		((ImageView) indicators.get(currentIndex)).setEnabled(true);
-
-		currentIndex = position;
-		cityName = cityAqis.get(position).getCityName();
-
-		new Handler().post(new Runnable() {
-			@Override
-			public void run() {
-				// 自动更新
-				autoUpdate();
-				// 设置城市名称
-				cityNameText.setText(cityName);
 			}
 		});
 	}
@@ -512,18 +494,15 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		// 获取添加过的城市的list
 		cityAqis = new ArrayList<CityAqi>();
 		cityAqis = cityAqiDB.getAll();
-		Log.v("HomeActivity", "viewDataInit " + cityAqis.toString());
+		Log.v("HomeActivity", "viewDataInit " + cityAqis.size() + "currentIndexOut " + currentIndexOut);
 
 		// 处理数组越界
 		cityName = cityAqis.get(currentIndexOut).getCityName();
-		Log.v("HomeActivity", "currentIndexOut" + currentIndexOut + cityName);
 		this.cityNameText.setText(cityName);
 
 		// 给首页几个城市界面赋值
-		int i = 0;
-		for (CityAqi cityAqi : cityAqis) {
-			setPageView(i, cityAqi);
-			i++;
+		for (int i = 0; i < cityAqis.size(); i++) {
+			setPageView(i, cityAqis.get(i));
 		}
 	}
 
@@ -534,7 +513,9 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	 * @param cityAqi
 	 */
 	private void setPageView(int i, CityAqi cityAqi) {
-		findView(views, i);
+		Log.v("HomeActivity", "setPageView " + views.size());
+		View view = views.get(i);
+		findSingleView(view);
 
 		if (cityAqi != null) {
 			// 显示aqi信息
@@ -583,35 +564,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		}
 
 		// 定位城市最近站点
-		if (i == 0 && siteList != null) {
-			this.nearestSiteLayout = (LinearLayout) views.get(i).findViewById(R.id.location_site);
-			this.nearestSiteLayout.setVisibility(View.VISIBLE);
-			nearestSiteLayout.setOnClickListener(this);
-
-			this.nearnest_site_name_text = (TextView) views.get(i).findViewById(R.id.nearnest_site_name);
-			this.nearnest_site_aqiValue_text = (TextView) views.get(i).findViewById(R.id.nearnest_site_aqi);
-			this.nearnest_site_pm25Value_text = (TextView) views.get(i).findViewById(R.id.nearnest_site_pm25);
-			this.nearnest_site_aqiGrade_text = (TextView) views.get(i).findViewById(R.id.nearnest_site_aqi_grade);
-			this.nearnest_site_updateTime_text = (TextView) views.get(i).findViewById(R.id.nearnest_site_update_time);
-
-			SiteAqi site;
-			if (siteList.get(0).getName().equals("美国大使馆") || siteList.get(0).getName().equals("美国领事馆")) {
-				site = siteList.get(1);
-			} else {
-				site = siteList.get(0);
-			}
-			String aqiSiteValue = site.getAqi();
-			nearnest_site_name_text.setText(site.getName());
-			nearnest_site_aqiValue_text.setText(aqiSiteValue);
-			nearnest_site_aqiValue_text.setBackgroundDrawable(getResources().getDrawable(
-					GradeTool.getAqiColorByIndex(aqiSiteValue)));
-			;
-			nearnest_site_aqiValue_text
-					.setTextColor(getResources().getColor(GradeTool.getTextColorByAqi(aqiSiteValue)));
-			nearnest_site_pm25Value_text.setText("PM2.5 : " + site.getPm25());
-			nearnest_site_aqiGrade_text.setText(GradeTool.getStateByIndex(Integer.parseInt(aqiSiteValue)));
-			nearnest_site_aqiGrade_text.setTextSize(16);
-			nearnest_site_updateTime_text.setText("更新 " + site.getUpdateTime().substring(11, 16));
+		if (i == 0) {
+			setNearestSite(view, siteList);
 		}
 
 		if (cityAqi != null) {
@@ -676,6 +630,30 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	}
 
 	/**
+	 * 设置当前页面
+	 * 
+	 * @param position
+	 */
+	private void setCurPage(int position) {
+		Log.e("HomeActivity", "setCurPage " + position);
+		// 异常处理
+		if ((position < 0) || (position >= cityCount)) {
+			return;
+		}
+		((ImageView) indicators.get(position)).setEnabled(false);
+		cityName = cityAqis.get(position).getCityName();
+		// 设置城市名称
+		cityNameText.setText(cityName);
+		new Handler().post(new Runnable() {
+			@Override
+			public void run() {
+				// 自动更新
+				autoUpdate();
+			}
+		});
+	}
+
+	/**
 	 * 附加功能菜单
 	 */
 	private void extraMenuInit() {
@@ -689,6 +667,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		titlePopup.addAction(new TitleActionItem(getActivity(), "空气标准", R.drawable.settings_tabcontent_standard));
 		titlePopup.addAction(new TitleActionItem(getActivity(), "关于我们", R.drawable.settings_tabcontent_about));
 		titlePopup.addAction(new TitleActionItem(getActivity(), "清除缓存", R.drawable.home_clean));
+		titlePopup.addAction(new TitleActionItem(getActivity(), "登录注册", R.drawable.home_login));
 		// titlePopup.addAction(new TitleActionItem(getActivity(),
 		// "意见反馈",R.drawable.settings_tabcontent_suggest));
 	}
@@ -773,11 +752,14 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		// 更新当前城市aqi
 		updateCurrentCityAqi(currentOrder, currentCityID);
 		// 更新定位城市最近站点
-		updateNeatestSite();
+		if (currentOrder == 0) {
+			updateNearestSite();
+		}
 	}
 
 	// 更新当前城市aqi
 	private void updateCurrentCityAqi(final int currentOrder, final int currentCityID) {
+		System.out.println("updateCurrentCityAqi");
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.get(Constant.SERVER_URL + currentCityID, new AsyncHttpResponseHandler() {
 			// 启动刷新动画
@@ -798,27 +780,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 				if (currentOrder != 0) {
 					UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
 				}
-			}
-		});
-	}
-
-	// 更新定位城市最近站点
-	private void updateNeatestSite() {
-		AsyncHttpClient client = new AsyncHttpClient();
-		client.get(Constant.SITE_URL + currentIndexOut, new AsyncHttpResponseHandler() {
-			@Override
-			public void onSuccess(String result) {
-				sp = getActivity().getSharedPreferences("sortSiteData", 0);
-				siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
-				siteList = DataTool.getsortsite(getActivity(), result, sp.getFloat("locationLong", 0),
-						sp.getFloat("locationLat", 0));
-				setPageView(0, null);
-				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
-			}
-
-			@Override
-			public void onFailure(Throwable error) {
-				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
 			}
 		});
 	}
@@ -844,9 +805,9 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			}
 		}
 		intent.setClass(getActivity(), SiteActivity.class);
+		intent.putExtra("order", currentIndexOut);
 		intent.putExtra("cityId", cityId);
 		intent.putExtra("cityName", cityName);
-		intent.putExtra("order", curViewId);
 		startActivity(intent);
 	}
 
@@ -858,7 +819,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			try {
 				nowCityId = citys.get(i).getId();
 				cityContentList.clear();
-				cityContentList = DataTool.String2SpitContentList(sp.getString("spit_" + nowCityId, ""));
+				cityContentList = EnAndDecryption.String2SpitContentList(sp.getString("spit_" + nowCityId, ""));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -914,8 +875,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		try {
 			sp = getActivity().getSharedPreferences("spitdata", 0);
 			cityContentList.clear();
-			cityContentList = DataTool.String2SpitContentList(sp.getString(
-					"spit_" + citys.get(currentIndexOut).getId(), ""));
+			cityContentList = EnAndDecryption.String2SpitContentList(sp.getString("spit_"
+					+ citys.get(currentIndexOut).getId(), ""));
 			if (cityContentList != null) {
 				publishTime = DateUtil.getTime(cityContentList.get(0).getPubTime());
 				Log.e("aqi", "pubtime：" + publishTime);
@@ -938,7 +899,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 					nowCityId = citys.get(i).getId();
 					sp = getActivity().getSharedPreferences("spitdata", 0);
 					cityContentList.clear();
-					cityContentList = DataTool.String2SpitContentList(sp.getString("spit_" + nowCityId, ""));
+					cityContentList = EnAndDecryption.String2SpitContentList(sp.getString("spit_" + nowCityId, ""));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1032,7 +993,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 									sp = getActivity().getSharedPreferences("spitdata", 0);
 									cityContentList.clear();
 									try {
-										cityContentList = DataTool.String2SpitContentList(sp.getString("spitjson", ""));
+										cityContentList = EnAndDecryption.String2SpitContentList(sp.getString(
+												"spitjson", ""));
 										if (cityContentList != null) {
 											if (j % 3 == 0) {
 												spitFirst.append(cityContentList.get(j).getContent() + "             ");
@@ -1180,8 +1142,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 			sp = getActivity().getSharedPreferences("spitdata", 0);
 			try {
 				cityContentList.clear();
-				cityContentList = DataTool.String2SpitContentList(sp.getString("spit_"
-						+ citys.get(currentIndexOut).getId(), ""));
+				cityContentList = EnAndDecryption.String2SpitContentList(sp.getString(
+						"spit_" + citys.get(currentIndexOut).getId(), ""));
 				while (true) {
 					long newTime = DateUtil.getTime(cityContentList.get(0).getPubTime());
 					if (newTime - publishTime > 0) {
@@ -1250,6 +1212,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 	private void clearCache() {
 		ModuleDataClean.cleanDatabaseByName(getActivity(), "lvdora.db");
 		ModuleDataClean.cleanSharedPreference(getActivity());
+		// 清除download文件
+		ModuleDataClean.cleanCustomCache(DataTool.createFileDir("Download"));
 
 		resetApplication();
 	}
@@ -1261,14 +1225,6 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		ExitTool.exit();
 	}
 
-	// 定位图标
-	public void homepageLocate(int position) {
-		ImageView locate = (ImageView) views.get(position).findViewById(R.id.home_locate);
-		if (position == 0) {
-			locate.setVisibility(View.VISIBLE);
-		}
-	}
-
 	private void findView() {
 		// 上方导航栏
 		this.forecast_index_layout = (RelativeLayout) homeView.findViewById(R.id.forecast_index_in);
@@ -1276,6 +1232,7 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		this.viewPager = (ViewPager) homeView.findViewById(R.id.viewpager);
 		// 下方翻页指示器
 		this.indicatorLayout = ((LinearLayout) homeView.findViewById(R.id.page_indicator));
+
 		// 按钮
 		this.cityNameText = (TextView) forecast_index_layout.findViewById(R.id.city_name_text);
 		this.updateAnimImg = (ImageView) forecast_index_layout.findViewById(R.id.iv_weather_update);
@@ -1291,41 +1248,36 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		this.menuImg.setOnClickListener(this);
 	}
 
-	/**
-	 * 不同城市数据
-	 * 
-	 * @param i
-	 */
-	private void findView(List<View> views, int i) {
-		Log.v("HomeActivity", "findView数组越界" + i + views.size());
+	// 单个城市
+	private void findSingleView(View view) {
 		// 美领馆
-		usaLayout = (LinearLayout) views.get(i).findViewById(R.id.usa_layout);
+		usaLayout = (LinearLayout) view.findViewById(R.id.usa_layout);
 		usaLayout.setOnClickListener(this);
 
 		// 城市
-		this.cityLayout = (RelativeLayout) views.get(i).findViewById(R.id.aqi_city_layout);
+		this.cityLayout = (RelativeLayout) view.findViewById(R.id.aqi_city_layout);
 		cityLayout.setOnClickListener(this);
-		this.aqiValueText = (TextView) views.get(i).findViewById(R.id.tv_aqi_index);
-		this.aqiGradeText = (TextView) views.get(i).findViewById(R.id.tv_aqi_grade);
-		this.pm25_value_text = (TextView) views.get(i).findViewById(R.id.pm25_value);
-		this.updateTimeText = (TextView) views.get(i).findViewById(R.id.update_aqi_time);
+		this.aqiValueText = (TextView) view.findViewById(R.id.tv_aqi_index);
+		this.aqiGradeText = (TextView) view.findViewById(R.id.tv_aqi_grade);
+		this.pm25_value_text = (TextView) view.findViewById(R.id.pm25_value);
+		this.updateTimeText = (TextView) view.findViewById(R.id.update_aqi_time);
 
 		// 温度
-		this.cityTemperature = (RelativeLayout) views.get(i).findViewById(R.id.temp);
+		this.cityTemperature = (RelativeLayout) view.findViewById(R.id.temp);
 		cityTemperature.setOnClickListener(this);
-		this.curDateText = (TextView) views.get(i).findViewById(R.id.tv_date);
-		this.curTempText = (TextView) views.get(i).findViewById(R.id.tv_temp_index);
-		this.weatherText = (TextView) views.get(i).findViewById(R.id.tv_temp_sign);
-		this.windText = (TextView) views.get(i).findViewById(R.id.tv_wind);
-		this.suggestionText = (TextView) views.get(i).findViewById(R.id.suggestion);
+		this.curDateText = (TextView) view.findViewById(R.id.tv_date);
+		this.curTempText = (TextView) view.findViewById(R.id.tv_temp_index);
+		this.weatherText = (TextView) view.findViewById(R.id.tv_temp_sign);
+		this.windText = (TextView) view.findViewById(R.id.tv_wind);
+		this.suggestionText = (TextView) view.findViewById(R.id.suggestion);
 
 		// 更多天气
-		this.moreWetherForecast = (LinearLayout) views.get(i).findViewById(R.id.weather_more_forecast);
+		this.moreWetherForecast = (LinearLayout) view.findViewById(R.id.weather_more_forecast);
 		moreWetherForecast.setOnClickListener(this);
-		this.firstDayText = (TextView) views.get(i).findViewById(R.id.tv_firstDay);
-		this.secondDayText = (TextView) views.get(i).findViewById(R.id.tv_secondDay);
-		this.firstWeatherImag = (ImageView) views.get(i).findViewById(R.id.iv_firstDay_weather);
-		this.secondWeatherImag = (ImageView) views.get(i).findViewById(R.id.iv_secondDay_weather);
+		this.firstDayText = (TextView) view.findViewById(R.id.tv_firstDay);
+		this.secondDayText = (TextView) view.findViewById(R.id.tv_secondDay);
+		this.firstWeatherImag = (ImageView) view.findViewById(R.id.iv_firstDay_weather);
+		this.secondWeatherImag = (ImageView) view.findViewById(R.id.iv_secondDay_weather);
 	}
 
 	// 加载缓存
@@ -1333,8 +1285,8 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		// 获取用户选择的城市
 		sp = getActivity().getSharedPreferences("citydata", 0);
 		citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
-		cityCount = citys.size();
 		ModuleSPIO.showCityData(getActivity(), "HomeActivity loadSP");
+		cityCount = citys.size();
 
 		// sortSiteData是当前城市的站点数据
 		sp = getActivity().getSharedPreferences("sortSiteData", 0);
@@ -1367,19 +1319,88 @@ public class HomeActivity extends Fragment implements OnClickListener {
 		sp = getActivity().getSharedPreferences("jsondata", 0);
 		sp.getString("rankjson", "");
 
-		// about信息
-		File aboutFile = new File(DataTool.createFileDir("Download") + "/about.html");
-		if (!aboutFile.exists() && NetworkTool.isNetworkConnected(getActivity())) {
-			DataTool.getAboutData();
-		}
-
 		// 吐槽数据
 		sp = getActivity().getSharedPreferences("spitdata", 0);
 		longtitude = sp.getString("longtitude", "");
 		latitude = sp.getString("latitude", "");
 
-		// 进度条标志位
-		sp = getActivity().getSharedPreferences("isFlash", 0);
-		isFlash = sp.getBoolean("isFlash", false);
+		// 是否首次进入homepage
+		sp = getActivity().getSharedPreferences("isFirstIn", 0);
+		isFirstIn = sp.getBoolean("isFirstIn", false);
+	}
+
+	// 定位图标
+	public void homepageLocateIcon(int position) {
+		ImageView locate = (ImageView) views.get(position).findViewById(R.id.home_locate);
+		if (position == 0) {
+			locate.setVisibility(View.VISIBLE);
+		}
+	}
+
+	// 更新定位城市最近站点
+	private void updateNearestSite() {
+		System.out.println("updateNeatestSite");
+		int cityId = CitysIndexMap.getInstance(getActivity()).get(0);
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(String result) {
+				Log.w("HomeActivity", "updateNeatestSite " + result);
+				sp = getActivity().getSharedPreferences("sortSiteData", 0);
+				siteList = EnAndDecryption.String2SiteList(sp.getString("sortSiteList", ""));
+				//
+				siteList = DataTool.getsortsite(getActivity(), result, sp.getFloat("locationLong", 0),
+						sp.getFloat("locationLat", 0));
+				setNearestSite(views.get(0), siteList);
+				// setPageView(0, null);
+				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+			}
+
+			@Override
+			public void onFailure(Throwable error) {
+				UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+			}
+		});
+	}
+
+	//
+	private void setNearestSite(View view, List<SiteAqi> siteList) {
+		Log.d("HomeActivity", "setNearestSite" + siteList.toString());
+		if (siteList == null) {
+			return;
+		}
+		this.nearestSiteLayout = (LinearLayout) view.findViewById(R.id.location_site);
+		this.nearestSiteLayout.setVisibility(View.VISIBLE);
+		this.nearestSiteLayout.setOnClickListener(this);
+
+		this.nearnest_site_name_text = (TextView) view.findViewById(R.id.nearnest_site_name);
+		this.nearnest_site_aqiValue_text = (TextView) view.findViewById(R.id.nearnest_site_aqi);
+		this.nearnest_site_pm25Value_text = (TextView) view.findViewById(R.id.nearnest_site_pm25);
+		this.nearnest_site_aqiGrade_text = (TextView) view.findViewById(R.id.nearnest_site_aqi_grade);
+		this.nearnest_site_updateTime_text = (TextView) view.findViewById(R.id.nearnest_site_update_time);
+
+		SiteAqi site;
+		if (siteList.get(0).getName().equals("美国大使馆") || siteList.get(0).getName().equals("美国领事馆")) {
+			site = siteList.get(1);
+		} else {
+			site = siteList.get(0);
+		}
+
+		String aqiSiteValue = site.getAqi();
+		nearnest_site_name_text.setText(site.getName());
+		nearnest_site_aqiValue_text.setText(aqiSiteValue);
+		int aqiColor = GradeTool.getAqiColorByIndex(aqiSiteValue);
+		nearnest_site_aqiValue_text.setBackgroundDrawable(getResources().getDrawable(aqiColor));
+		int textColor = GradeTool.getTextColorByAqi(aqiSiteValue);
+		nearnest_site_aqiValue_text.setTextColor(getResources().getColor(textColor));
+		nearnest_site_pm25Value_text.setText("PM2.5 : " + site.getPm25());
+		nearnest_site_aqiGrade_text.setText(GradeTool.getStateByIndex(Integer.parseInt(aqiSiteValue)));
+		nearnest_site_aqiGrade_text.setTextSize(16);
+		// 更新时间
+		nearnest_site_updateTime_text.setText("更新 " + site.getUpdateTime().substring(11, 16));
+	}
+
+	private void setCityAqi() {
+
 	}
 }

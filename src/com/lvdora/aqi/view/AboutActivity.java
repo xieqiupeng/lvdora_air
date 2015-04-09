@@ -14,8 +14,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.lvdora.aqi.R;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.DataTool;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
 import com.lvdora.aqi.util.WebViewContentClient;
 
@@ -53,7 +53,9 @@ public class AboutActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting_more_about);
 		
-		ExitTool.activityList.add(AboutActivity.this);
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
+		
 		rootPath = DataTool.createFileDir("Download");
 		Log.i("lvdora", "path" + rootPath);
 		

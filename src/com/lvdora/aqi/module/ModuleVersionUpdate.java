@@ -33,8 +33,10 @@ import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.NetworkTool;
 
 /**
- * apk 版本检测与升级模块
+ * 解决问题：版本检测与apk升级
  * 
+ * @1 版本检测
+ * @2 apk升级
  * @author xqp
  * 
  */
@@ -51,7 +53,7 @@ public class ModuleVersionUpdate {
 	public String updateDetails;
 	public int isUpdate;
 	public int about;
-	
+
 	public ModuleVersionUpdate(Activity activity) {
 		this.activity = activity;
 		getCacheFromSP();
@@ -98,7 +100,9 @@ public class ModuleVersionUpdate {
 		if (newVerCode > vercode) {
 			if (isUpdate == 2) {
 				showMustUpdateDialog();
-			} else if (isUpdate == 1) {
+			}
+			//
+			else if (isUpdate == 1) {
 				showUpdateDialog();
 			}
 		}
@@ -139,7 +143,7 @@ public class ModuleVersionUpdate {
 		Log.e("ModuleVersionUpdate", "showUpdateDialog");
 		// 版本更新信息
 		StringBuffer sb = updateDetails();
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("是否更新 ?");
 		builder.setMessage(sb.toString());

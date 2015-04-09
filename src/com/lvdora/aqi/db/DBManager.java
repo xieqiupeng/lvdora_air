@@ -13,6 +13,7 @@ import android.util.Log;
 
 /**
  * 外部数据库导入功能
+ * 
  * @city.db
  * 
  * @author xqp
@@ -21,11 +22,12 @@ import android.util.Log;
 public class DBManager {
 	private final int BUFFER_SIZE = 10000;
 	// 保存的数据库文件名
-	public static final String DB_NAME = "city.db"; 
+	public static final String DB_NAME = "city.db";
 	public static final String PACKAGE_NAME = "com.lvdora.aqi";
 	// 在手机里存放数据库的位置
 	public static final String DB_PATH = "/data" + Environment.getDataDirectory().getAbsolutePath() + "/"
-			+ PACKAGE_NAME; 
+			+ PACKAGE_NAME;
+	public static final String DB_TOTAL_PATH = DB_PATH + "/" + DB_NAME;
 
 	private SQLiteDatabase database;
 	private Context context;
@@ -38,6 +40,7 @@ public class DBManager {
 		this.database = this.openDatabase(DB_PATH + "/" + DB_NAME);
 	}
 
+	// 将数据库从asset考入内部存储
 	private SQLiteDatabase openDatabase(String dbfile) {
 		try {
 			if (!(new File(dbfile).exists())) {

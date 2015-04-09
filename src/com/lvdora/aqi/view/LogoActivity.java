@@ -19,40 +19,37 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.dao.CityDao;
 import com.lvdora.aqi.db.DBManager;
 import com.lvdora.aqi.model.City;
-import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CitysIndexMap;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.module.ModuleLocation;
-import com.lvdora.aqi.module.ModuleServerInteraction;
+import com.lvdora.aqi.thread.ThreadServerInteraction;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
 import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
-import com.lvdora.aqi.util.ScreenManager;
 
 /**
  * 加载logo界面
  * 
- * @author Administrator
+ * @author xqp
  * 
  */
 public class LogoActivity extends Activity {
 
 	private DBManager dbManager;
 
-	private int dbCount;
-	private CityAqiDao cityAqiDB;
 	private List<City> citys = new ArrayList<City>();
 	private SharedPreferences sp;
-	private boolean isNetLink = false;
 	public boolean isGPS = false;
 	public boolean isGPS_2 = false;
-	private int iDbItems;
+
 	// private List<SiteAqi> citySiteList;
 	// private String locationCitySiteJson;
 	// 地图管理器
@@ -60,16 +57,15 @@ public class LogoActivity extends Activity {
 	private int cityID;
 
 	boolean isSetToBeijing = false;
-	// 服务器数据交互服务
-	Intent serviceIntent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.logo_activity);
-		// 此处为了完美退出
-		ScreenManager.getScreenManager().pushActivity(this);
-		ExitTool.activityList.add(LogoActivity.this);
+		Log.d("LogoActivity", "onCreate");
+
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
 
 		// 保存运行时间的毫秒数到缓存
 		final long loadTime = System.currentTimeMillis();
@@ -79,117 +75,73 @@ public class LogoActivity extends Activity {
 		sp.edit().putLong("rankLoadTime", loadTime).commit();
 		sp.edit().putLong("deviceloadTime", loadTime).commit();
 
-		// 打开GPS
-		// turnGPSOn();
-
-		this.logo_layout = (LinearLayout) findViewById(R.id.ll_logo);
-
 		// 创建根目录
 		DataTool.createSDCardDir();
 
-		// 透明度变化动画类
-		AlphaAnimation localAnimation = new AlphaAnimation(0.1f, 1.0f);
-		localAnimation.setDuration(2500);
-
-		// 取得数据库的开始记录数
-		cityAqiDB = new CityAqiDao(LogoActivity.this, "");
-		iDbItems = cityAqiDB.getLastUid();
-		dbCount = cityAqiDB.getCount();
-
-		// 第一次运行时取得网络状态
-		if (NetworkTool.isNetworkConnected(LogoActivity.this) || dbCount > 0) {
-			isNetLink = true;
+		// 如果第一次没有网络连接，强制退出
+		NetworkTool network = new NetworkTool(LogoActivity.this);
+		if (!NetworkTool.isNetworkConnected(LogoActivity.this)) {
+			// 提示设置网络
+			network.alertWiFiConnection(LogoActivity.this);
 		}
-
-		// 如果第一次没有网络连接 强制退出
-		if (!isNetLink) {
-			// 提示网络设置
-			alertWiFiConnection();
-		} else {
-			// 有网络连接或者不是第一次进入时没有网络的情况
-			this.logo_layout.startAnimation(localAnimation);
-			localAnimation.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationStart(Animation animation) {
-					// 导入省市数据库
-					File file = new File(DBManager.DB_PATH + "/" + DBManager.DB_NAME);
-					if (!file.exists()) {
-						dbManager = new DBManager(LogoActivity.this);
-						dbManager.openDatabase();
-					}
-
-					// 有网络的情况,排除不是第一次没有网络的情况
-					if (NetworkTool.isNetworkConnected(LogoActivity.this)) {
-						// 第一次定位城市
-						try {
-							ModuleLocation locate = new ModuleLocation(LogoActivity.this);
-							locate.locateCity();
-						} catch (Exception e) {
-						}
-						// 获取吐槽数据
-						DataTool.getSpitData(getApplicationContext(), "", "");
-						// 获取排名信息及全国城市地图数据
-						DataTool.getRankJsonData(getApplicationContext());
-						// 获取全国地图站点数据
-						DataTool.getMapSiteData(getApplicationContext());
-						// 获取版本信息
-						DataTool.getVersionJsonData(getApplicationContext());
-						// 获取预警信息
-						DataTool.getForcastData();
-						// 获取民间设备数据
-						DataTool.getDeviceJsonData(getApplicationContext());
-					}
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					// closeGPS();
-				}
-			});
+		// 有网络连接
+		else {
+			pageAnimation();
 		}
+	}
 
+	@Override
+	protected void onDestroy() {
+		Log.d("LogoActivity", "onDestroy");
+		super.onDestroy();
 	}
 
 	/*
-	 * 网络设置提示
+	 * 设置透明度变化
 	 */
-	private void alertWiFiConnection() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(LogoActivity.this);
-		builder.setTitle("网络设置提示");
-		builder.setMessage("网络连接不可用,是否进行设置?");
-		// 点击确定
-		builder.setPositiveButton("设置", new OnClickListener() {
+	private void pageAnimation() {
+		this.logo_layout = (LinearLayout) findViewById(R.id.ll_logo);
+		// 透明度变化动画
+		AlphaAnimation localAnimation = new AlphaAnimation(0.1f, 1.0f);
+		localAnimation.setDuration(2000);
+		this.logo_layout.startAnimation(localAnimation);
+		// 监听器
+		localAnimation.setAnimationListener(new AnimationListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// 进入wifi设置
-				Intent intent = new Intent();
-				// 判断手机系统的版本 即API大于10 就是3.0或以上版本
-				if (android.os.Build.VERSION.SDK_INT > 10) {
-					intent.setAction(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
-				} else {
-					ComponentName component = new ComponentName("com.android.settings",
-							"com.android.settings.WirelessSettings");
-					intent.setComponent(component);
-					intent.setAction("android.intent.action.VIEW");
+			public void onAnimationStart(Animation animation) {
+				// 导入省市数据库
+				File file = new File(DBManager.DB_TOTAL_PATH);
+				if (!file.exists()) {
+					dbManager = new DBManager(LogoActivity.this);
+					dbManager.openDatabase();
 				}
-				startActivity(intent);
-				finish();
+
+				// TODO 第一次定位城市
+				ModuleLocation locate = new ModuleLocation(LogoActivity.this);
+				locate.locateCity();
+
+				// 获取吐槽数据
+				DataTool.getSpitData(getApplicationContext(), "", "");
+				// 获取排名信息及全国城市地图数据
+				DataTool.getRankJsonData(getApplicationContext());
+				// 获取全国地图站点数据
+				DataTool.getMapSiteData(getApplicationContext());
+				// 获取版本信息
+				DataTool.getVersionJsonData(getApplicationContext());
+				// 获取预警信息
+				DataTool.getForcastData();
+				// 获取民间设备数据
+				DataTool.getDeviceJsonData(getApplicationContext());
+			}
+
+			@Override
+			public void onAnimationEnd(Animation arg0) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
 			}
 		});
-		// 点击取消
-		builder.setNegativeButton("取消", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				for (int i = 0; i < ExitTool.activityList.size(); i++) {
-					ExitTool.activityList.get(i).finish();
-				}
-			}
-		});
-		builder.show();
 	}
 
 	/**
@@ -208,29 +160,34 @@ public class LogoActivity extends Activity {
 				// 1 深圳市 荔园
 				{ 114.064781, 22.560473 },
 				// 2 杭州市 千岛湖
-				{ 119.051449, 29.61001 } };
-		locateCity = "深圳市";
-		jingdu = lonLat[1][0];
-		weidu = lonLat[1][1];
+				{ 119.051449, 29.61001 },
+				// 3 天津 西站
+				{ 117.172509, 39.164913 } };
+		locateCity = "天津市";
+		jingdu = lonLat[3][0];
+		weidu = lonLat[3][1];
 
 		// 1 加载缓存城市
 		loadCityListFromSP();
+
 		// 2 加载定位城市，与db和缓存定位城市对比，将定位城市id存入类变量
 		cityID = loadLocateCity(locateCity);
-		// TODO 检查列表城市
 		Log.v("LogoActivity", "dispose " + cityID + ":" + citys.toString());
+
 		// 3 解决定位城市和缓存城市的冲突
 		resolveConflict();
+
 		// 4 序号重编
 		listReorder();
 
-		// 设置当前经纬度
+		// 如果定位北京则将经纬度设为天工大厦
 		if (isSetToBeijing) {
 			jingdu = 116.361555;
 			weidu = 39.993906;
 		}
 		// 5 存sp
 		listToSP(jingdu, weidu);
+
 		// 6 请求详细aqi数据，回调存db
 		sendRequestForAqis();
 
@@ -312,7 +269,7 @@ public class LogoActivity extends Activity {
 		return -1;
 	}
 
-	// 解决定位城市和缓存城市的冲突
+	// 3 解决定位城市和缓存城市的冲突
 	private void resolveConflict() {
 		// 冒泡排序，去掉后边的
 		for (int i = 0; i < citys.size() - 1; i++) {
@@ -326,9 +283,7 @@ public class LogoActivity extends Activity {
 		Log.v("LogoActivity", citys.toString());
 	}
 
-	/*
-	 * list序号重排，无奈，结构不好
-	 */
+	// 4 list序号重排，无奈，结构不好
 	private void listReorder() {
 		// list存map
 		for (City city : citys) {
@@ -346,18 +301,12 @@ public class LogoActivity extends Activity {
 		}
 	}
 
-	/**
-	 * 存到sp
-	 */
+	// 5 存sp
 	private void listToSP(double jingdu, double weidu) {
 		// 1 存入sp,citydata
-		try {
-			String cityString = EnAndDecryption.CityList2String(citys);
-			// String cityString = citys.toString();
-			sp = getSharedPreferences("citydata", 0);
-			sp.edit().putString("citys", cityString).commit();
-		} catch (Exception e) {
-		}
+		String cityString = EnAndDecryption.CityList2String(citys);
+		sp = getSharedPreferences("citydata", 0);
+		sp.edit().putString("citys", cityString).commit();
 
 		// 2 存定位城市
 		sp = getSharedPreferences("location", 0);
@@ -380,21 +329,16 @@ public class LogoActivity extends Activity {
 		// 6 存GPS
 		isGPS = true;
 		if (isGPS) {
-			sp = getSharedPreferences("isFlash", 0);
-			sp.edit().putBoolean("isFlash", false).commit();
+			sp = getSharedPreferences("isFirstIn", 0);
+			sp.edit().putBoolean("isFirstIn", false).commit();
 			isGPS_2 = false;
 		}
 	}
 
-	// 6 回调存库
-	public void listToDB(List<CityAqi> aqis) {
-		CityAqiDao cityAqiDao = new CityAqiDao(this, "");
-		cityAqiDao.insertCityAqiList(aqis);
-	}
-
 	// 6 从服务器获取aqi数据
 	private void sendRequestForAqis() {
-		ModuleServerInteraction msi = new ModuleServerInteraction(LogoActivity.this);
+		Log.w("LogoActivity", "sendRequestForAqis");
+		ThreadServerInteraction msi = new ThreadServerInteraction(LogoActivity.this);
 		msi.sendRequestForAqis(citys);
 	}
 
@@ -448,15 +392,15 @@ public class LogoActivity extends Activity {
 		// if没有定位到，返回去重新定位
 		long NowTime = System.currentTimeMillis();
 		if (isGPS && isGPS_2) {
-			sp = getSharedPreferences("isFlash", 0);
-			sp.edit().putBoolean("isFlash", false).commit();
+			sp = getSharedPreferences("isFirstIn", 0);
+			sp.edit().putBoolean("isFirstIn", false).commit();
 			Intent intent = new Intent();
 			intent.setClass(LogoActivity.this, MainActivity.class);
 			startActivity(intent);
 			finish();
 		} else if (System.currentTimeMillis() - NowTime > 5000) {
-			sp = getSharedPreferences("isFlash", 0);
-			sp.edit().putBoolean("isFlash", false).commit();
+			sp = getSharedPreferences("isFirstIn", 0);
+			sp.edit().putBoolean("isFirstIn", false).commit();
 			Intent intent = new Intent();
 			intent.setClass(LogoActivity.this, MainActivity.class);
 			startActivity(intent);

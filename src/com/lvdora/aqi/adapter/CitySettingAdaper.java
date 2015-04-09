@@ -158,10 +158,10 @@ public class CitySettingAdaper extends BaseAdapter {
 					}
 					// 去掉不合理的数字
 					cityAqiDao.delByOrder(-1);
-					
+
 					// 存sp
 					CitysIndexMap.getInstance((Activity) context).listToSP();
-					
+
 					// 界面当前页置为0
 					HomeActivity.currentIndexOut = 0;
 					try {
@@ -170,12 +170,9 @@ public class CitySettingAdaper extends BaseAdapter {
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
-					try {
-						// TODO sp中添加城市
-						sp.edit().putString("citys", EnAndDecryption.CityList2String(citys)).commit();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					// TODO sp中添加城市
+					String cityString = EnAndDecryption.CityList2String(citys);
+					sp.edit().putString("citys", cityString).commit();
 					notifyDataSetChanged();
 				}
 			});

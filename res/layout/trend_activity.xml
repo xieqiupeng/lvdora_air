@@ -31,12 +31,13 @@
                 android:textColor="@android:color/black" />
 
             <WebView
-                android:id="@+id/wumai_forcast"
+                android:id="@+id/wumai"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
         </LinearLayout>
-                <LinearLayout
-            android:id="@+id/wumai_forcast"
+
+        <LinearLayout
+            android:id="@+id/wumai2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1.0"
@@ -86,8 +87,7 @@
                          <com.lvdora.aqi.view.ui.TrendChartView
                         android:id="@+id/tcv_hours_aqi"
                         android:layout_width="200.0dp"
-                        android:layout_height="match_parent" />
-                    -->
+                        android:layout_height="match_parent" />                    -->
                 </LinearLayout>
             </HorizontalScrollView>
         </LinearLayout>
@@ -121,8 +121,7 @@
                          <com.lvdora.aqi.view.ui.TrendChartView
                         android:id="@+id/tcv_days_aqi"
                         android:layout_width="200.0dip"
-                        android:layout_height="match_parent" />
-                    -->
+                        android:layout_height="match_parent" />                    -->
                 </LinearLayout>
             </HorizontalScrollView>
         </LinearLayout>

@@ -13,7 +13,7 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * 定位模块
+ * 解决问题：定位模块
  * 
  * @author xqp
  */

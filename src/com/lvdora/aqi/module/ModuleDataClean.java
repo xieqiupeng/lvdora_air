@@ -5,15 +5,16 @@ import android.content.Context;
 import android.os.Environment;
 
 /**
- * 数据清理模块
+ * 解决问题：清理缓存
+ * 
  * @1 清除内/外缓存
- * @2 清除数据库 
+ * @2 清除数据库
  * @3 清除sharedPreference
  * @4 清除files和清除自定义目录
  * @author xqp
  */
 public class ModuleDataClean {
-	
+
 	/**
 	 * 清除本应用内部缓存(/data/data/com.xxx.xxx/cache)
 	 * 

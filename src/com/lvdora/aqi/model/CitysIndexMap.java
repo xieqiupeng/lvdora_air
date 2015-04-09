@@ -11,15 +11,15 @@ import android.util.Log;
 
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.module.ModuleSPIO;
-import com.lvdora.aqi.module.ModuleServerInteraction;
+import com.lvdora.aqi.thread.ThreadServerInteraction;
 import com.lvdora.aqi.util.EnAndDecryption;
 
 /**
  * 城市映射：保存6个定位、收藏城市的映射
  * 
- * @1.View 城市变更，编辑和保存操作
- * @2.SP 和citydata的数据交互
- * @3.DB 和cityaqi的数据交互
+ * @1.View 保存：城市的变更和编辑
+ * @2.SP 数据交互：和citydata
+ * @3.DB 数据交互：和cityaqi
  * 
  * @author xqp
  * 
@@ -50,7 +50,7 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 	 * 重新排序
 	 */
 	public void reorder() {
-		Log.v("CitysIndexMap", "recorder " + instance.size());
+		Log.v("CitysIndexMap", "reorder " + instance.size());
 		// 去掉不合理的数字
 		instance.remove(-1);
 		int i = 0;
@@ -83,11 +83,12 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 	// 取缓存
 	public void spToMap() {
 		instance.clear();
-		SharedPreferences spCitys = activity.getSharedPreferences("citydata", 0);
-		for (int i = 0; i < 6; i++) {
-			int value = spCitys.getInt(i + "", -1);
-			instance.put(i, value);
+		SharedPreferences sp = activity.getSharedPreferences("citydata", 0);
+		List<City> citys = EnAndDecryption.String2WeatherList(sp.getString("citys", ""));
+		for (City city : citys) {
+			instance.put(city.getOrder(), city.getId());
 		}
+		ModuleSPIO.showCityData(activity, "HomeActivity loadSP");
 	}
 
 	// 存缓存
@@ -114,23 +115,27 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 			city.setId(instance.get(key));
 			citys.add(city);
 		}
-		try {
-			String cityString = EnAndDecryption.CityList2String(citys);
-			// String cityString = citys.toString();
-			SharedPreferences sp;
-			sp = activity.getSharedPreferences("citydata", 0);
-			sp.edit().putString("citys", cityString).commit();
-		} catch (Exception e) {
-		}
+		String cityString = EnAndDecryption.CityList2String(citys);
+		SharedPreferences sp = activity.getSharedPreferences("citydata", 0);
+		sp.edit().putString("citys", cityString).commit();
 		ModuleSPIO.showCityData(activity, "CitysIndexMap");
 	}
 
 	// 存库
 	public void sendRequestForAqis() {
-		ModuleServerInteraction msi = new ModuleServerInteraction(activity);
+		ThreadServerInteraction msi = new ThreadServerInteraction(activity);
 		for (int i = 0; i < instance.size(); i++) {
 			msi.sendRequestForAqi(i, instance.get(i));
 		}
+	}
+
+	// 存库
+	public void mapToDB() {
+		//
+		sendRequestForAqis();
+		// 存库
+		CityAqiDao cityAqiDao = new CityAqiDao(activity, "");
+		// cityAqiDao.insertCityAqiList();
 	}
 
 	// 存库

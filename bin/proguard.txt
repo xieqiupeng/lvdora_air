@@ -4,15 +4,15 @@
 # view res/layout/forecast_activity.xml #generated:18
 -keep class android.support.v4.view.ViewPager { <init>(...); }
 
-# view AndroidManifest.xml #generated:131
+# view AndroidManifest.xml #generated:130
 -keep class com.baidu.location.f { <init>(...); }
 
 # view res/layout/baidumap_activity.xml #generated:7
 # view res/layout/map_activity.xml #generated:55
-# view res/layout/site_activity.xml #generated:187
+# view res/layout/site_activity.xml #generated:171
 -keep class com.baidu.mapapi.map.MapView { <init>(...); }
 
-# view AndroidManifest.xml #generated:55
+# view AndroidManifest.xml #generated:54
 -keep class com.lvdora.aqi.baidu.MyApplication { <init>(...); }
 
 # view res/layout/haze_forecast_activity.xml #generated:145
@@ -33,39 +33,39 @@
 # view res/layout/haze_forecast_activity.xml #generated:69
 -keep class com.lvdora.aqi.util.ScrollViewTool { <init>(...); }
 
-# view AndroidManifest.xml #generated:79
+# view AndroidManifest.xml #generated:78
 -keep class com.lvdora.aqi.view.AboutActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:108
+# view AndroidManifest.xml #generated:107
 -keep class com.lvdora.aqi.view.AirQualityStandardsActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:92
+# view AndroidManifest.xml #generated:91
 -keep class com.lvdora.aqi.view.CitySelectorActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:70
+# view AndroidManifest.xml #generated:69
 -keep class com.lvdora.aqi.view.CitySettingActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:75
+# view AndroidManifest.xml #generated:74
 -keep class com.lvdora.aqi.view.DeviceShareActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:87
+# view AndroidManifest.xml #generated:86
 -keep class com.lvdora.aqi.view.FeedBackActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:83
+# view AndroidManifest.xml #generated:82
 -keep class com.lvdora.aqi.view.HelpActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:102
+# view AndroidManifest.xml #generated:101
 -keep class com.lvdora.aqi.view.LogoActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:118
+# view AndroidManifest.xml #generated:117
 -keep class com.lvdora.aqi.view.LvdoraGuide { <init>(...); }
 
-# view AndroidManifest.xml #generated:65
+# view AndroidManifest.xml #generated:64
 -keep class com.lvdora.aqi.view.MainActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:97
+# view AndroidManifest.xml #generated:96
 -keep class com.lvdora.aqi.view.SiteActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:113
+# view AndroidManifest.xml #generated:112
 -keep class com.lvdora.aqi.view.WeatherForecast { <init>(...); }
 

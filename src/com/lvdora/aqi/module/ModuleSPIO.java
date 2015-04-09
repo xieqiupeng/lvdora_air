@@ -12,18 +12,20 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 /**
- * 所有有关缓存的工具类
+ * 解决问题：缓存IO的统一管理
  * 
+ * @1 所有sp的名字和用途
  * @author xqp
- * @String fullName
  */
 public class ModuleSPIO {
-	// 类名
+	
+	// SPIO含义
+	public static final String FULLNAME = "SharedPreferences InputStream and OutputStream";
+	
 	// private Activity activity;
-	public String fullName = "SharedPreferences InputStream and OutputStream";
 	private SharedPreferences sp;
 
-	// sp意义
+	// 所有sp的名字和用途
 	public final static String[] spName = {
 			// 0 城市编辑界面中添加的城市
 			"citydata",
@@ -42,7 +44,7 @@ public class ModuleSPIO {
 			// 7 记录界面加载时间
 			"autoupdate",
 			// 8 进度条标志位，存GPS
-			"isFlash"
+			"isFirstIn"
 	//
 	};
 
@@ -57,10 +59,10 @@ public class ModuleSPIO {
 		Log.d("ModuleSPIO", "showCityData from" + FromWhere + " citys:" + cityCount + " " + citys.toString());
 	}
 
-	public void dataIsFlashSave(Activity activity, boolean trueOrFalse) {
+	public void dataIsFirstInSave(Activity activity, boolean trueOrFalse) {
 		SharedPreferences sp;
-		sp = activity.getSharedPreferences("isFlash", 0);
-		sp.edit().putBoolean("isFlash", trueOrFalse).commit();
+		sp = activity.getSharedPreferences("isFirstIn", 0);
+		sp.edit().putBoolean("isFirstIn", trueOrFalse).commit();
 	}
 
 }

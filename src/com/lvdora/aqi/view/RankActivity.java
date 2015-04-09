@@ -25,6 +25,7 @@ import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
+import com.lvdora.aqi.util.EnAndDecryption;
 import com.lvdora.aqi.util.NetworkTool;
 import com.lvdora.aqi.util.ShareTool;
 import com.lvdora.aqi.util.UpdateTool;
@@ -170,7 +171,7 @@ public class RankActivity extends Fragment {
 				public void onSuccess(String result) {
 					try {
 						cityRankList = DataTool.getCityRank(getActivity(), result);
-						cityRankJson = DataTool.CityRankList2String(cityRankList);
+						cityRankJson = EnAndDecryption.CityRankList2String(cityRankList);
 						sp = getActivity().getSharedPreferences("jsondata", 0);
 						sp.edit().putString("cityrankjson", cityRankJson).commit();
 						DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);

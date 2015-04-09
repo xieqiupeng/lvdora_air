@@ -17,6 +17,13 @@ import android.os.Handler;
 import com.lvdora.aqi.util.Config;
 import com.lvdora.aqi.util.DataTool;
 
+/**
+ * 解决问题：IO流线程
+ * 
+ * @1
+ * @author xqp
+ * 
+ */
 public class ModuleFileDownload {
 	// 下载路径
 	private String downPath;
@@ -56,7 +63,7 @@ public class ModuleFileDownload {
 					if (fileOutputStream != null) {
 						fileOutputStream.close();
 					}
-					//down();
+					// down();
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

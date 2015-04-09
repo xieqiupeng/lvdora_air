@@ -8,6 +8,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.lvdora.aqi.R;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.WebViewContentClient;
 
@@ -19,7 +20,10 @@ public class AirQualityStandardsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting_more_air_quality_standards);
-		ExitTool.activityList.add(AirQualityStandardsActivity.this);
+		
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
+		
 		backView = (ImageView) findViewById(R.id.btn_back);
 		backView.setOnClickListener(new OnClickListener() {
 

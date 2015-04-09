@@ -22,17 +22,15 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.lvdora.aqi.util.ScreenManager;
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.adapter.CitySettingAdaper;
 import com.lvdora.aqi.dao.CityAqiDao;
-import com.lvdora.aqi.dao.CityDao;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CitysIndexMap;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
 import com.lvdora.aqi.util.UpdateTool;
 
@@ -66,10 +64,9 @@ public class CitySettingActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting_city_activity);
 
-		ScreenManager.getScreenManager().pushActivity(this);
-		ExitTool.activityList.add(CitySettingActivity.this);
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
 		findView();
-
 		// 测试页面加载时数据
 		// testData();
 
@@ -89,8 +86,8 @@ public class CitySettingActivity extends Activity implements OnClickListener {
 		case R.id.btn_life_back:
 			// 返回
 			Intent intent = new Intent(CitySettingActivity.this, MainActivity.class);
-			sp = getSharedPreferences("isFlash", 0);
-			sp.edit().putBoolean("isFlash", true).commit();
+			sp = getSharedPreferences("isFirstIn", 0);
+			sp.edit().putBoolean("isFirstIn", true).commit();
 			startActivity(intent);
 			this.finish();
 			break;
@@ -112,8 +109,8 @@ public class CitySettingActivity extends Activity implements OnClickListener {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			// 返回首页
 			Intent intent = new Intent(CitySettingActivity.this, MainActivity.class);
-			sp = getSharedPreferences("isFlash", 0);
-			sp.edit().putBoolean("isFlash", true).commit();
+			sp = getSharedPreferences("isFirstIn", 0);
+			sp.edit().putBoolean("isFirstIn", true).commit();
 			startActivity(intent);
 			finish();
 			return true;
@@ -133,7 +130,7 @@ public class CitySettingActivity extends Activity implements OnClickListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Log.d("LD", citys.toString());
+		Log.d("CitySettingActivity", citys.toString());
 	}
 
 	/**
@@ -156,43 +153,45 @@ public class CitySettingActivity extends Activity implements OnClickListener {
 			}
 		});
 
-		// 点击grid添加城市
+		// 点击加号添加城市
 		this.gv_citys.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// 不处于编辑状态
-				if (editModel == false) {
-					int addButton = CitySettingActivity.this.citys.size();
-					//int addButton = CitysIndexMap.getInstance(CitySettingActivity.this).size();
-					// 点击添加城市
-					if (position == addButton) {
-						// 最多只能添加六个城市
-						if (addButton == 6) {
-							Toast.makeText(CitySettingActivity.this, "最多只能添加六个城市", Toast.LENGTH_SHORT).show();
-							return;
-						}
-						// 进入添加城市页面
-						Intent intent = new Intent();
-						intent.setClass(CitySettingActivity.this, CitySelectorActivity.class);
-						startActivity(intent);
+				// 处于编辑状态则不执行操作
+				if (editModel == true) {
+					return;
+				}
+				int addButton = CitySettingActivity.this.citys.size();
+				// 点击添加城市
+				if (position == addButton) {
+					// 最多只能添加六个城市
+					if (addButton == 6) {
+						Toast.makeText(CitySettingActivity.this, "最多只能添加六个城市", Toast.LENGTH_SHORT).show();
+						return;
 					}
-					// 进入城市信息详情
-					else {
-						Intent intent = new Intent(CitySettingActivity.this, MainActivity.class);
-						HomeActivity.currentIndexOut = position;
-						sp = getSharedPreferences("isFlash", 0);
-						sp.edit().putBoolean("isFlash", true).commit();
-						startActivity(intent);
-						finish();
+					// 进入添加城市页面
+					Intent intent = new Intent();
+					intent.setClass(CitySettingActivity.this, CitySelectorActivity.class);
+					startActivity(intent);
+					return;
+				}
+				// 进入城市信息详情
+				if (position < addButton) {
+					// 改order
+					HomeActivity.currentIndexOut = position;
 
-						// 存缓存
-						sp = getSharedPreferences("cur_city", 0);
-						//CitysIndexMap.getInstance(CitySettingActivity.this).spToMap();
-						CityAqiDao cityAqiDao = new CityAqiDao(CitySettingActivity.this,"");
-						CityAqi cityAqi = cityAqiDao.selectAqiByOrder(position);
-						int cityID = cityAqi.getCityId();
-						sp.edit().putInt("city_id", cityID).commit();
-					}
+					// 存缓存
+					sp = getSharedPreferences("cur_city", 0);
+					int cityID = CitysIndexMap.getInstance(CitySettingActivity.this).get(position);
+					sp.edit().putInt("city_id", cityID).commit();
+					sp = getSharedPreferences("isFirstIn", 0);
+					sp.edit().putBoolean("isFirstIn", true).commit();
+
+					// 跳转
+					Intent intent = new Intent(CitySettingActivity.this, MainActivity.class);
+					startActivity(intent);
+					finish();
+					return;
 				}
 			}
 		});

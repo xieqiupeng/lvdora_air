@@ -24,6 +24,7 @@ import com.lvdora.aqi.R;
 import com.lvdora.aqi.adapter.DeviceAdapter;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.CityAqi;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
@@ -91,6 +92,8 @@ public class DeviceShareActivity extends Fragment implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
+		
 		sp = getActivity().getSharedPreferences("location", 0);
 		cityId = sp.getInt("cityId", 0);
 
@@ -104,8 +107,9 @@ public class DeviceShareActivity extends Fragment implements OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View devicesView = inflater.inflate(R.layout.devices_activity, container, false);
 
-		ExitTool.activityList.add(getActivity());
-
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(getActivity());
+		
 		sp = getActivity().getSharedPreferences("location", 0);
 		cityId = sp.getInt("cityId", 0);
 

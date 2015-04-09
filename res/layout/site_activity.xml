@@ -1,518 +1,509 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff7f7f7"
-    android:orientation="vertical" >
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#fff7f7f7"
+	android:orientation="vertical" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/top_bar_bg"
-        android:gravity="center" >
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/top_bar_bg"
+		android:gravity="center" >
 
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="0.0dip"
-            android:clickable="true"
-            android:src="@drawable/life_top_back_selector" />
+		<ImageView
+			android:id="@+id/back_btn"
+			android:layout_width="wrap_content"
+			android:layout_height="35dp"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="0.0dip"
+			android:clickable="true"
+			android:src="@drawable/life_top_back_selector" />
 
-        <ImageButton
-            android:id="@+id/share_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="60.0dp"
-            android:background="@drawable/share_bg_selector"
-            android:contentDescription="分享按钮"
-            android:visibility="visible" />
+		<ImageButton
+			android:id="@+id/share_image"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_gravity="center_vertical"
+			android:layout_marginRight="60.0dp"
+			android:background="@drawable/share_bg_selector"
+			android:contentDescription="分享按钮"
+			android:visibility="visible" />
 
-        <ImageButton
-            android:id="@+id/update_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="2.0dp"
-            android:background="@drawable/main_update_icon_selector"
-            android:contentDescription="刷新按钮"
-            android:visibility="visible" />
+		<ImageButton
+			android:id="@+id/update_image"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_gravity="center_vertical"
+			android:layout_marginRight="2.0dp"
+			android:background="@drawable/main_update_icon_selector"
+			android:contentDescription="刷新按钮"
+			android:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/update_image_animation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="2.0dip"
-            android:scaleType="center"
-            android:src="@drawable/main_progress_update"
-            android:visibility="gone" />
+		<ImageView
+			android:id="@+id/update_image_animation"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:layout_gravity="center_vertical"
+			android:layout_marginRight="2.0dip"
+			android:scaleType="center"
+			android:src="@drawable/main_progress_update"
+			android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/city_name_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/back_btn"
-            android:layout_centerHorizontal="true"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxEms="6"
-            android:shadowColor="#b2000000"
-            android:shadowDx="2.0"
-            android:shadowDy="2.0"
-            android:shadowRadius="1.0"
-            android:singleLine="true"
-            android:text="北京"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/title_text_size" />
-    </RelativeLayout>
+		<TextView
+			android:id="@+id/city_name_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignBottom="@+id/back_btn"
+			android:layout_centerHorizontal="true"
+			android:ellipsize="end"
+			android:gravity="center"
+			android:maxEms="6"
+			android:shadowColor="#b2000000"
+			android:shadowDx="2.0"
+			android:shadowDy="2.0"
+			android:shadowRadius="1.0"
+			android:singleLine="true"
+			android:text="北京"
+			android:textColor="@android:color/white"
+			android:textSize="@dimen/title_text_size" />
+	</RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+	<ScrollView
+		android:id="@+id/scroll_view"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical" >
 
-                <LinearLayout
-                    android:id="@+id/site_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+				<LinearLayout
+					android:id="@+id/site_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal"
+					android:orientation="vertical" >
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:padding="8.0dip"
-                        android:text="@string/all_site_data"
-                        android:textColor="#ff323232"
-                        android:textSize="18.0sp" />
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="8dp"
+						android:padding="8.0dip"
+						android:text="@string/all_site_data"
+						android:textColor="#ff323232"
+						android:textSize="18.0sp" />
 
-                    <FrameLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+					<FrameLayout
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:orientation="vertical" >
 
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="30.0dip"
-                            android:layout_marginTop="10.0dip"
-                            android:background="@drawable/top_item_header_bg"
-                            android:orientation="horizontal"
-                            android:paddingBottom="5.0dip"
-                            android:paddingLeft="5.0dip"
-                            android:paddingRight="5.0dip"
-                            android:paddingTop="5.0dip" >
+						<LinearLayout
+							android:layout_width="fill_parent"
+							android:layout_height="30.0dip"
+							android:layout_marginTop="10.0dip"
+							android:background="@drawable/top_item_header_bg"
+							android:orientation="horizontal"
+							android:paddingBottom="5.0dip"
+							android:paddingLeft="5.0dip"
+							android:paddingRight="5.0dip"
+							android:paddingTop="5.0dip" >
 
-                            <TextView
-                                android:layout_width="0.0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2.0"
-                                android:gravity="center_horizontal"
-                                android:text="@string/monitoring_points"
-                                android:textColor="#ff333333"
-                                android:textSize="@dimen/form_item_text_size" />
+							<TextView
+								android:layout_width="0.0dp"
+								android:layout_height="wrap_content"
+								android:layout_weight="2.0"
+								android:gravity="center_horizontal"
+								android:text="@string/monitoring_points"
+								android:textColor="#ff333333"
+								android:textSize="@dimen/form_item_text_size" />
 
-                            <TextView
-                                android:layout_width="0.0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.0"
-                                android:gravity="center_horizontal"
-                                android:text="@string/AQI"
-                                android:textColor="#ff333333"
-                                android:textSize="@dimen/form_item_text_size" />
+							<TextView
+								android:layout_width="0.0dp"
+								android:layout_height="wrap_content"
+								android:layout_weight="1.0"
+								android:gravity="center_horizontal"
+								android:text="@string/AQI"
+								android:textColor="#ff333333"
+								android:textSize="@dimen/form_item_text_size" />
 
-                            <TextView
-                                android:layout_width="0.0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.0"
-                                android:gravity="center_horizontal"
-                                android:text="@string/PM_density"
-                                android:textColor="#ff333333"
-                                android:textSize="@dimen/form_item_text_size" />
+							<TextView
+								android:layout_width="0.0dp"
+								android:layout_height="wrap_content"
+								android:layout_weight="1.0"
+								android:gravity="center_horizontal"
+								android:text="@string/PM_density"
+								android:textColor="#ff333333"
+								android:textSize="@dimen/form_item_text_size" />
 
-                            <TextView
-                                android:layout_width="0.0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.5"
-                                android:gravity="center_horizontal"
-                                android:text="@string/quality"
-                                android:textColor="#ff333333"
-                                android:textSize="@dimen/form_item_text_size" />
-                        </LinearLayout>
-                    </FrameLayout>
+							<TextView
+								android:layout_width="0.0dp"
+								android:layout_height="wrap_content"
+								android:layout_weight="1.5"
+								android:gravity="center_horizontal"
+								android:text="@string/quality"
+								android:textColor="#ff333333"
+								android:textSize="@dimen/form_item_text_size" />
+						</LinearLayout>
+					</FrameLayout>
 
-                    <com.lvdora.aqi.util.LinearLayoutForListView
-                        android:id="@+id/lv_site_data"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:orientation="vertical" >
-                    </com.lvdora.aqi.util.LinearLayoutForListView>
+					<com.lvdora.aqi.util.LinearLayoutForListView
+						android:id="@+id/lv_site_data"
+						android:layout_width="fill_parent"
+						android:layout_height="fill_parent"
+						android:orientation="vertical" >
+					</com.lvdora.aqi.util.LinearLayoutForListView>
+				</LinearLayout>
 
-                    <!--
-                    android:background="@android:color/white"
-                    android:cacheColorHint="#00000000"
-                    android:divider="#ffe1e1e1"
-                    android:dividerHeight="0.5dip"
-                    android:listSelector="@drawable/listview_selector"
-                    android:scrollbars="none"
-                    -->
+				<com.baidu.mapapi.map.MapView
+					android:id="@+id/bmapView1"
+					android:layout_width="fill_parent"
+					android:layout_height="200dp"
+					android:clickable="true" >
+				</com.baidu.mapapi.map.MapView>
 
-                </LinearLayout>
+				<LinearLayout
+					android:id="@+id/ll_exponent"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="@color/pollutants_bg"
+					android:gravity="center_horizontal"
+					android:orientation="horizontal" >
 
-                <com.baidu.mapapi.map.MapView
-                    android:id="@+id/bmapView1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="200dp"
-                    android:clickable="true" >
-                </com.baidu.mapapi.map.MapView>
+					<LinearLayout
+						style="@style/forecast_ll_exponent"
+						android:layout_width="0.0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_weight="1.0"
+						android:orientation="vertical" >
 
-                <LinearLayout
-                    android:id="@+id/ll_exponent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:background="@color/pollutants_bg"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal" >
+						<TextView
+							android:id="@+id/tv_PM10"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="PM10"
+							android:textColor="@android:color/black"
+							android:textSize="@dimen/pollutants_index_textsize" />
 
-                    <LinearLayout
-                        style="@style/forecast_ll_exponent"
-                        android:layout_width="0.0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.0"
-                        android:orientation="vertical" >
+						<TextView
+							android:id="@+id/tv_pm10_value"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/exponent_bg_shape_green"
+							android:gravity="center"
+							android:text="--"
+							android:textColor="@android:color/black" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_PM10"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PM10"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/pollutants_index_textsize" />
+					<LinearLayout
+						style="@style/forecast_ll_exponent"
+						android:layout_width="0.0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_weight="1.0"
+						android:orientation="vertical" >
 
-                        <TextView
-                            android:id="@+id/tv_pm10_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/exponent_bg_shape_green"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
+						<TextView
+							android:id="@+id/tv_O3"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="O₃"
+							android:textColor="@android:color/black"
+							android:textSize="@dimen/pollutants_index_textsize" />
 
-                    <LinearLayout
-                        style="@style/forecast_ll_exponent"
-                        android:layout_width="0.0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.0"
-                        android:orientation="vertical" >
+						<TextView
+							android:id="@+id/tv_O3_value"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/exponent_bg_shape_green"
+							android:gravity="center"
+							android:text="--"
+							android:textColor="@android:color/black" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_O3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="O₃"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/pollutants_index_textsize" />
+					<LinearLayout
+						style="@style/forecast_ll_exponent"
+						android:layout_width="0.0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_weight="1.0"
+						android:orientation="vertical" >
 
-                        <TextView
-                            android:id="@+id/tv_O3_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/exponent_bg_shape_green"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
+						<TextView
+							android:id="@+id/tv_SO2"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="SO₂"
+							android:textColor="@android:color/black"
+							android:textSize="@dimen/pollutants_index_textsize" />
 
-                    <LinearLayout
-                        style="@style/forecast_ll_exponent"
-                        android:layout_width="0.0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.0"
-                        android:orientation="vertical" >
+						<TextView
+							android:id="@+id/tv_SO2_value"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/exponent_bg_shape_green"
+							android:gravity="center"
+							android:text="--"
+							android:textColor="@android:color/black" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_SO2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="SO₂"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/pollutants_index_textsize" />
+					<LinearLayout
+						style="@style/forecast_ll_exponent"
+						android:layout_width="0.0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_weight="1.0"
+						android:orientation="vertical" >
 
-                        <TextView
-                            android:id="@+id/tv_SO2_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/exponent_bg_shape_green"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
+						<TextView
+							android:id="@+id/tv_NO2"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="NO₂"
+							android:textColor="@android:color/black"
+							android:textSize="@dimen/pollutants_index_textsize" />
 
-                    <LinearLayout
-                        style="@style/forecast_ll_exponent"
-                        android:layout_width="0.0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.0"
-                        android:orientation="vertical" >
+						<TextView
+							android:id="@+id/tv_NO2_value"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/exponent_bg_shape_green"
+							android:gravity="center"
+							android:text="--"
+							android:textColor="@android:color/black" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_NO2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NO₂"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/pollutants_index_textsize" />
+					<LinearLayout
+						style="@style/forecast_ll_exponent"
+						android:layout_width="0.0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_weight="1.0"
+						android:orientation="vertical" >
 
-                        <TextView
-                            android:id="@+id/tv_NO2_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/exponent_bg_shape_green"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
+						<TextView
+							android:id="@+id/tv_CO"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="CO"
+							android:textColor="@android:color/black"
+							android:textSize="@dimen/pollutants_index_textsize" />
 
-                    <LinearLayout
-                        style="@style/forecast_ll_exponent"
-                        android:layout_width="0.0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.0"
-                        android:orientation="vertical" >
+						<TextView
+							android:id="@+id/tv_CO_value"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/exponent_bg_shape_green"
+							android:gravity="center"
+							android:text="--"
+							android:textColor="@android:color/black" />
+					</LinearLayout>
+				</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_CO"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="CO"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/pollutants_index_textsize" />
+<!--
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:background="@color/transparentblack"
+					android:orientation="vertical" >
 
-                        <TextView
-                            android:id="@+id/tv_CO_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/exponent_bg_shape_green"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
-                </LinearLayout>
-                <!--
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/transparentblack"
-                    android:orientation="vertical" >
+					<LinearLayout
+						android:id="@+id/day"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="40dp"
+						android:orientation="horizontal"
+						android:textColor="#FFFFFF" >
 
-                    <LinearLayout
-                        android:id="@+id/day"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
-                        android:orientation="horizontal"
-                        android:textColor="#FFFFFF" >
+						<TextView
+							android:id="@+id/day1"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="周日 "
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/day1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="周日 "
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/day2"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="周一 "
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/day2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="周一 "
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/day3"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="周二 "
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/day3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="周二 "
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/day4"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="周三 "
+							android:textColor="#FFFFFF" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/day4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="周三 "
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
+					<LinearLayout
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:layout_below="@+id/day"
+						android:background="@drawable/shiline"
+						android:focusable="false"
+						android:focusableInTouchMode="false" />
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/day"
-                        android:background="@drawable/shiline"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false" />
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:orientation="vertical" >
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+						<com.lvdora.aqi.util.TrendView
+							android:id="@+id/trendView"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content" >
+						</com.lvdora.aqi.util.TrendView>
+					</LinearLayout>
 
-                        <com.lvdora.aqi.util.TrendView
-                            android:id="@+id/trendView"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content" >
-                        </com.lvdora.aqi.util.TrendView>
-                    </LinearLayout>
+					<LinearLayout
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:background="@drawable/shiline"
+						android:focusable="false"
+						android:focusableInTouchMode="false" />
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/shiline"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false" />
+					<LinearLayout
+						android:id="@+id/weather"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:orientation="horizontal" >
 
-                    <LinearLayout
-                        android:id="@+id/weather"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
+						<TextView
+							android:id="@+id/weather1"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="晴"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/weather1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="晴"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/weather2"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="晴"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/weather2"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="晴"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/weather3"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="晴"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/weather3"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="晴"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/weather4"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="晴"
+							android:textColor="#FFFFFF" />
+					</LinearLayout>
 
-                        <TextView
-                            android:id="@+id/weather4"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="晴"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
+					<LinearLayout
+						android:id="@+id/date"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_alignParentBottom="true"
+						android:layout_marginBottom="20dp"
+						android:orientation="horizontal"
+						android:textColor="#FFFFFF" >
 
-                    <LinearLayout
-                        android:id="@+id/date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="20dp"
-                        android:orientation="horizontal"
-                        android:textColor="#FFFFFF" >
+						<TextView
+							android:id="@+id/seventime"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="01/24"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/seventime"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="01/24"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/seventime"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="01/24"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/seventime"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="01/24"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/seventime"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="01/24"
+							android:textColor="#FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/seventime"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="01/24"
-                            android:textColor="#FFFFFF" />
+						<TextView
+							android:id="@+id/seventime"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:gravity="center_horizontal"
+							android:text="01/24"
+							android:textColor="#FFFFFF" />
+					</LinearLayout>
+				</LinearLayout>
+				-->
+				<!--
+					 <LinearLayout
+					android:id="@+id/ll_pm"
+					android:layout_width="fill_parent"
+					android:layout_height="fill_parent"
+					android:background="#fff6f7fb"
+					android:gravity="center"
+					android:visibility="invisible" >
 
-                        <TextView
-                            android:id="@+id/seventime"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="01/24"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
-                </LinearLayout>
-                -->
-                <!--
-                     <LinearLayout
-                    android:id="@+id/ll_pm"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="#fff6f7fb"
-                    android:gravity="center"
-                    android:visibility="invisible" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20.0dip"
-                        android:text="无站点信息，该市未开展PM2.5监测！"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp" />
-                </LinearLayout>
-                -->
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="20.0dip"
+						android:text="无站点信息，该市未开展PM2.5监测！"
+						android:textColor="@android:color/black"
+						android:textSize="20sp" />
+				</LinearLayout>
+				-->
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
 
 </LinearLayout>

@@ -16,10 +16,9 @@ import com.lvdora.aqi.R;
 import com.lvdora.aqi.adapter.WeatherForecastAdapter;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.CityAqi;
+import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.DataTool;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
-import com.lvdora.aqi.util.ScreenManager;
 import com.lvdora.aqi.util.ShareTool;
 
 public class WeatherForecast extends Activity implements OnClickListener {
@@ -47,8 +46,10 @@ public class WeatherForecast extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.weather_detail);
-		ExitTool.activityList.add(WeatherForecast.this);
-		ScreenManager.getScreenManager().pushActivity(this);
+		
+		// 当前页面加入activity管理模块
+		ModuleActivitiesManager.getActivitiesStack().push(this);
+		
 		cityId = getIntent().getIntExtra("cityId", 0);
 		
 		backImageBtn =(ImageView) findViewById(R.id.devices_back_btn);

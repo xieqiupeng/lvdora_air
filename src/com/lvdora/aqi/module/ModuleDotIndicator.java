@@ -12,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 /**
- * 给任意一个activity添加页面白点指示器
+ * 解决问题：给任意一个activity添加页面白点指示器
  * 
+ * @1
+ * @2
  * @author xqp
  * 
  */

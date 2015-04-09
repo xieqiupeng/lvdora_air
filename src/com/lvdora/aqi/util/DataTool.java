@@ -44,6 +44,56 @@ public class DataTool {
 	// 城市总数
 	public static int count_city = 0;
 
+	/**
+	 * 在SD卡下创建根文件夹
+	 */
+	public static void createSDCardDir() {
+
+		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+
+			// 创建一个文件夹对象，赋值为外部存储器的目录
+			File sdcardDir = Environment.getExternalStorageDirectory();
+
+			// 得到一个路径，内容是sdcard的文件夹路径和名字
+			String path = sdcardDir.getPath() + "/lvdora";
+
+			File path1 = new File(path);
+
+			if (!path1.exists()) {
+				// 若不存在，创建目录，可以在应用启动的时候创建
+				path1.mkdirs();
+			}
+		}
+
+		else {
+			return;
+		}
+	}
+
+	/**
+	 * 相对路径转为绝对路径
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static String createFileDir(String filePath) {
+		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+			// 创建一个文件夹对象，赋值为外部存储器的目录
+			File sdcardDir = Environment.getExternalStorageDirectory();
+			// 得到一个路径，内容是sdcard的文件夹路径和名字
+			String appPath = sdcardDir.getPath() + "/lvdora";
+			// 绝对路径
+			File jdpath = new File(appPath + "/" + filePath);
+			if (!jdpath.exists()) {
+				// 若不存在，创建目录，可以在应用启动的时候创建
+				jdpath.mkdirs();
+			}
+			return jdpath.getPath();
+		} else {
+			return "";
+		}
+	}
+
 	// getCityAqi
 	public static CityAqi getCityAqi(String jsonData, int cityId, int order) {
 
@@ -230,21 +280,6 @@ public class DataTool {
 
 	}
 
-	public static String CityRankList2String(List<CityRank> cityRankList) throws IOException {
-		// 实例化一个ByteArrayOutputStream对象，用来装载压缩后的字节文件。
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		// 然后将得到的字符数据装载到ObjectOutputStream
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-		// writeObject 方法负责写入特定类的对象的状态，以便相应的 readObject 方法可以还原它
-		objectOutputStream.writeObject(cityRankList);
-		// 最后，用Base64.encode将字节文件转换成Base64编码保存在String中
-		String cityListString = new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
-		// 关闭objectOutputStream
-		objectOutputStream.close();
-		return cityListString;
-
-	}
-
 	public static List<CityRank> getCityRank(Context context, String jsonData) {
 
 		List<CityRank> listRank = new ArrayList<CityRank>();
@@ -286,16 +321,6 @@ public class DataTool {
 
 	}
 
-	public static List<CityRank> String2CityRankList(String cityListString) throws StreamCorruptedException,
-			IOException, ClassNotFoundException {
-		byte[] mobileBytes = Base64.decode(cityListString.getBytes(), Base64.DEFAULT);
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mobileBytes);
-		ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-		List<CityRank> cityList = (List<CityRank>) objectInputStream.readObject();
-		objectInputStream.close();
-		return cityList;
-	}
-
 	public static List<Map<String, Object>> getRankData(String jsonStr, String index, boolean flag) {
 
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -304,7 +329,7 @@ public class DataTool {
 
 		try {
 
-			cityRankList = sortCityRankList(DataTool.String2CityRankList(jsonStr), index, flag);
+			cityRankList = sortCityRankList(EnAndDecryption.String2CityRankList(jsonStr), index, flag);
 			// 根据参数type排序
 			int ranking = 0;// 相同数据的次数
 			CityRank cityPro = null;
@@ -602,6 +627,7 @@ public class DataTool {
 	 * @param cityAqiDB
 	 */
 	public static void getAqiData(List<City> citys, final CityAqiDao cityAqiDB) {
+		Log.w("DataTool", "getAqiData " + cityAqiDB.getCount());
 		cityAqiDB.deleteAll();
 		for (final City city : citys) {
 			AsyncHttpClient client = new AsyncHttpClient();
@@ -736,7 +762,7 @@ public class DataTool {
 				String mapPopupJson;
 				try {
 					cityRankList = DataTool.getCityRank(context.getApplicationContext(), result);
-					cityRankJson = DataTool.CityRankList2String(cityRankList);
+					cityRankJson = EnAndDecryption.CityRankList2String(cityRankList);
 					/*
 					 * mPopupList =
 					 * DataTool.getMapPopup(context.getApplicationContext(),
@@ -824,56 +850,6 @@ public class DataTool {
 		});
 	}
 
-	/**
-	 * 在SD卡下创建根文件夹
-	 */
-	public static void createSDCardDir() {
-
-		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-
-			// 创建一个文件夹对象，赋值为外部存储器的目录
-			File sdcardDir = Environment.getExternalStorageDirectory();
-
-			// 得到一个路径，内容是sdcard的文件夹路径和名字
-			String path = sdcardDir.getPath() + "/lvdora";
-
-			File path1 = new File(path);
-
-			if (!path1.exists()) {
-				// 若不存在，创建目录，可以在应用启动的时候创建
-				path1.mkdirs();
-			}
-		}
-
-		else {
-			return;
-		}
-	}
-
-	/**
-	 * 相对路径转为绝对路径
-	 * 
-	 * @param filePath
-	 * @return
-	 */
-	public static String createFileDir(String filePath) {
-		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-			// 创建一个文件夹对象，赋值为外部存储器的目录
-			File sdcardDir = Environment.getExternalStorageDirectory();
-			// 得到一个路径，内容是sdcard的文件夹路径和名字
-			String appPath = sdcardDir.getPath() + "/lvdora";
-			// 绝对路径
-			File jdpath = new File(appPath + "/" + filePath);
-			if (!jdpath.exists()) {
-				// 若不存在，创建目录，可以在应用启动的时候创建
-				jdpath.mkdirs();
-			}
-			return jdpath.getPath();
-		} else {
-			return "";
-		}
-	}
-
 	public static void getForcastData() {
 		String rootPath = DataTool.createFileDir("Download");
 		NetworkTool.downloadFile(Constant.HAZESPREADFORECAST_URL, rootPath, "spread.html");
@@ -885,71 +861,6 @@ public class DataTool {
 		NetworkTool.downloadFile(Constant.ABOUT_LOGO, rootPath, "ic_launcher.png");
 		NetworkTool.downloadFile(Constant.ABOUT_CODE, rootPath, "code.jpg");
 		NetworkTool.downloadFile(Constant.ABOUT_URL, rootPath, "about.html");
-	}
-
-	public static String mapSiteList2String(List<MapSite> mapSiteList) throws Exception {
-		// 实例化一个ByteArrayOutputStream对象，用来装载压缩后的字节文件。
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		// 然后将得到的字符数据装载到ObjectOutputStream
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-		// writeObject 方法负责写入特定类的对象的状态，以便相应的 readObject 方法可以还原它
-		objectOutputStream.writeObject(mapSiteList);
-		// 最后，用Base64.encode将字节文件转换成Base64编码保存在String中
-		String mapSiteListString = new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
-		// 关闭objectOutputStream
-		objectOutputStream.close();
-		return mapSiteListString;
-
-	}
-
-	public static List<MapSite> String2MapSiteList(String mapSiteListString) throws Exception {
-		byte[] mobileBytes = Base64.decode(mapSiteListString.getBytes(), Base64.DEFAULT);
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mobileBytes);
-		ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-		List<MapSite> mapSiteList = (List<MapSite>) objectInputStream.readObject();
-		objectInputStream.close();
-		return mapSiteList;
-	}
-
-	public static String SpitList2String(List<SpitContent> spitList) throws Exception {
-		// 实例化一个ByteArrayOutputStream对象，用来装载压缩后的字节文件。
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		// 然后将得到的字符数据装载到ObjectOutputStream
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-		// writeObject 方法负责写入特定类的对象的状态，以便相应的 readObject 方法可以还原它
-		objectOutputStream.writeObject(spitList);
-		// 最后，用Base64.encode将字节文件转换成Base64编码保存在String中
-		String spitListString = new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
-		// 关闭objectOutputStream
-		objectOutputStream.close();
-		return spitListString;
-
-	}
-
-	/*
-	 * public static String spitContentList2String(List<SpitContent>
-	 * spitContentList) throws Exception { //
-	 * 实例化一个ByteArrayOutputStream对象，用来装载压缩后的字节文件。 ByteArrayOutputStream
-	 * byteArrayOutputStream = new ByteArrayOutputStream(); //
-	 * 然后将得到的字符数据装载到ObjectOutputStream ObjectOutputStream objectOutputStream =
-	 * new ObjectOutputStream( byteArrayOutputStream); // writeObject
-	 * 方法负责写入特定类的对象的状态，以便相应的 readObject 方法可以还原它
-	 * objectOutputStream.writeObject(spitContentList); //
-	 * 最后，用Base64.encode将字节文件转换成Base64编码保存在String中 String spitContentListString
-	 * = new String(Base64.encode( byteArrayOutputStream.toByteArray(),
-	 * Base64.DEFAULT)); // 关闭objectOutputStream objectOutputStream.close();
-	 * return spitContentListString;
-	 * 
-	 * }
-	 */
-
-	public static List<SpitContent> String2SpitContentList(String spitContentListString) throws Exception {
-		byte[] mobileBytes = Base64.decode(spitContentListString.getBytes(), Base64.DEFAULT);
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(mobileBytes);
-		ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-		List<SpitContent> spitContentList = (List<SpitContent>) objectInputStream.readObject();
-		objectInputStream.close();
-		return spitContentList;
 	}
 
 	/**
@@ -984,7 +895,7 @@ public class DataTool {
 						spitList.add(content);
 					}
 					// Log.e("aqi", "spitList:"+spitList);
-					spitContentString = DataTool.SpitList2String(spitList);
+					spitContentString = EnAndDecryption.SpitList2String(spitList);
 					// Log.e("aqi", "spitContentString:"+spitContentString);
 
 					sp = context.getSharedPreferences("spitdata", 0);
@@ -1043,7 +954,7 @@ public class DataTool {
 						spitList.add(content);
 					}
 					// Log.e("aqi", "spitList:"+spitList);
-					spitContentString = DataTool.SpitList2String(spitList);
+					spitContentString = EnAndDecryption.SpitList2String(spitList);
 					// Log.e("aqi", "spitContentString:"+spitContentString);
 
 					sp = context.getSharedPreferences("spitdata", 0);

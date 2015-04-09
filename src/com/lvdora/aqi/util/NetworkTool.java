@@ -14,40 +14,112 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.view.CitySelectorActivity;
+import com.lvdora.aqi.view.LogoActivity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
 public class NetworkTool {
+
 	/**
-	 * 判断网络是否连接
+	 * 是否连接网络
 	 * 
-	 * @param context
-	 * @return
+	 * @true 已连接
+	 * @false 未连接
+	 */
+	public static boolean NETWORK_CONNECTION = false;
+
+	private static Context context;
+
+	public NetworkTool(Context context) {
+		this.context = context;
+	}
+
+	/*
+	 * 判断网络是否连接
 	 */
 	public static boolean isNetworkConnected(Context context) {
 		if (context != null) {
-			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-			if (mNetworkInfo != null) {
-				return mNetworkInfo.isAvailable();
+			ConnectivityManager cm;
+			cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+			if (networkInfo != null) {
+				NETWORK_CONNECTION = true;
+				return networkInfo.isAvailable();
 			}
 		}
+		NETWORK_CONNECTION = false;
 		return false;
+	}
+
+	/*
+	 * 判断网络是否连接
+	 */
+	public void isNetworkConnected() {
+		ConnectivityManager cm;
+		cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		if (networkInfo != null) {
+			NETWORK_CONNECTION = true;
+		}
+		NETWORK_CONNECTION = false;
 	}
 
 	/*
 	 * 提示网络错误
 	 */
-	public static boolean toastNetWork(Context context) {
-		if (!NetworkTool.isNetworkConnected(context)) {
+	public void toastNetworkDisconnection(Context context) {
+		isNetworkConnected();
+		if (!NETWORK_CONNECTION) {
 			Toast.makeText(context, R.string.network_error, Toast.LENGTH_SHORT).show();
-			return true;
 		}
-		return false;
+	}
+
+	/*
+	 * 网络设置提示
+	 */
+	public void alertWiFiConnection(final Activity activity) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		builder.setTitle("网络设置提示");
+		builder.setMessage("网络连接不可用,是否进行设置?");
+		// 点击确定
+		builder.setPositiveButton("设置", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// 进入wifi设置
+				Intent intent = new Intent();
+				// 判断手机系统的版本 即API大于10 就是3.0或以上版本
+				if (android.os.Build.VERSION.SDK_INT > 10) {
+					intent.setAction(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+				}
+				//
+				else {
+					String arg0 = "com.android.settings";
+					String arg1 = "com.android.settings.WirelessSettings";
+					ComponentName name = new ComponentName(arg0, arg1);
+					intent.setComponent(name);
+					intent.setAction("android.intent.action.VIEW");
+				}
+				activity.startActivity(intent);
+				activity.finish();
+			}
+		});
+		// 点击取消
+		builder.setNegativeButton("取消", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				ExitTool.exit();
+			}
+		});
+		builder.show();
 	}
 
 	/**

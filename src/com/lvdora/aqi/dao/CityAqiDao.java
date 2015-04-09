@@ -40,7 +40,7 @@ public class CityAqiDao {
 	public void closeAll() {
 		db.close();
 		dbHelper.close();
-		
+
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class CityAqiDao {
 	public void deleteAll() {
 		db.delete(TB_NAME, null, null);
 	}
-	
+
 	/**
 	 * 通过cityid删除某一条数据
 	 * 
@@ -186,8 +186,8 @@ public class CityAqiDao {
 		cursor.close();
 		return cityAqi;
 	}
-	
-	public CityAqi selectAqiByOrder(int cityOrder){
+
+	public CityAqi selectAqiByOrder(int cityOrder) {
 		String sql = " select * from " + TB_NAME + " where " + CityAqi.ORDER + " = ?; ";
 		String[] para = { String.valueOf(cityOrder) };
 		Cursor cursor = this.selectBySql(sql, para);
@@ -341,6 +341,8 @@ public class CityAqiDao {
 		for (CityAqi cityAqi : cityAqis) {
 			this.saveData(cityAqi);
 		}
+		Log.e("CityAqiDao", "" + this.getCount());
+		db.setTransactionSuccessful();
 		db.endTransaction();
 	}
 
