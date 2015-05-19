@@ -9,7 +9,6 @@ import android.widget.ImageView;
 
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.module.ModuleActivitiesManager;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.WebViewContentClient;
 
 public class AirQualityStandardsActivity extends Activity {

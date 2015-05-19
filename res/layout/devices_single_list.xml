@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/device_listview"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dip"
+    android:background="@color/white" >
+
+    <ListView
+        android:id="@+id/device_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="@android:color/white"
+        android:divider="#ffe1e1e1"
+        android:dividerHeight="0dip"
+        android:listSelector="@drawable/listview_selector" />
+
+</RelativeLayout>

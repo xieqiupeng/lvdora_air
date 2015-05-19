@@ -26,7 +26,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/settings_tabcontent_more_all_title_bg" >
 
         <WebView

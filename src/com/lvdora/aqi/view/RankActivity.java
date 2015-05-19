@@ -1,8 +1,10 @@
 package com.lvdora.aqi.view;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,9 +32,16 @@ import com.lvdora.aqi.util.NetworkTool;
 import com.lvdora.aqi.util.ShareTool;
 import com.lvdora.aqi.util.UpdateTool;
 
+/**
+ * 排行榜
+ * 
+ * @author xqp
+ */
 public class RankActivity extends Fragment {
 
 	private ListView listCity;
+	private TextView themeRank;
+	private TextView viewAqi;
 	private TextView aqiText;
 	private TextView pm25Text;
 	private TextView pm10Text;
@@ -40,13 +49,19 @@ public class RankActivity extends Fragment {
 	private TextView so2Text;
 	private TextView no2Text;
 	private TextView rank;
+	private ImageButton rankNext;
 
 	private ImageButton shareImageBtn;// 分享按钮
 	protected ImageButton updateImageBtn;// 更新按钮
 	public ImageView updateImageAnimation;// 更新动画
 	private ImageButton rankSelect;// 排名顺序按钮
 	private List<CityRank> cityRankList;
+	//
+	private String[] indexTypes;
 	private String indexType;
+	// indexTypes 的位数
+	private int indexFlag;
+
 	private String cityRankJson;
 	private boolean rankUpOrDown;
 	private SharedPreferences sp;
@@ -70,6 +85,14 @@ public class RankActivity extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rankView = inflater.inflate(R.layout.rank_activity, container, false);
+		//
+		themeRank = (TextView) rankView.findViewById(R.id.theme_rank);
+		//
+		viewAqi = (TextView) rankView.findViewById(R.id.lv_air_aqi);
+
+		//
+		rankNext = (ImageButton) rankView.findViewById(R.id.rank_next);
+		rankNext.setOnClickListener(new changeListener());
 		aqiText = (TextView) rankView.findViewById(R.id.air_aqi);
 		aqiText.setOnTouchListener(new touchListener());
 		pm25Text = (TextView) rankView.findViewById(R.id.air_pm25);
@@ -78,10 +101,11 @@ public class RankActivity extends Fragment {
 		pm10Text.setOnTouchListener(new touchListener());
 		so2Text = (TextView) rankView.findViewById(R.id.air_so2);
 		so2Text.setOnTouchListener(new touchListener());
-		o3Text = (TextView) rankView.findViewById(R.id.air_o3);
-		o3Text.setOnTouchListener(new touchListener());
 		no2Text = (TextView) rankView.findViewById(R.id.air_no2);
 		no2Text.setOnTouchListener(new touchListener());
+		o3Text = (TextView) rankView.findViewById(R.id.air_o3);
+		o3Text.setOnTouchListener(new touchListener());
+		//
 		rank = (TextView) rankView.findViewById(R.id.rank_update_time);
 		listCity = (ListView) rankView.findViewById(R.id.air_rank_city);
 		shareImageBtn = (ImageButton) rankView.findViewById(R.id.share_image);
@@ -144,20 +168,15 @@ public class RankActivity extends Fragment {
 		o3Text.setBackgroundColor(0x00ffffff);
 		no2Text.setBackgroundColor(0x00ffffff);
 
-		aqiText.setTextColor(getResources().getColor(R.color.black));
-		pm25Text.setTextColor(getResources().getColor(R.color.black));
-		pm10Text.setTextColor(getResources().getColor(R.color.black));
-		so2Text.setTextColor(getResources().getColor(R.color.black));
-		o3Text.setTextColor(getResources().getColor(R.color.black));
-		no2Text.setTextColor(getResources().getColor(R.color.black));
+		aqiText.setTextColor(getResources().getColor(R.color.white));
+		pm25Text.setTextColor(getResources().getColor(R.color.white));
+		pm10Text.setTextColor(getResources().getColor(R.color.white));
+		so2Text.setTextColor(getResources().getColor(R.color.white));
+		o3Text.setTextColor(getResources().getColor(R.color.white));
+		no2Text.setTextColor(getResources().getColor(R.color.white));
 	}
 
-	/**
-	 * 刷新数据
-	 * 
-	 * @author admin
-	 * 
-	 */
+	// 刷新数据
 	public void OnFlush() {
 		if (NetworkTool.isNetworkConnected(getActivity())) {
 			AsyncHttpClient client = new AsyncHttpClient();
@@ -227,6 +246,8 @@ public class RankActivity extends Fragment {
 				}
 				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
 				break;
+			case R.id.rank_next:
+				changeExponent(++indexFlag);
 			default:
 				break;
 			}
@@ -241,66 +262,70 @@ public class RankActivity extends Fragment {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (v.getId()) {
-
 			case R.id.air_aqi:
-				clearAllTextColors();
-				aqiText.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				aqiText.setTextColor(getResources().getColor(R.color.white));
-				indexType = "aqi_aqi";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				aqiText.setClickable(false);
+				// TODO
+				indexFlag = 0;
+				changeExponent(indexFlag);
 				break;
 			case R.id.air_pm25:
-				clearAllTextColors();
-				pm25Text.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				pm25Text.setTextColor(getResources().getColor(R.color.white));
-				indexType = "pm25";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				pm25Text.setClickable(false);
+				indexFlag = 1;
+				changeExponent(indexFlag);
 				break;
 			case R.id.air_pm10:
-				clearAllTextColors();
-				pm10Text.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				pm10Text.setTextColor(getResources().getColor(R.color.white));
-				indexType = "pm10";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				pm10Text.setClickable(false);
+				indexFlag = 2;
+				changeExponent(indexFlag);
 				break;
 			case R.id.air_so2:
-				clearAllTextColors();
-				so2Text.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				so2Text.setTextColor(getResources().getColor(R.color.white));
-				indexType = "so2";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				so2Text.setClickable(false);
+				indexFlag = 3;
+				changeExponent(indexFlag);
 				break;
 			case R.id.air_no2:
-				clearAllTextColors();
-				no2Text.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				no2Text.setTextColor(getResources().getColor(R.color.white));
-				indexType = "no2";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				no2Text.setClickable(false);
+				indexFlag = 4;
+				changeExponent(indexFlag);
 				break;
 			case R.id.air_o3:
-				clearAllTextColors();
-				o3Text.setBackgroundResource(R.drawable.aqi_index_shape_green);
-				o3Text.setTextColor(getResources().getColor(R.color.white));
-				indexType = "o3";
-				DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
-				changeAllState();
-				o3Text.setClickable(false);
+				indexFlag = 5;
+				changeExponent(indexFlag);
 				break;
 			default:
 				break;
 			}
 			return true;
 		}
+	}
+
+	// 改变展示项目
+	private void changeExponent(int indexFlag) {
+		indexFlag = indexFlag % 6;
+		Log.v("RankActivity", indexFlag+"");
+		// get view
+		Map<Integer, TextView> mapView = new HashMap<Integer, TextView>();
+		mapView.put(0, aqiText);
+		mapView.put(1, pm25Text);
+		mapView.put(2, pm10Text);
+		mapView.put(3, so2Text);
+		mapView.put(4, no2Text);
+		mapView.put(5, o3Text);
+		TextView view = mapView.get(indexFlag);
+		// get indexType
+		indexTypes = new String[] { "aqi_aqi", "pm25", "pm10", "so2", "no2", "o3" };
+		indexType = indexTypes[indexFlag];
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(indexTypes[0], "AQI");
+		map.put(indexTypes[1], "PM2.5");
+		map.put(indexTypes[2], "PM10");
+		map.put(indexTypes[3], "SO₂");
+		map.put(indexTypes[4], "NO₂");
+		map.put(indexTypes[5], "O₃");
+
+		clearAllTextColors();
+		view.setBackgroundResource(R.drawable.aqi_index_shape_green);
+		view.setTextColor(getResources().getColor(R.color.white));
+		DataTool.showRankData(cityRankJson, indexType, rankUpOrDown, getActivity(), listCity);
+		changeAllState();
+		themeRank.setText(map.get(indexType));
+		viewAqi.setText(map.get(indexType));
+		view.setClickable(false);
 	}
 
 }

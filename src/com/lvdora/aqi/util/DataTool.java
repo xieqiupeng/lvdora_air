@@ -1,12 +1,12 @@
 package com.lvdora.aqi.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+//import java.io.ByteArrayInputStream;
+//import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
+//import java.io.IOException;
+//import java.io.ObjectInputStream;
+//import java.io.ObjectOutputStream;
+//import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
+//import android.util.Log;
 import android.widget.ListView;
 
 import com.lvdora.aqi.adapter.RankAdapter;
@@ -30,6 +31,7 @@ import com.lvdora.aqi.dao.CityDao;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CityRank;
+import com.lvdora.aqi.model.Device;
 import com.lvdora.aqi.model.MapPopup;
 import com.lvdora.aqi.model.MapSite;
 import com.lvdora.aqi.model.SiteAqi;
@@ -50,22 +52,16 @@ public class DataTool {
 	public static void createSDCardDir() {
 
 		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-
 			// 创建一个文件夹对象，赋值为外部存储器的目录
 			File sdcardDir = Environment.getExternalStorageDirectory();
-
 			// 得到一个路径，内容是sdcard的文件夹路径和名字
 			String path = sdcardDir.getPath() + "/lvdora";
-
 			File path1 = new File(path);
-
 			if (!path1.exists()) {
 				// 若不存在，创建目录，可以在应用启动的时候创建
 				path1.mkdirs();
 			}
-		}
-
-		else {
+		} else {
 			return;
 		}
 	}
@@ -96,18 +92,16 @@ public class DataTool {
 
 	// getCityAqi
 	public static CityAqi getCityAqi(String jsonData, int cityId, int order) {
-
 		CityAqi cityAqi = new CityAqi();
 		cityAqi.setCityId(cityId);
 		cityAqi.setOrder(order);
-
 		try {
 			JSONObject obj = new JSONObject(jsonData);
 			cityAqi.setCityName(obj.getString("city").trim());
 			// 提取aqi信息
 			JSONObject airObj = obj.getJSONObject("aqi");
 			obj.keys();
-			Log.e("DataTool", "jsonToCityAqi " + airObj + ">>>>");
+			// Log.e("DataTool", "jsonToCityAqi " + airObj + ">>>>");
 			if (airObj != null) {
 				cityAqi.setAqi(GradeTool.getValue(airObj.getString("aqi_aqi")));
 				cityAqi.setPm25(GradeTool.getValue(airObj.getString("pm25")));
@@ -203,43 +197,35 @@ public class DataTool {
 	}
 
 	/**
+	 * 获取aqi信息
 	 * 
-	 * @param jsonData
-	 *            取得的站点信息
-	 * @param cityId
-	 *            城市id
+	 * @param citys
+	 * @param cityAqiDB
 	 */
-	public static List<SiteAqi> getSiteAqi(String jsonData, int cityId) {
+	public static void getAqiData(List<City> citys, final CityAqiDao cityAqiDB) {
+		// Log.w("DataTool", "getAqiData " + cityAqiDB.getCount());
+		cityAqiDB.deleteAll();
+		for (final City city : citys) {
+			AsyncHttpClient client = new AsyncHttpClient();
+			client.get(Constant.SERVER_URL + city.getId(), new AsyncHttpResponseHandler() {
+				@Override
+				public void onStart() {
+				}
 
-		if (jsonData.toString().equals("0")) {
+				@Override
+				public void onSuccess(String result) {
+					// 取得添加城市及信息
+					CityAqi cityAqi = DataTool.getCityAqi(result, city.getId(), city.getOrder());
+					cityAqiDB.delByCityID(city.getId());
+					cityAqiDB.saveData(cityAqi);
+					count_city++;
+				}
 
-			return null;
+				@Override
+				public void onFailure(Throwable error) {
+				}
+			});
 		}
-
-		List<SiteAqi> siteAqis = new ArrayList<SiteAqi>();
-		try {
-			JSONArray array = new JSONArray(jsonData);
-			for (int i = 0; i < array.length(); i++) {
-				SiteAqi siteAqi = new SiteAqi();
-				siteAqi.setCityId(cityId);
-				JSONObject obj = array.getJSONObject(i);
-				siteAqi.setName(obj.getString("spotName"));
-				siteAqi.setAqi(obj.getString("aqi"));
-				siteAqi.setPm25(obj.getString("pm25"));
-
-				siteAqis.add(siteAqi);
-			}
-
-			return siteAqis;
-
-		} catch (JSONException e) {
-
-			e.printStackTrace();
-
-		}
-
-		return null;
-
 	}
 
 	/**
@@ -267,17 +253,11 @@ public class DataTool {
 				mapSite.setSpotLatitude(obj.getDouble("spotLatitude"));
 				mapSiteList.add(mapSite);
 			}
-
 			return mapSiteList;
-
 		} catch (JSONException e) {
-
 			e.printStackTrace();
-
 		}
-
 		return null;
-
 	}
 
 	public static List<CityRank> getCityRank(Context context, String jsonData) {
@@ -321,138 +301,122 @@ public class DataTool {
 
 	}
 
-	public static List<Map<String, Object>> getRankData(String jsonStr, String index, boolean flag) {
-
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	public static List<Map<String, String>> getRankData(String jsonStr, String index, boolean flag) {
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		List<CityRank> cityRankList = new ArrayList<CityRank>();
-		Map<String, Object> map;
+		Map<String, String> map;
 
 		try {
-
 			cityRankList = sortCityRankList(EnAndDecryption.String2CityRankList(jsonStr), index, flag);
-			// 根据参数type排序
-			int ranking = 0;// 相同数据的次数
-			CityRank cityPro = null;
-			for (int i = 0; i < cityRankList.size(); i++) {
-				map = new HashMap<String, Object>();
-				CityRank city = cityRankList.get(i);
-				if (i > 0) {
-					cityPro = cityRankList.get(i - 1);
-				}
-				if (index.equals("aqi_aqi")) {
-					if (i > 0) {
-						if (city.getAqiCalculated().equals(cityPro.getAqiCalculated())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getAqiCalculated());
-					// 各种数据均计算为AQI的值，用于背景颜色的显示
-					map.put("aqiCal", city.getAqiCalculated());
-
-				} else if (index.equals("pm25")) {
-					if (i > 0) {
-						if (city.getPm25().equals(cityPro.getPm25())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getPm25());
-					map.put("aqiCal", city.getPm25Calculated());
-
-				} else if (index.equals("pm10")) {
-					if (i > 0) {
-						if (city.getPm10().equals(cityPro.getPm10())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getPm10());
-					map.put("aqiCal", city.getPm10Calculated());
-
-				} else if (index.equals("so2")) {
-					if (i > 0) {
-						if (city.getSo2().equals(cityPro.getSo2())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getSo2());
-					map.put("aqiCal", city.getSo2Calculated());
-
-				} else if (index.equals("o3")) {
-					if (i > 0) {
-						if (city.getO3Calculated().equals(cityPro.getO3Calculated())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getO3());
-					map.put("aqiCal", city.getO3Calculated());
-
-				} else {
-					if (i > 0) {
-						if (city.getNo2().equals(cityPro.getNo2())) {
-							ranking = ranking + 1;
-							// 排名相同只第一个显示排名
-							map.put("rank", "");
-
-						} else {
-							ranking = 0;
-							map.put("rank", i + 1);
-						}
-					} else {
-						map.put("rank", i + 1);
-					}
-					map.put("aqi", city.getNo2());
-					map.put("aqiCal", city.getNo2Calculated());
-
-				}
-
-				map.put("provinceName", city.getProvinceName());
-				map.put("cityName", city.getCityName());
-				list.add(map);
-			}
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
+		// 根据参数type排序
+		int ranking = 0;// 相同数据的次数
+		CityRank cityPro = null;
+		for (int i = 0; i < cityRankList.size(); i++) {
+			map = new HashMap<String, String>();
+			CityRank city = cityRankList.get(i);
+			if (i > 0) {
+				cityPro = cityRankList.get(i - 1);
+			}
+			if (index.equals("aqi_aqi")) {
+				if (i > 0) {
+					if (city.getAqiCalculated().equals(cityPro.getAqiCalculated())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1 + "");
+				}
+				map.put("aqi", city.getAqiCalculated());
+				// 各种数据均计算为AQI的值，用于背景颜色的显示
+				map.put("aqiCal", city.getAqiCalculated());
+			} else if (index.equals("pm25")) {
+				if (i > 0) {
+					if (city.getPm25().equals(cityPro.getPm25())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1 + "");
+				}
+				map.put("aqi", city.getPm25());
+				map.put("aqiCal", city.getPm25Calculated());
+			} else if (index.equals("pm10")) {
+				if (i > 0) {
+					if (city.getPm10().equals(cityPro.getPm10())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1 + "");
+				}
+				map.put("aqi", city.getPm10());
+				map.put("aqiCal", city.getPm10Calculated());
+			} else if (index.equals("so2")) {
+				if (i > 0) {
+					if (city.getSo2().equals(cityPro.getSo2())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1 + "");
+				}
+				map.put("aqi", city.getSo2());
+				map.put("aqiCal", city.getSo2Calculated());
+			} else if (index.equals("o3")) {
+				if (i > 0) {
+					if (city.getO3Calculated().equals(cityPro.getO3Calculated())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1+"");
+				}
+				map.put("aqi", city.getO3());
+				map.put("aqiCal", city.getO3Calculated());
+			} else {
+				if (i > 0) {
+					if (city.getNo2().equals(cityPro.getNo2())) {
+						ranking = ranking + 1;
+						// 排名相同只第一个显示排名
+						map.put("rank", "");
+					} else {
+						ranking = 0;
+						map.put("rank", i + 1 + "");
+					}
+				} else {
+					map.put("rank", i + 1 + "");
+				}
+				map.put("aqi", city.getNo2());
+				map.put("aqiCal", city.getNo2Calculated());
+			}
+			map.put("provinceName", city.getProvinceName());
+			map.put("cityName", city.getCityName());
+			list.add(map);
+		}
 		return list;
-
 	}
 
 	/**
@@ -483,9 +447,7 @@ public class DataTool {
 				tag = city.getNo2();
 			}
 			if (!tag.trim().equals("--")) {
-
 				temp.add(cityList.get(i));
-
 			}
 		}
 
@@ -538,73 +500,6 @@ public class DataTool {
 	}
 
 	/**
-	 * 站点根据经纬度排序
-	 * 
-	 * @param deviceJson
-	 * @return
-	 */
-	public static List<SiteAqi> sortCitySiteList(List<SiteAqi> citySiteList, final double longitude,
-			final double latitude) throws Exception {
-
-		Collections.sort(citySiteList, new Comparator<SiteAqi>() {
-			@Override
-			public int compare(SiteAqi lhs, SiteAqi rhs) {
-				long lid = 0;
-				long rid = 0;
-				long longitude_lhs = (long) (Math.abs(Double.parseDouble(lhs.getSpotLongitude()) * 1E6 - longitude));
-				long latitude_lhs = (long) (Math.abs(Double.parseDouble(lhs.getSpotLatitude()) * 1E6 - latitude));
-				long longitude_rhs = (long) (Math.abs(Double.parseDouble(rhs.getSpotLongitude()) * 1E6 - longitude));
-				long latitude_rhs = (long) (Math.abs(Double.parseDouble(rhs.getSpotLatitude()) * 1E6 - latitude));
-
-				lid = longitude_lhs * longitude_lhs + latitude_lhs * latitude_lhs;
-				rid = longitude_rhs * longitude_rhs + latitude_rhs * latitude_rhs;
-				// Log.e("aqi", lhs.getName() +":"+lid);
-				// Log.e("aqi", rhs.getName() +":"+rid);
-				if (lid - rid >= 0) {
-					return 1;
-				} else {
-					return -1;
-				}
-
-			}
-		});
-		return new ArrayList<SiteAqi>(citySiteList);
-	}
-
-	/**
-	 * 民间设备数据
-	 * 
-	 * @param deviceJson
-	 * @return
-	 */
-	public static List<Map<String, Object>> getDeviceData(String deviceJson) {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> map;
-		try {
-			JSONArray deviceJsonArray = new JSONArray(deviceJson);
-			int kk = 0;
-			for (int i = 0; i < deviceJsonArray.length(); i++) {
-				JSONObject obj = deviceJsonArray.getJSONObject(i);
-				map = new HashMap<String, Object>();
-
-				map.put("nickname", obj.getString("nickname"));
-				map.put("address", obj.getString("address"));
-				map.put("aqi", obj.getString("aqi"));
-				map.put("pm2.5", obj.getString("pm2.5"));
-				if (obj.getString("address").indexOf("北京") != -1) {
-					list.add(kk, map);
-					kk++;
-				} else {
-					list.add(map);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	/**
 	 * 显示排名信息
 	 * 
 	 * @param cityRankJson
@@ -615,41 +510,55 @@ public class DataTool {
 	 */
 	public static void showRankData(String cityRankJson, String indexType, Boolean rankUpOrDown, Context context,
 			ListView listCity) {
-		List<Map<String, Object>> ranks = DataTool.getRankData(cityRankJson, indexType, rankUpOrDown);
+		List<Map<String, String>> ranks = DataTool.getRankData(cityRankJson, indexType, rankUpOrDown);
 		RankAdapter rankAdapter = new RankAdapter(ranks, context);
 		listCity.setAdapter(rankAdapter);
+		listCity.setSelection(rankAdapter.CURRENT_CITY_INDEX);
 	}
 
 	/**
-	 * 获取aqi信息
+	 * 排名数据
 	 * 
-	 * @param citys
-	 * @param cityAqiDB
+	 * @param context
 	 */
-	public static void getAqiData(List<City> citys, final CityAqiDao cityAqiDB) {
-		Log.w("DataTool", "getAqiData " + cityAqiDB.getCount());
-		cityAqiDB.deleteAll();
-		for (final City city : citys) {
-			AsyncHttpClient client = new AsyncHttpClient();
-			client.get(Constant.SERVER_URL + city.getId(), new AsyncHttpResponseHandler() {
-				@Override
-				public void onStart() {
-				}
+	public static void getRankJsonData(final Context context) {
+		// 获取网络数据
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.get(Constant.JSON_SERVER, new AsyncHttpResponseHandler() {
+			@Override
+			public void onStart() {
 
-				@Override
-				public void onSuccess(String result) {
-					// 取得添加城市及信息
-					CityAqi cityAqi = DataTool.getCityAqi(result, city.getId(), city.getOrder());
-					cityAqiDB.delByCityID(city.getId());
-					cityAqiDB.saveData(cityAqi);
-					count_city++;
-				}
+			}
 
-				@Override
-				public void onFailure(Throwable error) {
+			@Override
+			public void onSuccess(String result) {
+				List<CityRank> cityRankList;
+				List<MapPopup> mPopupList;
+				SharedPreferences sp;
+				String cityRankJson;
+				String mapPopupJson;
+				try {
+					cityRankList = DataTool.getCityRank(context.getApplicationContext(), result);
+					cityRankJson = EnAndDecryption.CityRankList2String(cityRankList);
+					/*
+					 * mPopupList =
+					 * DataTool.getMapPopup(context.getApplicationContext(),
+					 * result); mapPopupJson =
+					 * DataTool.MapPopupList2String(mPopupList);
+					 */
+					sp = context.getSharedPreferences("jsondata", 0);
+					sp.edit().putString("cityrankjson", cityRankJson).commit();
+					sp.edit().putString("rankjson", result).commit();
+					// sp.edit().putString("popupjson", mapPopupJson).commit();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			});
-		}
+			}
+
+			@Override
+			public void onFailure(Throwable error) {
+			}
+		});
 	}
 
 	/**
@@ -702,9 +611,7 @@ public class DataTool {
 				try {
 					JSONArray versionArray = new JSONArray(result);
 					if (versionArray.length() > 0) {
-
 						JSONObject obj = versionArray.getJSONObject(0);
-
 						sp = context.getSharedPreferences("verdata", 0);
 						sp.edit().putString("verName", obj.getString("verName")).commit();
 						// Log.e("aqi", "verName"+obj.getString("verName"));
@@ -712,9 +619,7 @@ public class DataTool {
 						sp.edit().putString("about", obj.getString("about")).commit();
 						// Log.e("aqi", obj.getString("info").toString());
 						sp.edit().putString("updatedetails", obj.getString("info").toString()).commit();
-
 						String isForce = obj.getString("isForce");
-
 						if (isForce.equals("2")) {
 							// 必须更新
 							sp.edit().putInt("isUpdate", 2).commit();
@@ -726,53 +631,6 @@ public class DataTool {
 							sp.edit().putInt("isUpdate", 0).commit();
 						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable error) {
-
-			}
-		});
-	}
-
-	/**
-	 * 排名数据
-	 * 
-	 * @param context
-	 */
-	public static void getRankJsonData(final Context context) {
-		// 获取网络数据
-		AsyncHttpClient client = new AsyncHttpClient();
-
-		client.get(Constant.JSON_SERVER, new AsyncHttpResponseHandler() {
-			@Override
-			public void onStart() {
-
-			}
-
-			@Override
-			public void onSuccess(String result) {
-				List<CityRank> cityRankList;
-				List<MapPopup> mPopupList;
-				SharedPreferences sp;
-				String cityRankJson;
-				String mapPopupJson;
-				try {
-					cityRankList = DataTool.getCityRank(context.getApplicationContext(), result);
-					cityRankJson = EnAndDecryption.CityRankList2String(cityRankList);
-					/*
-					 * mPopupList =
-					 * DataTool.getMapPopup(context.getApplicationContext(),
-					 * result); mapPopupJson =
-					 * DataTool.MapPopupList2String(mPopupList);
-					 */
-					sp = context.getSharedPreferences("jsondata", 0);
-					sp.edit().putString("cityrankjson", cityRankJson).commit();
-					sp.edit().putString("rankjson", result).commit();
-					// sp.edit().putString("popupjson", mapPopupJson).commit();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -818,13 +676,10 @@ public class DataTool {
 	 * @param context
 	 */
 	public static void getMapSiteData(final Context context) {
-
 		AsyncHttpClient client = new AsyncHttpClient();
-
 		client.get(Constant.MAP_SITE_URL, new AsyncHttpResponseHandler() {
 			@Override
 			public void onStart() {
-
 			}
 
 			@Override
@@ -832,7 +687,6 @@ public class DataTool {
 				// List<MapSite> mapSiteList;
 				SharedPreferences sp;
 				// String mapSiteJson;
-
 				try {
 					// mapSiteList = DataTool.getMapSite(result);
 					// mapSiteJson = DataTool.mapSiteList2String(mapSiteList);
@@ -845,7 +699,6 @@ public class DataTool {
 
 			@Override
 			public void onFailure(Throwable error) {
-
 			}
 		});
 	}
@@ -897,11 +750,9 @@ public class DataTool {
 					// Log.e("aqi", "spitList:"+spitList);
 					spitContentString = EnAndDecryption.SpitList2String(spitList);
 					// Log.e("aqi", "spitContentString:"+spitContentString);
-
 					sp = context.getSharedPreferences("spitdata", 0);
 					sp.edit().putString("spitjson", spitContentString).commit();
 					// Log.e("aqi", "spitContentString:"+spitContentString);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -956,11 +807,9 @@ public class DataTool {
 					// Log.e("aqi", "spitList:"+spitList);
 					spitContentString = EnAndDecryption.SpitList2String(spitList);
 					// Log.e("aqi", "spitContentString:"+spitContentString);
-
 					sp = context.getSharedPreferences("spitdata", 0);
 					sp.edit().putString("spit_" + cityId, spitContentString).commit();
 					// Log.e("aqi", "spitContentString:"+spitContentString);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -968,60 +817,71 @@ public class DataTool {
 
 			@Override
 			public void onFailure(Throwable error) {
-
 			}
 		});
 	}
 
-	public static void getSiteJson(final Context context, final int cityId) {
-
+	/**
+	 * 站点json
+	 */
+	public static void getNearestSite(final Context context, final int cityId) {
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
-
-			@Override
-			public void onStart() {
-
-			}
-
 			@Override
 			public void onSuccess(String result) {
-				List<SiteAqi> siteAqis;
-				SharedPreferences sp;
+				SharedPreferences sp = context.getSharedPreferences("sitedata", 0);
 				// 获取siteaqis
 				if (!result.toString().equals("0")) {
-					siteAqis = new ArrayList<SiteAqi>();
-					siteAqis = DataTool.getSiteAqi(result, cityId);
-					// 存入到缓存中
-					sp = context.getSharedPreferences("sitedata", 0);
+					List<SiteAqi> siteAqis = DataTool.siteResultToList(result);
 					sp.edit().putString("sites_" + cityId, EnAndDecryption.SiteList2String(siteAqis)).commit();
 				} else {
 					sp = context.getSharedPreferences("sitedata", 0);
 					sp.edit().putString("sites_" + cityId, "0").commit();
 				}
-
 			}
-
-			@Override
-			public void onFailure(Throwable error) {
-
-			}
-
 		});
-
 	}
 
-	public static List<SiteAqi> getsortsite(final Context context, final String result, final double locationLong,
+	/**
+	 * 存最近站点
+	 * 
+	 * @param context
+	 * @param cityId
+	 * @param locationLong
+	 * @param locationLat
+	 */
+	public static void getNearestSite(final Context context, final int cityId, final double locationLong,
 			final double locationLat) {
-		final List<SiteAqi> siteList = new ArrayList<SiteAqi>();
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(String result) {
+				Log.i("DataTool", "getNearestSite " + result);
+				if (result.toString().equals("0")) {
+					Log.e("DataTool", result);
+					return;
+				}
+				List<SiteAqi> siteList = siteResultToList(result);
+				List<SiteAqi> sortSiteList = DataTool.sortCitySiteList(siteList, locationLong, locationLat);
+				String sortList2String = EnAndDecryption.SiteList2String(sortSiteList);
+
+				SharedPreferences sp = context.getSharedPreferences("sortSiteData", 0);
+				sp.edit().putString("sortSiteList", sortList2String).commit();
+				sp.edit().putFloat("locationLong", (float) locationLong).commit();// 经度
+				sp.edit().putFloat("locationLat", (float) locationLat).commit();// 纬度
+			}
+		});
+	}
+
+	public static List<SiteAqi> siteResultToList(String result) {
+		if (result.toString().equals("0")) {
+			return null;
+		}
+		List<SiteAqi> siteList = new ArrayList<SiteAqi>();
 		try {
-
-			List<SiteAqi> sortSiteList;
-			SiteAqi site;
-
 			JSONArray jsonArray = new JSONArray(result);
-
 			for (int i = 0; i < jsonArray.length(); i++) {
-				site = new SiteAqi();
+				SiteAqi site = new SiteAqi();
 				JSONObject obj = jsonArray.getJSONObject(i);
 				site.setCityId(Integer.valueOf(obj.getString("cityId").toString()));
 				site.setName(obj.getString("spotName"));
@@ -1032,57 +892,147 @@ public class DataTool {
 				site.setSpotLatitude(obj.getString("latitude"));
 				siteList.add(site);
 			}
-
-			sortSiteList = DataTool.sortCitySiteList(siteList, locationLong, locationLat);
-			return sortSiteList;
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return siteList;
 	}
 
-	public static void getNearestSite(final Context context, final int cityId, final double locationLong,
-			final double locationLat) {
-		final List<SiteAqi> siteList = new ArrayList<SiteAqi>();
-		Log.e("DataTool", "requestNearestSite " + locationLong + "|" + locationLat);
-		AsyncHttpClient client = new AsyncHttpClient();
-		client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
+	/**
+	 * 根据经纬度选择最近站点
+	 * 
+	 * @param deviceJson
+	 * @return
+	 */
+	public static List<SiteAqi> sortCitySiteList(List<SiteAqi> citySiteList, final double longitude,
+			final double latitude) {
+		Collections.sort(citySiteList, new Comparator<SiteAqi>() {
 			@Override
-			public void onSuccess(String result) {
-				Log.i("DataTool", "getNearestSite " + Constant.SITE_URL + cityId);
-				try {
-
-					List<SiteAqi> sortSiteList;
-					SiteAqi site;
-					SharedPreferences sp;
-					String sortListString;
-					Log.i("DataTool", "ok:" + result);
-					JSONArray jsonArray = new JSONArray(result);
-
-					for (int i = 0; i < jsonArray.length(); i++) {
-						site = new SiteAqi();
-						JSONObject obj = jsonArray.getJSONObject(i);
-						site.setCityId(Integer.valueOf(obj.getString("cityId").toString()));
-						site.setName(obj.getString("spotName"));
-						site.setAqi(obj.getString("aqi"));
-						site.setPm25(obj.getString("pm25"));
-						site.setUpdateTime(obj.getString("pubtime"));
-						site.setSpotLongitude(obj.getString("longtitude"));
-						site.setSpotLatitude(obj.getString("latitude"));
-						siteList.add(site);
-					}
-
-					sortSiteList = DataTool.sortCitySiteList(siteList, locationLong, locationLat);
-					sortListString = EnAndDecryption.SiteList2String(sortSiteList);
-					sp = context.getSharedPreferences("sortSiteData", 0);
-					sp.edit().putString("sortSiteList", sortListString).commit();
-					sp.edit().putFloat("locationLong", (float) locationLong).commit();// 经度
-					sp.edit().putFloat("locationLat", (float) locationLat).commit();// 纬度
-					Log.e("DataTool", "sortSiteList:" + (float) locationLong);
-				} catch (Exception e) {
-					e.printStackTrace();
+			public int compare(SiteAqi lhs, SiteAqi rhs) {
+				long lid = 0;
+				long rid = 0;
+				long longitude_lhs = (long) (Math.abs(Double.parseDouble(lhs.getSpotLongitude()) * 1E6 - longitude));
+				long latitude_lhs = (long) (Math.abs(Double.parseDouble(lhs.getSpotLatitude()) * 1E6 - latitude));
+				long longitude_rhs = (long) (Math.abs(Double.parseDouble(rhs.getSpotLongitude()) * 1E6 - longitude));
+				long latitude_rhs = (long) (Math.abs(Double.parseDouble(rhs.getSpotLatitude()) * 1E6 - latitude));
+				lid = longitude_lhs * longitude_lhs + latitude_lhs * latitude_lhs;
+				rid = longitude_rhs * longitude_rhs + latitude_rhs * latitude_rhs;
+				if (lid - rid >= 0) {
+					return 1;
+				} else {
+					return -1;
 				}
 			}
 		});
+		return new ArrayList<SiteAqi>(citySiteList);
+	}
+
+	/**
+	 * 民间设备数据
+	 * 
+	 * @param deviceJson
+	 * @return
+	 */
+	public static List<Device> deviceJson2List(String deviceJson) {
+		List<Device> list = new ArrayList<Device>();
+		try {
+			JSONObject deviceJA = new JSONObject(deviceJson);
+			// public
+			JSONArray publicPlace = deviceJA.getJSONArray("public");
+			Log.d("DataTool", "public " + publicPlace.length());
+			for (int i = 0; i < publicPlace.length(); i++) {
+				// single
+				JSONObject site = publicPlace.getJSONObject(i);
+				Device device = new Device();
+				Log.d("DataTool", site.getString("nickname"));
+				// important
+				device.setDevId(site.getString("devId"));
+				device.setAqi(site.getString("aqi"));
+				device.setNickname(site.getString("nickname"));
+				device.setPm25(site.getString("pm25"));
+				// unimportant
+				device.setCityId(site.getString("cityId"));
+				device.setCountyId(site.getString("countyId"));
+				device.setCountyName(site.getString("countyName"));
+				device.setStyle(site.getString("style"));
+				device.setCountySort(site.getString("countySort"));
+				device.setAddress(site.getString("address"));
+				Log.d("DataTool", device.toString());
+				list.add(device);
+			}
+
+			// private
+			JSONArray privateShare = deviceJA.getJSONArray("private");
+			for (int i = 0; i < privateShare.length(); i++) {
+				// single
+				JSONObject site = privateShare.getJSONObject(i);
+				Device device = new Device();
+				// important
+				device.setDevId(site.getString("devId"));
+				device.setAqi(site.getString("aqi"));
+				device.setNickname(site.getString("nickname"));
+				device.setPm25(site.getString("pm25"));
+				// unimportant
+				device.setCityId(site.getString("cityId"));
+				device.setCountyId(site.getString("countyId"));
+				device.setCountyName(site.getString("countyName"));
+				device.setStyle(site.getString("style"));
+				device.setCountySort(site.getString("countySort"));
+				device.setAddress(site.getString("address"));
+				list.add(device);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		Log.d("DataTool", list.toString());
+		return list;
+	}
+
+	/**
+	 * 
+	 * @param deviceJson
+	 * @return
+	 */
+	public static List<Map<String, Object>> getChildList(String deviceJson) {
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		JSONObject deviceJA;
+		try {
+			deviceJA = new JSONObject(deviceJson);
+			Log.v("DataTool", deviceJA.length() + "");
+			// public
+			JSONArray publicPlace = deviceJA.getJSONArray("public");
+			for (int i = 0; i < publicPlace.length(); i++) {
+				JSONArray county = publicPlace.getJSONArray(i);
+				for (int j = 0; i < county.length(); i++) {
+					JSONObject site = county.getJSONObject(j);
+					Device device = new Device();
+					device.setAqi(site.getString("aqi"));
+					device.setNickname(site.getString("nickname"));
+					device.setPm25(site.getString("pm2.5"));
+					device.setDevId(site.getString("devId"));
+					map.put(device.getDevId(), device);
+				}
+				list.add(map);
+			}
+			// private
+			JSONArray privateShare = deviceJA.getJSONArray("private");
+			for (int i = 0; i < privateShare.length(); i++) {
+				JSONArray county = privateShare.getJSONArray(i);
+				for (int j = 0; i < county.length(); i++) {
+					JSONObject site = county.getJSONObject(j);
+					Device device = new Device();
+					device.setAqi(site.getString("aqi"));
+					device.setNickname(site.getString("nickname"));
+					device.setPm25(site.getString("pm2.5"));
+					device.setDevId(site.getString("devId"));
+					map.put(device.getDevId(), device);
+				}
+				list.add(map);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }

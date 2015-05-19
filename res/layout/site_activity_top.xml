@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/top_bar_bg"
+    android:gravity="center" >
+
+    <ImageView
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="0.0dip"
+        android:clickable="true"
+        android:src="@drawable/life_top_back_selector" />
+
+    <ImageButton
+        android:id="@+id/share_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="50.0dp"
+        android:background="@drawable/share_bg_selector"
+        android:contentDescription="分享按钮"
+        android:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/update_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="2.0dp"
+        android:background="@drawable/main_update_icon_selector"
+        android:contentDescription="刷新按钮"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/update_image_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="2.0dip"
+        android:scaleType="center"
+        android:src="@drawable/main_progress_update"
+        android:visibility="gone" />
+
+    <!--
+        android:ellipsize="end"
+        android:maxEms="6"
+    -->
+
+    <TextView
+        android:id="@+id/city_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:padding="0.0dip"
+        android:shadowColor="#b2000000"
+        android:shadowDx="2.0"
+        android:shadowDy="2.0"
+        android:shadowRadius="1.0"
+        android:singleLine="true"
+        android:text="@string/all_site_data"
+        android:textColor="@android:color/white"
+        android:textSize="18.0sp" />
+
+</RelativeLayout>

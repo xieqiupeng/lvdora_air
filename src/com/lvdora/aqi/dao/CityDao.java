@@ -23,6 +23,8 @@ public class CityDao {
 	private static final String DB_PATH = "/data/data/com.lvdora.aqi/city.db";
 	private Context context;
 
+	private String TABLE_NAME = "aqi_cities";
+
 	public CityDao(Context paramContext) {
 		this.setContext(paramContext);
 	}
@@ -177,6 +179,14 @@ public class CityDao {
 		}
 		return null;
 
+	}
+
+	public String selectNameById(String cityId) {
+		SQLiteDatabase db = getCityDB();
+		String sql = "SELECT name FROM aqi_cities where id =" + cityId;
+		Cursor cursor = db.rawQuery(sql, null);
+		cursor.moveToFirst();
+		return cursor.getString(0);
 	}
 
 	/**

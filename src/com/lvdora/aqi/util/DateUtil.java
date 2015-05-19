@@ -1,6 +1,5 @@
 package com.lvdora.aqi.util;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
@@ -8,7 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-@SuppressLint("SimpleDateFormat")
+/**
+ * 时间工具
+ * 
+ * @author xqp
+ */
 public class DateUtil {
 
 	private static String mYear;
@@ -87,7 +90,6 @@ public class DateUtil {
 		default:
 			break;
 		}
-
 		return "周" + mWeek;
 	}
 
@@ -121,95 +123,86 @@ public class DateUtil {
 		case 7:
 			mWeek = "一";
 			break;
+		default:
+			break;
+		}
+		return "周" + mWeek;
+	}
 
+	// 获取第四天星期
+	public static String getThirdTomorrowWeek() {
+
+		final Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+		int iWeek = c.get(Calendar.DAY_OF_WEEK);
+		mWeek = String.valueOf(iWeek);
+
+		switch (iWeek) {
+
+		case 1:
+			mWeek = "三";
+			break;
+		case 2:
+			mWeek = "四";
+			break;
+		case 3:
+			mWeek = "五";
+			break;
+		case 4:
+			mWeek = "六";
+			break;
+		case 5:
+			mWeek = "日";
+			break;
+		case 6:
+			mWeek = "一";
+			break;
+		case 7:
+			mWeek = "二";
+			break;
 		default:
 			break;
 		}
 
 		return "周" + mWeek;
 	}
-	
-	// 获取第四天星期
-		public static String getThirdTomorrowWeek() {
 
-			final Calendar c = Calendar.getInstance();
-			c.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-			int iWeek = c.get(Calendar.DAY_OF_WEEK);
-			mWeek = String.valueOf(iWeek);
-
-			switch (iWeek) {
-
-			case 1:
-				mWeek = "三";
-				break;
-			case 2:
-				mWeek = "四";
-				break;
-			case 3:
-				mWeek = "五";
-				break;
-			case 4:
-				mWeek = "六";
-				break;
-			case 5:
-				mWeek = "日";
-				break;
-			case 6:
-				mWeek = "一";
-				break;
-			case 7:
-				mWeek = "二";
-				break;
-			default:
-				break;
-			}
-
-			return "周" + mWeek;
+	// 获取第五天星期
+	public static String getFourthTomorrowWeek() {
+		final Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+		int iWeek = c.get(Calendar.DAY_OF_WEEK);
+		mWeek = String.valueOf(iWeek);
+		switch (iWeek) {
+		case 1:
+			mWeek = "四";
+			break;
+		case 2:
+			mWeek = "五";
+			break;
+		case 3:
+			mWeek = "六";
+			break;
+		case 4:
+			mWeek = "日";
+			break;
+		case 5:
+			mWeek = "一";
+			break;
+		case 6:
+			mWeek = "二";
+			break;
+		case 7:
+			mWeek = "三";
+			break;
+		default:
+			break;
 		}
-
-		// 获取第五天星期
-		public static String getFourthTomorrowWeek() {
-
-			final Calendar c = Calendar.getInstance();
-			c.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
-			int iWeek = c.get(Calendar.DAY_OF_WEEK);
-			mWeek = String.valueOf(iWeek);
-
-			switch (iWeek) {
-
-			case 1:
-				mWeek = "四";
-				break;
-			case 2:
-				mWeek = "五";
-				break;
-			case 3:
-				mWeek = "六";
-				break;
-			case 4:
-				mWeek = "日";
-				break;
-			case 5:
-				mWeek = "一";
-				break;
-			case 6:
-				mWeek = "二";
-				break;
-			case 7:
-				mWeek = "三";
-				break;
-			default:
-				break;
-			}
-
-			return "周" + mWeek;
-		}
-
+		return "周" + mWeek;
+	}
 
 	/**
-	 *  将字符串转为时间戳
-	 * @param timeString
-	 * @return
+	 * 将字符串转为时间戳
 	 */
 	public static Long getTime(String timeString) {
 		// String millisecond = null;
@@ -228,14 +221,13 @@ public class DateUtil {
 	}
 
 	/**
-	 *  将时间戳转为字符串
-	 * @author admin
-	 *
+	 * 将时间戳转为字符串
 	 */
 	public static String Date2String(Date today) {
-		//Date today = new Date();
+		// Date today = new Date();
 		SimpleDateFormat f = new SimpleDateFormat("yyyy年MM月dd日hh:mm:ss");
 		String time = f.format(today);
 		return time;
 	}
+
 }

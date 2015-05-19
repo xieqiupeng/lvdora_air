@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/device_title"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="#A9DBFD"
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_weight="1"
+        android:text="站点"
+        android:textColor="#ff005FC6"
+        android:textSize="18sp" />
+
+    <include
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        layout="@layout/devices_three_exponent" />
+</LinearLayout>

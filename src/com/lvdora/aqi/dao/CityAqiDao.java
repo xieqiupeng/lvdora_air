@@ -3,21 +3,22 @@ package com.lvdora.aqi.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.integer;
+//import android.R.integer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+//import android.util.Log;
 
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.guid.sqllite.SqliteHelper;
 
 /**
- * cityaqi表的数据操作 DB lvdora.db Table cityaqi
+ * cityaqi表的数据操作 
+ * @1 DB lvdora.db 
+ * @2 Table cityaqi
  * 
  * @author Eagle,XQP
- * 
  */
 public class CityAqiDao {
 	// 数据库名称
@@ -341,7 +342,7 @@ public class CityAqiDao {
 		for (CityAqi cityAqi : cityAqis) {
 			this.saveData(cityAqi);
 		}
-		Log.e("CityAqiDao", "" + this.getCount());
+//		Log.e("CityAqiDao", "" + this.getCount());
 		db.setTransactionSuccessful();
 		db.endTransaction();
 	}

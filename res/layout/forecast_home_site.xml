@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/location_site"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/nearnest_site_name"
+        style="@style/forecast_message_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="西直门"
+        android:textColor="@android:color/white" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/nearnest_site_aqi"
+            style="@style/ExponentTextStyle"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/aqi_index_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textSize="35sp" />
+
+        <TextView
+            android:id="@+id/nearnest_site_aqi_grade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="6.0dip"
+            android:layout_marginTop="25dp"
+            android:layout_toRightOf="@id/nearnest_site_aqi"
+            android:gravity="center"
+            android:text="严重污染"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_site_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="5.0dip" >
+
+        <TextView
+            android:id="@+id/nearnest_site_pm25"
+            style="@style/forecast_message_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PM2.5 : 188" />
+
+        <TextView
+            android:id="@+id/nearnest_site_update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="6.0dip"
+            android:gravity="center"
+            android:text="更新   09:00"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lvdora.aqi.model.City;
-import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
 
 import android.app.Activity;

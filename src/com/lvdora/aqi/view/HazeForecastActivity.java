@@ -271,7 +271,6 @@ public class HazeForecastActivity extends Fragment implements OnClickListener {
 	 * @param webView
 	 * @param url
 	 */
-	@SuppressWarnings("deprecation")
 	@SuppressLint("SetJavaScriptEnabled")
 	public void setWebViewContent(WebView webView, String url) {
 

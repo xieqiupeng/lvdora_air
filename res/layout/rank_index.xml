@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/air_aqi"
+        android:layout_width="0.0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="AQI"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/air_pm25"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="PM2.5"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/air_pm10"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="PM10"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/air_so2"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="SO₂"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/air_no2"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="NO₂"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/air_o3"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="O₃"
+        android:textColor="#ffffff"
+        android:textSize="17.0sp" />
+</LinearLayout>

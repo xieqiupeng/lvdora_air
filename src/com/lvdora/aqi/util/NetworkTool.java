@@ -11,11 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
 import com.lvdora.aqi.R;
-import com.lvdora.aqi.view.CitySelectorActivity;
-import com.lvdora.aqi.view.LogoActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -39,6 +35,7 @@ public class NetworkTool {
 
 	private static Context context;
 
+	@SuppressWarnings("static-access")
 	public NetworkTool(Context context) {
 		this.context = context;
 	}

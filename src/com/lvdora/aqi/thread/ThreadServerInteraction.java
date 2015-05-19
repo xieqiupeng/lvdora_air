@@ -12,10 +12,12 @@ import android.util.Log;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
+import com.lvdora.aqi.module.MyApplication;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
 import com.lvdora.aqi.util.DataTool;
+import com.lvdora.aqi.view.HomeActivity;
 
 /**
  * 服务器交互类
@@ -23,7 +25,7 @@ import com.lvdora.aqi.util.DataTool;
  * @1 根据城市id和order得到aqi数据
  * @2 存到数据库
  */
-public class ThreadServerInteraction {
+public class ThreadServerInteraction extends Thread {
 
 	private Context context;
 	private List<CityAqi> Aqis;
@@ -50,7 +52,7 @@ public class ThreadServerInteraction {
 		}
 		citysID = citysID.substring(0, citysID.length() - 1);
 		citysOrder = citysOrder.substring(0, citysOrder.length() - 1);
-		Log.v("ModuleServerInteraction", citysID + " " + citysOrder);
+		Log.e("ThreadServerInteraction", citysID + " " + citysOrder);
 		sendRequestForAqis(citysOrder, citysID);
 	}
 
@@ -58,7 +60,7 @@ public class ThreadServerInteraction {
 	 * 多条请求
 	 */
 	public void sendRequestForAqis(final String citysOrder, final String citysID) {
-		Log.d("ModuleServerInteraction", citysID + citysOrder + " " + Aqis.toString() + " " + Aqis.size() + " "
+		Log.i("ThreadServerInteraction", citysID + citysOrder + " " + Aqis.toString() + " " + Aqis.size() + " "
 				+ requestNum);
 		String param = Constant.AQIS_URL + citysID;
 		// java转义
@@ -70,8 +72,7 @@ public class ThreadServerInteraction {
 		client.get(param, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String result) {
-				Log.v("ModuleServerIneteraction", "ServerSendBack " + Aqis.size() + " " + Aqis.toString() + " "
-						+ result);
+				Log.e("ThreadServerInteraction", "ServerSendBack " + Aqis.size() + " " + Aqis.toString() + " " + result);
 				JSONObject obj;
 				try {
 					obj = new JSONObject(result);
@@ -83,12 +84,19 @@ public class ThreadServerInteraction {
 						Aqis.add(cityAqi);
 					}
 				} catch (JSONException e) {
-
 				}
-				Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
+				Log.w("ThreadServerInteraction", "pageCallBack " + Aqis.toString());
 				callBackLogo();
 			}
 		});
+	}
+
+	// 回调界面函数
+	public void callBackLogo() {
+		CityAqiDao cityAqiDao = new CityAqiDao(context, "");
+		cityAqiDao.insertCityAqiList(Aqis);
+		Log.w("ThreadServerInteraction", "insertListTODB " + cityAqiDao.getCount());
+		sendMessage();
 	}
 
 	/**
@@ -104,30 +112,35 @@ public class ThreadServerInteraction {
 	 * 单条请求
 	 */
 	public void sendRequestForAqi(final int cityOrder, final int cityID) {
-		Log.d("ModuleServerIneteraction", cityID + " " + Aqis.toString() + Aqis.size());
+		Log.i("ThreadServerInteraction", cityID + " " + Aqis.toString() + Aqis.size());
 		String param = Constant.SERVER_URL + cityID;
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.get(param, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(String result) {
-				Log.w("ModuleServerIneteraction", "ServerSendBack " + result);
+				Log.w("ThreadServerInteraction", "ServerSendBack " + result);
 				// 得到单条城市天气信息
 				CityAqi cityAqi = DataTool.getCityAqi(result, cityID, cityOrder);
-				callBackHome();
+				callBackHome(cityAqi, cityID);
 			}
 		});
 	}
 
 	// 回调界面函数
-	public void callBackLogo() {
+	public void callBackHome(CityAqi cityAqi, int id) {
 		CityAqiDao cityAqiDao = new CityAqiDao(context, "");
-		cityAqiDao.insertCityAqiList(Aqis);
-		Log.d("ModuleServerIneteraction", "" + cityAqiDao.getCount());
+		cityAqiDao.updateSingleById(cityAqi, id);
+		Log.i("ThreadServerInteraction", "updateSingleTODB " + cityAqiDao.getCount());
+		sendMessage();
 	}
 
-	// 回调界面函数
-	public void callBackHome() {
-		Log.d("ModuleServerIneteraction", "pageCallBack " + Aqis.toString());
-
+	private void sendMessage() {
+		MyApplication app = MyApplication.getInstance();
+		if (app.getHandler() != null) {
+			app.getHandler().sendEmptyMessage(HomeActivity.UPDATE_UI);
+			Log.w("ThreadServerInteraction", "sendUPdateUI " + app.getHandler() + "");
+		} else {
+			Log.w("ThreadServerInteraction", "notUPdateUI " + app.getHandler() + "");
+		}
 	}
 }

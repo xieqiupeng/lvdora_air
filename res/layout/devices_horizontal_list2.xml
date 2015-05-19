@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list2"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="#3F85CA"
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <!-- 浅蓝背景 #A9DBFD -->
+
+    <TextView
+        android:id="@+id/public_place"
+        android:layout_width="0.5dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.50"
+        android:gravity="center_horizontal"
+        android:text="公开场所"
+        android:textColor="#8FB9E1"
+        android:textSize="18.0sp" />
+    <!-- 深蓝字体 #0a65c8 -->
+
+
+    <TextView
+        android:id="@+id/private_share"
+        android:layout_width="0.5dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.50"
+        android:gravity="center_horizontal"
+        android:text="个人分享"
+        android:textColor="#8FB9E1"
+        android:textSize="18.0sp" />
+
+</LinearLayout>

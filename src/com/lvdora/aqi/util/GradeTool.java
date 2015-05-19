@@ -29,7 +29,6 @@ public class GradeTool {
 
 	//
 	public static int getMapColorByIndex(String index) {
-
 		if ("--".equals(index.trim()) || "".equals(index.trim())) {
 			return R.color.green;
 		}
@@ -84,7 +83,11 @@ public class GradeTool {
 		return R.color.white;
 	}
 
-	//
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public static int getColorByIndex(String index) {
 		if ("--".equals(index.trim()) || "".equals(index.trim())) {
 			return R.drawable.exponent_bg_shape_green;
@@ -105,7 +108,11 @@ public class GradeTool {
 		return R.drawable.exponent_bg_shape_hered;
 	}
 
-	//
+	/**
+	 * 
+	 * @param grade
+	 * @return
+	 */
 	public static int getWeatherIcon(String grade) {
 		if (grade.equals("d00")) {
 			return R.drawable.weathericon_graph_01;
@@ -188,7 +195,11 @@ public class GradeTool {
 		return R.string.yanzhong_weather_description;
 	}
 
-	//
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public static String getValue(String value) {
 		if (value != null) {
 			return value;

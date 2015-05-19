@@ -13,6 +13,7 @@ import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.module.ModuleSPIO;
 import com.lvdora.aqi.thread.ThreadServerInteraction;
 import com.lvdora.aqi.util.EnAndDecryption;
+import com.lvdora.aqi.view.HomeActivity;
 
 /**
  * 城市映射：保存6个定位、收藏城市的映射
@@ -42,6 +43,7 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 			instance = new CitysIndexMap(activity);
 		}
 		Log.v("CitysIndexMap", "getInstance " + instance.size() + " " + instance.toString());
+		Log.v("CitysIndexMap", "currentIndexOut " + HomeActivity.currentIndexOut);
 		// 返回实例
 		return instance;
 	}
@@ -77,10 +79,12 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 				return key;
 			}
 		}
-		return -1;
+		return 0;
 	}
 
-	// 取缓存
+	/**
+	 *  取缓存
+	 */
 	public void spToMap() {
 		instance.clear();
 		SharedPreferences sp = activity.getSharedPreferences("citydata", 0);
@@ -91,7 +95,9 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 		ModuleSPIO.showCityData(activity, "HomeActivity loadSP");
 	}
 
-	// 存缓存
+	/**
+	 *  存缓存
+	 */
 	public void mapToSP() {
 		SharedPreferences spCitys = activity.getSharedPreferences("citydata", 0);
 		// 遍历所有key取value存入sp
@@ -105,7 +111,9 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 		spLocation.edit().putInt("cityId", cityId).commit();
 	}
 
-	// 城市列表存缓存
+	/**
+	 *  城市列表存缓存
+	 */
 	public void listToSP() {
 		Log.v("CitysIndexMap", "listToSP " + instance.toString());
 		List<City> citys = new ArrayList<City>();
@@ -121,7 +129,9 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 		ModuleSPIO.showCityData(activity, "CitysIndexMap");
 	}
 
-	// 存库
+	/**
+	 *  存库
+	 */
 	public void sendRequestForAqis() {
 		ThreadServerInteraction msi = new ThreadServerInteraction(activity);
 		for (int i = 0; i < instance.size(); i++) {
@@ -134,24 +144,31 @@ public class CitysIndexMap extends TreeMap<Integer, Integer> {
 		//
 		sendRequestForAqis();
 		// 存库
-		CityAqiDao cityAqiDao = new CityAqiDao(activity, "");
+//		CityAqiDao cityAqiDao = new CityAqiDao(activity, "");
 		// cityAqiDao.insertCityAqiList();
 	}
 
-	// 存库
+	/**
+	 *  存库
+	 * @param cityAqis
+	 */
 	public void mapToDB(List<CityAqi> cityAqis) {
 		CityAqiDao cityAqiDao = new CityAqiDao(activity, "");
 		cityAqiDao.insertCityAqiList(cityAqis);
 	}
 
-	// 取库
+	/**
+	 * 取库
+	 */
 	public void dbToMap() {
 		CityAqiDao cityAqiDao = new CityAqiDao(activity, "");
 		List<CityAqi> aqis = cityAqiDao.getAll();
 	}
 
 	/*-------------------下边是在不改旧有逻辑的情况下的修改方法------------------------------*/
-	// 查询特定的值
+	/**
+	 * 查询特定的值
+	 */ 
 	private boolean test(Integer selectByKey, Integer selectByValue) {
 		for (Integer key : instance.keySet()) {
 			if (key == selectByKey) {

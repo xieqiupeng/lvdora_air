@@ -19,7 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
-import android.util.Log;
+//import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +45,6 @@ import com.baidu.platform.comapi.basestruct.GeoPoint;
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.adapter.SiteAdapter;
 import com.lvdora.aqi.baidu.BMapUtil;
-import com.lvdora.aqi.baidu.MyApplication;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.dao.CityDao;
 import com.lvdora.aqi.model.CityAqi;
@@ -53,6 +52,7 @@ import com.lvdora.aqi.model.Longlati;
 import com.lvdora.aqi.model.MapPopup;
 import com.lvdora.aqi.model.SiteAqi;
 import com.lvdora.aqi.module.ModuleActivitiesManager;
+import com.lvdora.aqi.module.MyApplication;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
@@ -65,6 +65,12 @@ import com.lvdora.aqi.util.ShareTool;
 import com.lvdora.aqi.util.TrendView;
 import com.lvdora.aqi.util.UpdateTool;
 
+/**
+ * 官方站点实时数据
+ * 
+ * @author xqp
+ * 
+ */
 public class SiteActivity extends Activity implements OnClickListener {
 
 	private static final int UPDATE_UI = 1;
@@ -144,82 +150,41 @@ public class SiteActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.site_activity);
-
 		// 当前页面加入activity管理模块
 		ModuleActivitiesManager.getActivitiesStack().push(this);
-
-		// TODO 取得屏幕的分辨率
+		// 取得屏幕的分辨率
 		dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
-
 		// 初始化界面
 		findView();
+		
 		// 接受参数
 		cityId = getIntent().getIntExtra("cityId", 0);
 		cityName = getIntent().getStringExtra("cityName");
 		order = getIntent().getIntExtra("order", 0);
+//		Log.d("SiteActivity", cityId + cityName + order);
+
 		// 数据库
 		cityAqis = new ArrayList<CityAqi>();
 		cityAqiDB = new CityAqiDao(SiteActivity.this, "");
-		cityDB = new CityDao(SiteActivity.this);
 		// 查询aqis
 		cityAqis = cityAqiDB.getAll();
+
+		cityDB = new CityDao(SiteActivity.this);
+
 		// sp缓存
 		sp = getSharedPreferences("jsondata", 0);
 		mapJson = sp.getString("rankjson", "");
 		mapSiteJson = sp.getString("mapsitejson", "");
 
-		/*
-		 * 使用地图sdk前需先初始化BMapManager. BMapManager是全局的，可为多个MapView共用，它需要地图模块创建前创建，
-		 * 并在地图地图模块销毁后销毁，只要还有地图模块在使用，BMapManager就不应该销毁
-		 */
-		MyApplication app = (MyApplication) getApplication();
-		if (app.mBMapManager == null) {
-			app.mBMapManager = new BMapManager(this);
-			// 如果BMapManager没有初始化则初始化BMapManager
-			app.mBMapManager.init(new MyApplication.MyGeneralListener());
-		}
-
-		// 获取地图控制器
-		mMapController = mMapView.getController();
-		// 设置地图是否响应点击事件
-		mMapController.enableClick(true);
-		// 设置地图缩放级别
-		mMapController.setZoom(11);
-		// 显示内置缩放控件
-		// mMapView.setBuiltInZoomControls(true);
-		// 设定类型
-		type = "captial";
-		// 初始化显示省会城市信息
-		initOverlay();
-		// 设定地图中心点
-		Longlati ll = cityDB.getJWById(cityId);
-		GeoPoint p;
-		if (ll != null) {
-			p = new GeoPoint((int) (ll.getLati() * 1E6), (int) (ll.getLongi() * 1E6));
-		} else {
-			p = new GeoPoint((int) (116.45999 * 1E6), (int) (39.919998 * 1E6));
-		}
-		mMapController.setCenter(p);
-		// 地图状态监听
-		MapStatusChange();
-		mMapView.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					scrollView.requestDisallowInterceptTouchEvent(false);
-				} else {
-					scrollView.requestDisallowInterceptTouchEvent(true);
-				}
-				return false;
-			}
-		});
-
+		mapControl();
+		updateData();
+		
 		if (!NetworkTool.isNetworkConnected(SiteActivity.this)) {
 			initViewData();
 		} else {
 			// 判断获取数据结束
+			
 			pDialog = ProgressDialog.show(SiteActivity.this, "", getResources().getString(R.string.getting_data));
 			pDialog.show();
 			new Thread(new Runnable() {
@@ -250,12 +215,67 @@ public class SiteActivity extends Activity implements OnClickListener {
 		mMapView.onSaveInstanceState(outState);
 	}
 
+	@Override
+	public void onPause() {
+		mMapView.onPause();
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		mMapView.onResume();
+		super.onResume();
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		autoFlush();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.update_image:
+			if (!NetworkTool.isNetworkConnected(SiteActivity.this)) {
+				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+			} else {
+				//更新数据
+				updateData();
+			}
+			break;
+		// 返回
+		case R.id.back_btn:
+			finish();
+			break;
+		// 分享
+		case R.id.share_image:
+			if (NetworkTool.isNetworkConnected(SiteActivity.this)) {
+				String filePath = DataTool.createFileDir("Share_Imgs");
+				String tmpTime = String.valueOf(System.currentTimeMillis());
+				String path = filePath + "/" + getResources().getString(R.string.app_name) + "_站点详情_" + tmpTime
+						+ ".png";
+				ShareTool.shoot(path, SiteActivity.this);
+				ShareTool.SharePhoto(path, "绿朵分享", "站点信息", SiteActivity.this);
+			} else {
+				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		mMapView.destroy();
+		super.onDestroy();
+	}
+
 	// 初始化数据
 	private void initViewData() {
-		//
 		sp = getSharedPreferences("sitedata", 0);
 		siteStr = sp.getString("sites_" + cityId, "");
-		//
 		if (!siteStr.equals("0")) {
 			siteAqis = new ArrayList<SiteAqi>();
 			try {
@@ -274,10 +294,62 @@ public class SiteActivity extends Activity implements OnClickListener {
 			}
 		} else {
 			site_layout.setVisibility(View.GONE);
-			// noSite_layout.setVisibility(View.VISIBLE);
 		}
 		// 刷新指数
 		updateExponent();
+	}
+
+	private void updateData() {
+//		Log.d("SiteActivity", "updateData " + cityId);
+		if (NetworkTool.isNetworkConnected(this)) {
+			AsyncHttpClient client = new AsyncHttpClient();
+			client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
+				@Override
+				public void onStart() {
+					UpdateTool.startLoadingAnim(SiteActivity.this, updateDataBtn, updateAnimImg);
+				}
+
+				@Override
+				public void onSuccess(String result) {
+					siteAqis = DataTool.siteResultToList(result);
+					sp = getSharedPreferences("sitedata", 0);
+					try {
+						sp.edit().putString("sites_" + cityId, EnAndDecryption.SiteList2String(siteAqis)).commit();
+						initViewData();
+						UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+				}
+			});
+
+			client.get(Constant.JSON_SERVER, new AsyncHttpResponseHandler() {
+				@Override
+				public void onStart() {
+				}
+
+				@Override
+				public void onSuccess(String result) {
+					mapJson = result;
+					sp = getSharedPreferences("jsondata", 0);
+					sp.edit().putString("rankjson", mapJson).commit();
+					initOverlay();
+					// 更新按钮的动画结束旋转
+					UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
+				}
+
+				@Override
+				public void onFailure(Throwable error) {
+				}
+			});
+		} else {
+			Toast.makeText(this, R.string.network_error, 0).show();
+		}
+
 	}
 
 	/**
@@ -365,9 +437,7 @@ public class SiteActivity extends Activity implements OnClickListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		showMap();
-
 	}
 
 	private void initAllOverlay() {
@@ -472,7 +542,6 @@ public class SiteActivity extends Activity implements OnClickListener {
 			pa.setTextSize(dm.widthPixels / 25);
 			canvasTemp.drawText(value, (float) (dm.widthPixels / 10 - pa.measureText(value)) / 2, dm.widthPixels / 20,
 					pa);// 文字居中显示
-			@SuppressWarnings("deprecation")
 			Drawable drawable = new BitmapDrawable(bmp);
 			item.setMarker(drawable);
 		} catch (Exception e) {
@@ -484,23 +553,16 @@ public class SiteActivity extends Activity implements OnClickListener {
 	 * 显示地图
 	 */
 	public void showMap() {
-		/**
-		 * 将overlay 添加至MapView中
-		 */
+		// 将overlay 添加至MapView中
 		mMapView.getOverlays().add(mOverlay);
 
-		/**
-		 * 刷新地图
-		 */
+		// 刷新地图
 		mMapView.refresh();
 
-		/**
-		 * 自定义view
-		 */
+		// 自定义view
 		createView();
-		/**
-		 * 创建popupoverlay
-		 */
+
+		// 创建popupoverlay
 		PopupClick();
 	}
 
@@ -543,14 +605,12 @@ public class SiteActivity extends Activity implements OnClickListener {
 	 * 
 	 */
 	public class MyOverlay extends ItemizedOverlay {
-
 		public MyOverlay(Drawable defaultMarker, MapView mapView) {
 			super(defaultMarker, mapView);
 		}
 
 		@Override
 		public boolean onTap(int index) {
-
 			if (type.equals("cities")) {
 				try {
 					JSONArray array = new JSONArray(mapJson);
@@ -607,141 +667,9 @@ public class SiteActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.update_image:
-			if (!NetworkTool.isNetworkConnected(SiteActivity.this)) {
-				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
-			} else {
-				// 更新数据
-				updateData();
-			}
-			break;
-		// 返回
-		case R.id.back_btn:
-			finish();
-			break;
-		// 分享
-		case R.id.share_image:
-			if (NetworkTool.isNetworkConnected(SiteActivity.this)) {
-				String filePath = DataTool.createFileDir("Share_Imgs");
-				String tmpTime = String.valueOf(System.currentTimeMillis());
-				String path = filePath + "/" + getResources().getString(R.string.app_name) + "_站点详情_" + tmpTime
-						+ ".png";
-				ShareTool.shoot(path, SiteActivity.this);
-				ShareTool.SharePhoto(path, "绿朵分享", "站点信息", SiteActivity.this);
-			} else {
-				Toast.makeText(SiteActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
-			}
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void updateData() {
-		if (NetworkTool.isNetworkConnected(this)) {
-			AsyncHttpClient client = new AsyncHttpClient();
-
-			client.get(Constant.SITE_URL + cityId, new AsyncHttpResponseHandler() {
-				@Override
-				public void onStart() {
-					UpdateTool.startLoadingAnim(SiteActivity.this, updateDataBtn, updateAnimImg);
-				}
-
-				@Override
-				public void onSuccess(String result) {
-					siteAqis = DataTool.getSiteAqi(result, cityId);
-					sp = getSharedPreferences("sitedata", 0);
-					try {
-						sp.edit().putString("sites_" + cityId, EnAndDecryption.SiteList2String(siteAqis)).commit();
-						initViewData();
-						UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-				@Override
-				public void onFailure(Throwable error) {
-				}
-			});
-
-			client.get(Constant.SERVER_URL + cityId, new AsyncHttpResponseHandler() {
-				@Override
-				public void onStart() {
-				}
-
-				@Override
-				public void onSuccess(String result) {
-
-					// 取得添加城市及信息
-					CityAqi cityAqi = DataTool.getCityAqi(result, cityId, 0);
-					cityAqiDB.delByOrder(0);
-					cityAqiDB.saveData(cityAqi);
-
-				}
-
-				@Override
-				public void onFailure(Throwable error) {
-
-				}
-			});
-
-			client.get(Constant.JSON_SERVER, new AsyncHttpResponseHandler() {
-				@Override
-				public void onStart() {
-
-				}
-
-				@Override
-				public void onSuccess(String result) {
-					mapJson = result;
-					sp = getSharedPreferences("jsondata", 0);
-					sp.edit().putString("rankjson", mapJson).commit();
-					initOverlay();
-					// 更新按钮的动画结束旋转
-					UpdateTool.stopLoadingAnim(updateDataBtn, updateAnimImg);
-				}
-
-				@Override
-				public void onFailure(Throwable error) {
-				}
-			});
-		} else {
-			Toast.makeText(this, R.string.network_error, 0).show();
-		}
-
-	}
-
-	@Override
-	public void onPause() {
-		mMapView.onPause();
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		mMapView.onResume();
-		super.onResume();
-	}
-
-	@Override
-	public void onDestroy() {
-		mMapView.destroy();
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-		autoFlush();
-	}
-
+	// 自动刷新
 	private void autoFlush() {
 		long nowTime = System.currentTimeMillis();
-
 		sp = getSharedPreferences("autoupdate", 0);
 		long loadTime = sp.getLong("siteloadTime", 0);
 		if (nowTime - loadTime > Constant.UPDATE_TIME) {
@@ -777,12 +705,12 @@ public class SiteActivity extends Activity implements OnClickListener {
 
 	private void findView() {
 		//
-		this.site_layout = (LinearLayout) findViewById(R.id.site_layout);
-		/* this.noSite_layout = (LinearLayout) findViewById(R.id.ll_pm); */
+		this.site_layout = (LinearLayout) findViewById(R.id.item2);
+		// this.noSite_layout = (LinearLayout) findViewById(R.id.ll_pm);
 		this.backBtn = (ImageView) findViewById(R.id.back_btn);
 		this.backBtn.setOnClickListener(this);
 		this.cityNameText = (TextView) findViewById(R.id.city_name_text);
-		this.cityNameText.setText(cityName);
+		// this.cityNameText.setText(cityName);
 		this.updateDataBtn = (ImageButton) findViewById(R.id.update_image);
 		this.updateDataBtn.setOnClickListener(this);
 		this.shareBtn = (ImageView) findViewById(R.id.share_image);
@@ -803,4 +731,49 @@ public class SiteActivity extends Activity implements OnClickListener {
 
 	}
 
+	// 使用地图sdk前需先初始化BMapManager. BMapManager是全局的，可为多个MapView共用，它需要地图模块创建前创建，
+	// 并在地图地图模块销毁后销毁，只要还有地图模块在使用，BMapManager就不应该销毁
+	private void mapControl() {
+		MyApplication app = (MyApplication) getApplication();
+		if (app.mBMapManager == null) {
+			app.mBMapManager = new BMapManager(this);
+			// 如果BMapManager没有初始化则初始化BMapManager
+			app.mBMapManager.init(new MyApplication.MyGeneralListener());
+		}
+
+		// 获取地图控制器
+		mMapController = mMapView.getController();
+		// 设置地图是否响应点击事件
+		mMapController.enableClick(true);
+		// 设置地图缩放级别
+		mMapController.setZoom(11);
+		// 显示内置缩放控件
+		// mMapView.setBuiltInZoomControls(true);
+		// 设定类型
+		type = "captial";
+		// 初始化显示省会城市信息
+		initOverlay();
+		// 设定地图中心点
+		Longlati ll = cityDB.getJWById(cityId);
+		GeoPoint p;
+		if (ll != null) {
+			p = new GeoPoint((int) (ll.getLati() * 1E6), (int) (ll.getLongi() * 1E6));
+		} else {
+			p = new GeoPoint((int) (116.45999 * 1E6), (int) (39.919998 * 1E6));
+		}
+		mMapController.setCenter(p);
+		// 地图状态监听
+		MapStatusChange();
+		mMapView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					scrollView.requestDisallowInterceptTouchEvent(false);
+				} else {
+					scrollView.requestDisallowInterceptTouchEvent(true);
+				}
+				return false;
+			}
+		});
+	}
 }

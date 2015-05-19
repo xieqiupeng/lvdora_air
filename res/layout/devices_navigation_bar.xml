@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/top_bar_bg" >
+
+    <ImageButton
+        android:id="@+id/devices_share_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="60.0dp"
+        android:background="@drawable/share_bg_selector"
+        android:contentDescription="分享按钮"
+        android:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/devices_update_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="2.0dp"
+        android:background="@drawable/main_update_icon_selector"
+        android:contentDescription="刷新按钮"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/devides_update_image_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="2.0dip"
+        android:scaleType="center"
+        android:src="@drawable/main_progress_update"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/devices_title"
+        style="@style/setting_top_back_text"
+        android:layout_centerInParent="true"
+        android:text="民间测试站点" />
+</RelativeLayout>

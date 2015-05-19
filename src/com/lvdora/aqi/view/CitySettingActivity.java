@@ -26,7 +26,6 @@ import com.lvdora.aqi.R;
 import com.lvdora.aqi.adapter.CitySettingAdaper;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.City;
-import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CitysIndexMap;
 import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.util.DataTool;

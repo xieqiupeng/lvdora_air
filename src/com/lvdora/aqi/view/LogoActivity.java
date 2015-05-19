@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+//import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
+//import android.content.DialogInterface;
+//import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,10 +19,9 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import com.lvdora.aqi.R;
-import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.dao.CityDao;
 import com.lvdora.aqi.db.DBManager;
 import com.lvdora.aqi.model.City;
@@ -32,8 +31,8 @@ import com.lvdora.aqi.module.ModuleLocation;
 import com.lvdora.aqi.thread.ThreadServerInteraction;
 import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
-import com.lvdora.aqi.util.ExitTool;
 import com.lvdora.aqi.util.NetworkTool;
+import com.lvdora.aqi.util.TimeGauging;
 
 /**
  * 加载logo界面
@@ -62,7 +61,9 @@ public class LogoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.logo_activity);
-		Log.d("LogoActivity", "onCreate");
+		Log.w("LogoActivity", "onCreate");
+
+		TimeGauging.diffTime(TimeGauging.START_TIME, TimeGauging.LOGO_TIME);
 
 		// 当前页面加入activity管理模块
 		ModuleActivitiesManager.getActivitiesStack().push(this);
@@ -78,6 +79,13 @@ public class LogoActivity extends Activity {
 		// 创建根目录
 		DataTool.createSDCardDir();
 
+		// 导入city.db
+		File file = new File(DBManager.DB_TOTAL_PATH);
+		if (!file.exists()) {
+			dbManager = new DBManager(LogoActivity.this);
+			dbManager.openDatabase();
+		}
+
 		// 如果第一次没有网络连接，强制退出
 		NetworkTool network = new NetworkTool(LogoActivity.this);
 		if (!NetworkTool.isNetworkConnected(LogoActivity.this)) {
@@ -92,7 +100,7 @@ public class LogoActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		Log.d("LogoActivity", "onDestroy");
+		Log.w("LogoActivity", "onDestroy");
 		super.onDestroy();
 	}
 
@@ -109,17 +117,16 @@ public class LogoActivity extends Activity {
 		localAnimation.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
-				// 导入省市数据库
-				File file = new File(DBManager.DB_TOTAL_PATH);
-				if (!file.exists()) {
-					dbManager = new DBManager(LogoActivity.this);
-					dbManager.openDatabase();
-				}
-
 				// TODO 第一次定位城市
 				ModuleLocation locate = new ModuleLocation(LogoActivity.this);
-				locate.locateCity();
+				locate.locateStart();
 
+				// 获取版本信息
+				DataTool.getVersionJsonData(getApplicationContext());
+				// 获取民间设备数据
+				DataTool.getDeviceJsonData(getApplicationContext());
+				// 获取预警信息
+				DataTool.getForcastData();
 				// 获取吐槽数据
 				DataTool.getSpitData(getApplicationContext(), "", "");
 				// 获取排名信息及全国城市地图数据
@@ -154,25 +161,31 @@ public class LogoActivity extends Activity {
 	public void dispose(String locateCity, double jingdu, double weidu) {
 
 		// 0 TODO 手动设置定位城市，进行测试
-		double[][] lonLat = {
-				// 0 保定市 游泳馆
-				{ 115.472963, 38.878139 },
-				// 1 深圳市 荔园
-				{ 114.064781, 22.560473 },
-				// 2 杭州市 千岛湖
-				{ 119.051449, 29.61001 },
-				// 3 天津 西站
-				{ 117.172509, 39.164913 } };
-		locateCity = "天津市";
-		jingdu = lonLat[3][0];
-		weidu = lonLat[3][1];
+//		double[][] lonLat = {
+//				// 0 保定市 游泳馆
+//				{ 115.472963, 38.878139 },
+//				// 1 深圳市 荔园
+//				{ 114.064781, 22.560473 },
+//				// 2 杭州市 千岛湖
+//				{ 119.051449, 29.61001 },
+//				// 3 天津市 西站
+//				{ 117.172509, 39.164913 },
+//				// 4 扬州市
+//				{ 119.49648, 32.438861 },
+//				// 5 临沂市
+//				{ 118.418956, 35.053736 }
+//
+//		};
+//		locateCity = "临沂市";
+//		jingdu = lonLat[5][0];
+//		weidu = lonLat[5][1];
 
 		// 1 加载缓存城市
 		loadCityListFromSP();
 
 		// 2 加载定位城市，与db和缓存定位城市对比，将定位城市id存入类变量
 		cityID = loadLocateCity(locateCity);
-		Log.v("LogoActivity", "dispose " + cityID + ":" + citys.toString());
+		Log.i("LogoActivity", "dispose " + cityID + ":" + citys.toString());
 
 		// 3 解决定位城市和缓存城市的冲突
 		resolveConflict();
@@ -185,18 +198,22 @@ public class LogoActivity extends Activity {
 			jingdu = 116.361555;
 			weidu = 39.993906;
 		}
+
 		// 5 存sp
 		listToSP(jingdu, weidu);
 
-		// 6 请求详细aqi数据，回调存db
+		// 6 存最近站点
+		DataTool.getNearestSite(getApplicationContext(), cityID, jingdu * 1E6, weidu * 1E6);
+
+		// 7 请求详细aqi数据，回调存db
 		sendRequestForAqis();
 
 		// 争取缓存时间
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// Thread.sleep(1000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
 
 		// 9 跳转到主界面
 		Intent intent = new Intent();
@@ -226,7 +243,7 @@ public class LogoActivity extends Activity {
 	 * 加载定位城市，与db和缓存定位城市对比
 	 */
 	private int loadLocateCity(String locateCity) {
-		Log.d("LogoActivity", "loadLocateCity " + citys.toString());
+		Log.w("LogoActivity", "loadLocateCity " + citys.toString());
 		// 0 预处理
 		locateCity = locateCity.substring(0, locateCity.length() - 1);
 		// 得cityID和isHaveAqi
@@ -280,7 +297,7 @@ public class LogoActivity extends Activity {
 				}
 			}
 		}
-		Log.v("LogoActivity", citys.toString());
+		Log.i("LogoActivity", citys.toString());
 	}
 
 	// 4 list序号重排，无奈，结构不好
@@ -317,16 +334,13 @@ public class LogoActivity extends Activity {
 		sp.edit().putString("longtitude", jingdu + "").commit();
 		sp.edit().putString("latitude", weidu + "").commit();
 
-		// 4 存最近站点
-		DataTool.getNearestSite(getApplicationContext(), cityID, jingdu * 1E6, weidu * 1E6);
-
-		// 5 存吐槽城市
+		// 4 存吐槽城市
 		for (int i = 0; i < citys.size(); i++) {
 			DataTool.getCitySpitData(getApplicationContext(), String.valueOf(citys.get(i).getId()), "", jingdu + "",
 					weidu + "");
 		}
 
-		// 6 存GPS
+		// 5 存GPS
 		isGPS = true;
 		if (isGPS) {
 			sp = getSharedPreferences("isFirstIn", 0);
@@ -359,6 +373,7 @@ public class LogoActivity extends Activity {
 	/**
 	 * 打开GPS
 	 */
+	@SuppressWarnings("unused")
 	private void turnGPSOn() {
 		Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
 		intent.putExtra("enabled", true);
@@ -375,7 +390,10 @@ public class LogoActivity extends Activity {
 		}
 	}
 
-	// GPS定位
+	/**
+	 *  GPS定位
+	 */
+	@SuppressWarnings("unused")
 	private void locateByGPS() {
 		// 有网络的情况,排除不是第一次没有网络的情况
 		// 有网络时使用新数据，删除旧数据，无网络时使用旧数据
@@ -405,13 +423,13 @@ public class LogoActivity extends Activity {
 			intent.setClass(LogoActivity.this, MainActivity.class);
 			startActivity(intent);
 			finish();
-			// locateCity();
 		}
 	}
 
 	/**
 	 * 没看懂什么意思，好像是传递了一个缩略名
 	 */
+	@SuppressWarnings("unused")
 	private void ShortcutIcon() {
 		Intent shortcutIntent = new Intent();
 		shortcutIntent.setComponent(new ComponentName("com.lvdora.aqi", "com.lvdora.aqi.view.LvdoraGuide"));
@@ -432,6 +450,7 @@ public class LogoActivity extends Activity {
 	/**
 	 * 关闭GPS
 	 */
+	@SuppressWarnings("unused")
 	private void closeGPS() {
 		Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
 		intent.putExtra("enabled", false);

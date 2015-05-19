@@ -1,9 +1,6 @@
 package com.lvdora.aqi.adapter;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,7 +17,6 @@ import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.aqi.model.City;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.model.CitysIndexMap;
-import com.lvdora.aqi.util.DataTool;
 import com.lvdora.aqi.util.EnAndDecryption;
 import com.lvdora.aqi.util.GradeTool;
 import com.lvdora.aqi.view.HomeActivity;

@@ -1,16 +1,11 @@
 package com.lvdora.aqi.adapter;
 
-import java.util.List;
-import java.util.Map;
-
 import com.lvdora.aqi.R;
-import com.lvdora.aqi.adapter.DeviceAdapter.ViewHolder;
 import com.lvdora.aqi.model.CityAqi;
 import com.lvdora.aqi.util.DateUtil;
 import com.lvdora.aqi.util.GradeTool;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +15,10 @@ import android.widget.TextView;
 
 public class WeatherForecastAdapter extends BaseAdapter {
 	private CityAqi cityAqi;
-	private Context context;
 	private LayoutInflater mInflater = null;
 
 	public WeatherForecastAdapter(CityAqi cityAqi, Context context) {
 		this.cityAqi = cityAqi;
-		this.context = context;
 		this.mInflater = LayoutInflater.from(context);
 	}
 

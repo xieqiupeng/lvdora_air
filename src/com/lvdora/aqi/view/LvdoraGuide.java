@@ -21,10 +21,10 @@ import android.widget.ViewFlipper;
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.db.DBManager;
 import com.lvdora.aqi.util.Config;
+import com.lvdora.aqi.util.TimeGauging;
 import com.lvdora.guid.sqllite.DataHelper;
 import com.lvdora.aqi.dao.CityAqiDao;
 import com.lvdora.guid.sqllite.guidUsedInfo;
-import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * 首页
@@ -34,6 +34,7 @@ import com.tencent.bugly.crashreport.CrashReport;
  */
 public class LvdoraGuide extends Activity implements OnGestureListener {
 
+	@SuppressWarnings("unused")
 	private CityAqiDao cityAqiDB;
 	private DBManager dbManager;
 	private ViewFlipper viewFlipper;
@@ -55,7 +56,6 @@ public class LvdoraGuide extends Activity implements OnGestureListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		// 去掉标题栏
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// 去掉信息栏
@@ -64,12 +64,14 @@ public class LvdoraGuide extends Activity implements OnGestureListener {
 		// 绘制界面
 		setContentView(R.layout.app_guide);
 
+		TimeGauging.showTime(TimeGauging.START_TIME);
+		
 		// 初始化腾讯bugly
-		Context appContext = this.getApplicationContext();
-		String appId = "900001956"; // 上Bugly(bugly.qq.com)注册产品获取的AppId
-		boolean isDebug = true; // true代表App处于调试阶段，false代表App发布阶段
-		CrashReport.initCrashReport(appContext, appId, isDebug); // 初始化SDK
-		CrashReport.setUserId("xieqiupeng");
+		// Context appContext = this.getApplicationContext();
+		// String appId = "900001956"; // 上Bugly(bugly.qq.com)注册产品获取的AppId
+		// boolean isDebug = true; // true代表App处于调试阶段，false代表App发布阶段
+		// CrashReport.initCrashReport(appContext, appId, isDebug); // 初始化SDK
+		// CrashReport.setUserId("xieqiupeng");
 
 		// 模拟Java Crash方法：
 		// CrashReport.testJavaCrash ();
@@ -79,7 +81,7 @@ public class LvdoraGuide extends Activity implements OnGestureListener {
 		// 此处取得屏幕的分辨率
 		dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
-
+		
 		// 数据库初始化
 		File file = new File(DBManager.DB_PATH + "/" + DBManager.DB_NAME);
 		if (!file.exists()) {
@@ -88,8 +90,8 @@ public class LvdoraGuide extends Activity implements OnGestureListener {
 		}
 
 		// 关闭所有数据库
-		cityAqiDB = new CityAqiDao(LvdoraGuide.this, "");
-		cityAqiDB.closeAll();
+		// cityAqiDB = new CityAqiDao(LvdoraGuide.this, "");
+		// cityAqiDB.closeAll();
 
 		initView();
 	}

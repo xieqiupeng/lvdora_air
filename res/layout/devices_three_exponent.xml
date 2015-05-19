@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/device_title"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_margin="0dp"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:weightSum="3"
+    android:padding="0dp" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/bar_30" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/device_aqi_value"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:gravity="top|center_horizontal"
+            android:padding="0dp"
+            android:text="指数"
+            android:textColor="#ff005FC6"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/device_pm25_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="PM2.5"
+        android:textColor="#ff005FC6"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/bar_30" />
+
+    <TextView
+        android:id="@+id/device_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="等级"
+        android:textColor="#ff005FC6"
+        android:textSize="18sp" />
+
+</LinearLayout>

@@ -39,8 +39,8 @@ import com.baidu.mapapi.map.PopupOverlay;
 import com.baidu.platform.comapi.basestruct.GeoPoint;
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.baidu.BMapUtil;
-import com.lvdora.aqi.baidu.MyApplication;
 import com.lvdora.aqi.model.MapPopup;
+import com.lvdora.aqi.module.MyApplication;
 import com.lvdora.aqi.util.AsyncHttpClient;
 import com.lvdora.aqi.util.AsyncHttpResponseHandler;
 import com.lvdora.aqi.util.Constant;
@@ -442,6 +442,7 @@ public class MapActivity extends Fragment implements OnClickListener {
 	 * @author admin
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	public class MyOverlay extends ItemizedOverlay {
 
 		public MyOverlay(Drawable defaultMarker, MapView mapView) {

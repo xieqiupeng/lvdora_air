@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/weather_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/ll_weather_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/weather_bg"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_firstDay"
+            style="@style/forecast_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="今天\n9°/22°" />
+
+        <ImageView
+            android:id="@+id/iv_firstDay_weather"
+            android:layout_width="43dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5.0dip"
+            android:layout_marginTop="5.0dip"
+            android:background="@drawable/weathericon_graph_01" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_weather_bg2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/weather_bg"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_secondDay"
+            style="@style/forecast_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="周三\n10°/22°" />
+
+        <ImageView
+            android:id="@+id/iv_secondDay_weather"
+            android:layout_width="43dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5.0dip"
+            android:layout_marginTop="5.0dip"
+            android:background="@drawable/weathericon_graph_03" />
+    </LinearLayout>
+
+<!--     <LinearLayout
+        android:id="@+id/ll_weather_bg3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/weather_bg"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_thirdDay"
+            style="@style/forecast_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="周四\n8°/22°" />
+
+        <ImageView
+            android:id="@+id/iv_thirdDay_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8.0dip"
+            android:layout_marginTop="5.0dip"
+            android:background="@drawable/weathericon_graph_05" />
+    </LinearLayout> -->
+
+</LinearLayout>

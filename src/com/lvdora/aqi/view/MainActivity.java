@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -13,7 +14,9 @@ import android.widget.Toast;
 import com.lvdora.aqi.R;
 import com.lvdora.aqi.module.ModuleActivitiesManager;
 import com.lvdora.aqi.module.ModuleVersionUpdate;
+import com.lvdora.aqi.module.MyApplication;
 import com.lvdora.aqi.util.ExitTool;
+import com.lvdora.aqi.util.TimeGauging;
 
 /**
  * 
@@ -28,6 +31,7 @@ public class MainActivity extends FragmentActivity {
 	private FragmentTabHost mTabHost;
 	private RadioGroup mTabRg;
 
+	@SuppressWarnings("rawtypes")
 	public final Class[] fragments = { HazeForecastActivity.class, //
 			MapActivity.class, //
 			HomeActivity.class, //
@@ -39,6 +43,8 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
+
+		TimeGauging.diffTime(TimeGauging.LOGO_TIME, TimeGauging.MAIN_TIME);
 
 		// 当前页面加入activity管理模块
 		ModuleActivitiesManager.getActivitiesStack().push(this);
@@ -59,6 +65,11 @@ public class MainActivity extends FragmentActivity {
 				Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
 				mExitTime = System.currentTimeMillis();
 			} else {
+				// 存缓存
+				MyApplication app = (MyApplication) getApplication();
+				Log.w("a", app.getHandler() + "");
+				app.getHandler().sendEmptyMessage(HomeActivity.SAVE_SP);
+				Log.w("b", app.getHandler() + "");
 				// 停止服务
 				ExitTool.exit();
 			}
@@ -72,6 +83,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void initTabs() {
 
+		// 添加tabs
 		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 		int count = fragments.length;
@@ -79,7 +91,8 @@ public class MainActivity extends FragmentActivity {
 			TabSpec tabSpec = mTabHost.newTabSpec(i + "").setIndicator(i + "");
 			mTabHost.addTab(tabSpec, fragments[i], null);
 		}
-		// homeActivity
+
+		// 进入HomeActivity
 		mTabHost.setCurrentTab(2);
 
 		// 切换界面

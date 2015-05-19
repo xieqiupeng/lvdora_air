@@ -3,7 +3,7 @@
 
     <string name="app_name">绿朵空气质量</string>
     <string name="all_site_data">各监测站点实时数据</string>
-    <string name="update_time">[更新时间 : 2013-06-17 18:00]</string>
+    <string name="update_time">[更新时间 :]</string>
     <string name="monitoring_points">监测点</string>
     <string name="PM_density">PM2.5</string>
     <string name="quality">质量状况</string>
@@ -12,12 +12,12 @@
     <string name="getting_data">正在获取数据</string>
     <string name="feedback_content_hint">请输入您的反馈意见</string>
     <string name="feedback_contact_hint">联系方式:邮箱/QQ/手机</string>
-     <string name="spitOn">正在为您打开吐槽，请您耐心等待...</string>
-     <string name="spitOff">正在关闭吐槽</string>
-     <string name="spit">亲，吐槽内容不能为空！</string>
-     <string name="spitlimit">亲，吐槽内容不能超过30字哦！</string>
-    
-
+    <string name="spitOn">正在为您打开吐槽，请您耐心等待&#8230;</string>
+    <string name="spitOff">正在关闭吐槽</string>
+    <string name="spit">亲，吐槽内容不能为空！</string>
+    <string name="spitlimit">亲，吐槽内容不能超过30字哦！</string>
+	<string name="subsub">--</string>
+	
     <!-- 配置建议等级 -->
     <string name="you_weather_description">"空气好，可外出活动"</string>
     <string name="liang_weather_description">"易敏感人群减少外出"</string>
@@ -27,4 +27,10 @@
     <string name="yanzhong_weather_description">"避免外出敏感人群在室内"</string>
     <string name="citycontentlist_">title</string>
 
+    <!-- 配置wifi -->
+    <string name="action_settings">欢迎使用绿朵康物联</string>
+    <string name="ssid">SSID:</string>
+    <string name="password">PASSWORD:</string>
+    <string name="btn_get_wifi_name">取得当前wifi名称</string>
+	<string name="wifi_memo">"    注意：SSID名称要与您手机所在的wifi名称相同。\r\n    USB-wifi物联模块要在上电的情况下进行设置。未设置时，物联模块的指示灯闪烁比较快，在设置成功以后指示灯大约3秒闪烁一次。\r\n    如果设置物联模块以后手机不能上网，请重启一下路由器。"</string>
 </resources>

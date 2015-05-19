@@ -10,73 +10,73 @@ import android.widget.LinearLayout;
 
 public class LinearLayoutForListView extends LinearLayout {
 
-    private SiteAdapter adapter;
-    private OnClickListener onClickListener = null;
+	private SiteAdapter adapter;
+	private OnClickListener onClickListener = null;
 
-    /**
-     * 绑定布局
-     */
-    public void bindLinearLayout() {
-        int count = adapter.getCount();
-        for (int i = 0; i < count; i++) {
-            View v = adapter.getView(i, null, null);
+	/**
+	 * 绑定布局
+	 */
+	public void bindLinearLayout() {
+		int count = adapter.getCount();
+		
+		for (int i = 0; i < count; i++) {
+			View view = adapter.getView(i, null, null);
+			view.setOnClickListener(this.onClickListener);
+			if (i == count - 1) {
+				LinearLayout ly = (LinearLayout) view;
+				ly.removeViewAt(2);
+			}
+			addView(view, i);
+		}
+		Log.v("LLFListView", "" + count);
+	}
 
-            v.setOnClickListener(this.onClickListener);
-            if (i == count - 1) {
-                LinearLayout ly = (LinearLayout) v;
-                ly.removeViewAt(2);
-            }
-            addView(v, i);
-        }
-        Log.v("countTAG", "" + count);
-    }
+	public LinearLayoutForListView(Context context) {
+		super(context);
 
-    public LinearLayoutForListView(Context context) {
-        super(context);
+	}
 
-    }
+	public LinearLayoutForListView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
-    public LinearLayoutForListView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        // TODO Auto-generated constructor stub
+	}
 
-    }
+	/**
+	 * 获取点击事件
+	 * 
+	 * @return
+	 */
+	public OnClickListener getOnclickListener() {
+		return onClickListener;
+	}
 
-    /**
-     * 获取Adapter
-     * 
-     * @return adapter
-     */
-    public SiteAdapter getAdpater() {
-        return adapter;
-    }
+	/**
+	 * 设置点击事件
+	 * 
+	 * @param onClickListener
+	 */
+	public void setOnclickLinstener(OnClickListener onClickListener) {
+		this.onClickListener = onClickListener;
+	}
 
-    /**
-     * 设置数据
-     * 
-     * @param adpater
-     */
-    public void setAdapter(SiteAdapter adpater) {
-        this.adapter = adpater;
-        bindLinearLayout();
-    }
+	/**
+	 * 获取Adapter
+	 * 
+	 * @return adapter
+	 */
+	public SiteAdapter getAdpater() {
+		return adapter;
+	}
 
-    /**
-     * 获取点击事件
-     * 
-     * @return
-     */
-    public OnClickListener getOnclickListner() {
-        return onClickListener;
-    }
+	/**
+	 * 设置数据
+	 * 
+	 * @param adpater
+	 */
+	public void setAdapter(SiteAdapter adpater) {
+		this.adapter = adpater;
+		bindLinearLayout();
+	}
 
-    /**
-     * 设置点击事件
-     * 
-     * @param onClickListener
-     */
-    public void setOnclickLinstener(OnClickListener onClickListener) {
-        this.onClickListener = onClickListener;
-    }
-
+	
 }

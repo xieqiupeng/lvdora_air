@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30.0dip"
+    android:background="@drawable/top_item_header_bg"
+    android:orientation="horizontal"
+    android:padding="5.0dip" >
+
+    <TextView
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.0"
+        android:gravity="center_horizontal"
+        android:text="@string/monitoring_points"
+        android:textColor="#ff333333"
+        android:textSize="@dimen/form_item_text_size" />
+
+    <TextView
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_horizontal"
+        android:text="@string/AQI"
+        android:textColor="#ff333333"
+        android:textSize="@dimen/form_item_text_size" />
+
+    <TextView
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_horizontal"
+        android:text="@string/PM_density"
+        android:textColor="#ff333333"
+        android:textSize="@dimen/form_item_text_size" />
+
+    <TextView
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:gravity="center_horizontal"
+        android:text="@string/quality"
+        android:textColor="#ff333333"
+        android:textSize="@dimen/form_item_text_size" />
+
+</LinearLayout>

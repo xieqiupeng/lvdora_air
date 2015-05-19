@@ -1,13 +1,10 @@
 package com.lvdora.aqi.graph;
 
 import java.util.ArrayList;
-
 import com.lvdora.aqi.R;
-
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.HorizontalScrollView;
 
 public class MyHorizontalScrollView1 extends HorizontalScrollView {

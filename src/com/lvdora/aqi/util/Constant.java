@@ -20,6 +20,8 @@ public class Constant {
 	public static final String ABOUT_CODE = MAIN_URL+"/Download/About/code.jpg";
 	public static final String ABOUT_LOGO = MAIN_URL+"/Download/About/ic_launcher.png";
 	public static final String DEVICE_URL = MAIN_URL+"/index.php/Mobile/deviceJson";
+	public static final String DEVICE_JAVA_URL = MAIN_URL+"/index.php?s=/Interface/getStationDataByCityId/user/java/cityid/";
+	
 	public static final String VERSION_URL = MAIN_URL+"/index.php/Mobile/varJson";
 	//public static final String VERSION_URL = "http://www.greendora.com/index.php/Mobile/varJson";
 	//public static final String SITE_URL = MAIN_URL+"/index.php/Mobile/getSpot/cityid/";

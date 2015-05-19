@@ -70,21 +70,21 @@
                 android:id="@+id/forecast_city_air_item_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                layout="@layout/forecast_city_air_offical_item1" />
+                layout="@layout/forecast_home_item1" />
 
             <include
                 android:id="@+id/forecast_city_air_item_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/forecast_city_air_item_1"
-                layout="@layout/forecast_city_air_usa_item2" />
+                layout="@layout/forecast_home_item3" />
 
             <include
                 android:id="@+id/forecast_city_air_item_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/forecast_city_air_item_2"
-                layout="@layout/forecast_city_air_location_site_item3" />
+                layout="@layout/forecast_home_item2" />
 
            
 

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_exponent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/pollutants_bg"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        style="@style/forecast_ll_exponent"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_PM10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PM10"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/pollutants_index_textsize" />
+
+        <TextView
+            android:id="@+id/tv_pm10_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/exponent_bg_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/forecast_ll_exponent"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_O3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="O₃"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/pollutants_index_textsize" />
+
+        <TextView
+            android:id="@+id/tv_O3_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/exponent_bg_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/forecast_ll_exponent"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_SO2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SO₂"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/pollutants_index_textsize" />
+
+        <TextView
+            android:id="@+id/tv_SO2_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/exponent_bg_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/forecast_ll_exponent"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_NO2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NO₂"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/pollutants_index_textsize" />
+
+        <TextView
+            android:id="@+id/tv_NO2_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/exponent_bg_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/forecast_ll_exponent"
+        android:layout_width="0.0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_CO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CO"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/pollutants_index_textsize" />
+
+        <TextView
+            android:id="@+id/tv_CO_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/exponent_bg_shape_green"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+</LinearLayout>
